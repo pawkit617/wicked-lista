@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Wicked Lista</string>
+    <string name="no_list_message">You have no lists saved.</string>
+    <string name="create_a_list">Create a List</string>
+
+    <!-- screen key/title for nav host -->
+    <string name="home_screen">Home</string>
+    <string name="create_list">Create List</string>
+    <string name="add_item">Add Item</string>
+
+    <!--Create List Labels-->
+    <string name="title">Title</string>
+    <string name="subject">Subject</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="optional">Optional</string>
+    <string name="error_message">&#x2A;Please provide a title</string>
+
+</resources>
