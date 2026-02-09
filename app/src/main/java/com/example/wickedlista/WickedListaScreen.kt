@@ -1,6 +1,5 @@
 package com.example.wickedlista
 
-import android.view.Window
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,7 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wickedlista.ui.screens.HomeScreen
-import com.example.wickedlista.ui.screens.NewListCreation
 
 
 enum class WickedListaScreen(@StringRes val title: Int) {

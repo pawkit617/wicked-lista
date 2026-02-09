@@ -13,7 +13,7 @@ navigationCompose = "2.9.6"
 materialDesign = "1.4.0-alpha17"
 viewModelSavedState = "2.8.0"
 lifecycleViewModel = "2.8.0"
-room = "2.5.1"
+room = "2.6.1"
 foundation = "1.6.0"
 hilt = "2.56.2"
 

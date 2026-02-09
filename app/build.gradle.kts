@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.hilt)
-    //id("com.google.devtools.ksp")
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
+    //kotlin("kapt")
 }
 
 
@@ -68,10 +68,10 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     //annotationProcessor(libs.androidx.room.compiler)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation("com.google.dagger:hilt-android:2.59.1")
-    //ksp("com.google.dagger:hilt-android-compiler:2.59.1") associated with plugin id("com.google.devtools.ksp") version "2.1.0-1.0.29"
-    kapt("com.google.dagger:hilt-android-compiler:2.59.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.59.1")
+    //kapt("com.google.dagger:hilt-android-compiler:2.59.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     //implementation("org.jetbrains:annotations:26.0.2-1")

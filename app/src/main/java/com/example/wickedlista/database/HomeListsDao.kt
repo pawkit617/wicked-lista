@@ -7,11 +7,12 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
+
 interface HomeListsDao {
     @Query("SELECT * FROM home_lists")
     fun getAllHomeLists(): Flow<List<HomeLists>>
 
-//    @Insert(onConflict = OnConflictStrategy.ABORT)
-//    suspend fun insertNewList(homeList: HomeLists)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertNewList(homeList: HomeLists)
 }
 
