@@ -2,8 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.android.hilt)
+    //id("com.google.devtools.ksp")
+    kotlin("kapt")
 }
 
+
+
+hilt {
+    enableAggregatingTask = false
+}
 android {
     namespace = "com.example.wickedlista"
     compileSdk {
@@ -55,8 +63,22 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.foundation)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    //annotationProcessor(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
+    implementation("com.google.dagger:hilt-android:2.59.1")
+    //ksp("com.google.dagger:hilt-android-compiler:2.59.1") associated with plugin id("com.google.devtools.ksp") version "2.1.0-1.0.29"
+    kapt("com.google.dagger:hilt-android-compiler:2.59.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+
+    //implementation("org.jetbrains:annotations:26.0.2-1")
+
+//    implementation("com.intellij:annotations:12.0") {
+//        exclude(group = "com.intellij", module = "annotations")
+//    }
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

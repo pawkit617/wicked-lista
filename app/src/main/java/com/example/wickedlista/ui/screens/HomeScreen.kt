@@ -24,14 +24,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.R
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
 @Composable
 fun HomeScreen(
-    homeScreenViewModel: HomeScreenViewModel = viewModel(),
+    homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
     createNewList: () -> Unit,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp)
@@ -138,8 +138,4 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel, setShowDialog: (B
             }
         }
     }
-}
-
-private fun validateInput(validator: (value: String, maxCount: Int, minCount: Int) -> Boolean): Boolean {
-    return true
 }
