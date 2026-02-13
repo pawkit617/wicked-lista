@@ -13,6 +13,6 @@ interface HomeListsDao {
     fun getAllHomeLists(): Flow<List<HomeLists>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertNewList(homeList: HomeLists)
+    suspend fun insertNewList(homeList: HomeLists): Long
 }
 

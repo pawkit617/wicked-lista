@@ -4,5 +4,7 @@ data class HomeScreenUIState(
     val existingLists: List<String> = listOf(),
     val titleOfNewList:String = "",
     val subjectOfNewList: String = "",
-    val isError: Boolean = false
+    val errorMessage: String = "",
+    val isError: Boolean = false,
+    val hasSQLError: Boolean = false
 )

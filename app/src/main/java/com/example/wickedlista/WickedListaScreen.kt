@@ -7,6 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,14 +60,14 @@ fun WickedListaApp(
                 navController = navController,
                 startDestination = WickedListaScreen.HomeScreen.name, //why not current screen?
                 modifier = Modifier.fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                   // .verticalScroll(rememberScrollState()) //uncomment will lead to “Infinite Height” Crash in Jetpack since i have a LazyVertcialGrid in HomeScreen
                     .padding(innerPadding)
             ) {
                 composable(route = WickedListaScreen.HomeScreen.name) {
                     HomeScreen(
-                        createNewList = {
-                            navController.navigate(WickedListaScreen.CreateList.name)
-                        },
+//                        createNewList = {
+//                            navController.navigate(WickedListaScreen.CreateList.name)
+//                        },
                         contentPaddingValues = innerPadding
                     )
                 }
@@ -88,6 +90,13 @@ fun TopWickedListaAppBar(
     CenterAlignedTopAppBar(
         title = {
             Text(text = stringResource(currentScreen.title))
+        },
+        actions = {
+            IconButton(
+                onClick = {}
+            ) {
+                //Icon(imageVector = Icons.Defaults)
+            }
         }
     )
 }

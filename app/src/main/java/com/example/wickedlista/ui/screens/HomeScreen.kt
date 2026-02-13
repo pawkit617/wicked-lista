@@ -1,54 +1,126 @@
 package com.example.wickedlista.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.R
+import com.example.wickedlista.data.HomeScreenUIState
+import com.example.wickedlista.database.HomeLists
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
 @Composable
 fun HomeScreen(
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
-    createNewList: () -> Unit,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp)
-) { //cdc- will need a view model to show the lists or the no list msg
+) {
 
+    val allListsAsState = homeScreenViewModel.getLists().collectAsState(emptyList())
+    val allLists = allListsAsState.value
 
+    if (allLists.isEmpty()) {
+        NoListFoundScreen(homeScreenViewModel, contentPaddingValues)
+    } else {
+        ListsScreen(allLists, contentPaddingValues)
+    }
+
+}
+
+@Composable
+fun ListsScreen(
+    allLists: List<HomeLists>,
+    contentPaddingValues: PaddingValues
+) {
+
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(200.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        contentPadding = contentPaddingValues
+    ) {
+        items(items = allLists, key = {list -> list.id}) { list ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.rounded_chess_queen_24),
+                        contentScale = ContentScale.None,
+                        modifier = Modifier
+                            .size(64.dp)
+                            .padding(8.dp)
+                            .clip(MaterialTheme.shapes.small)
+                            .background(Color.White),
+                        contentDescription = ""
+                    )
+                    Text(text = list.title)
+                    Text(text = list.subject, modifier = Modifier.padding(bottom = 8.dp))
+                }
+            }
+        }
+   }
+}
+
+@Composable
+fun NoListFoundScreen(
+    homeScreenViewModel: HomeScreenViewModel,
+    contentPaddingValues: PaddingValues
+) {
     val showCreateListDialog = rememberSaveable { mutableStateOf(false) }
     if (showCreateListDialog.value) {
         CreateListDialog(homeScreenViewModel) {showCreateListDialog.value = it}
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(contentPaddingValues),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    ) {
         Text(
             modifier = Modifier.padding(0.dp, 0.dp,0.dp, 16.dp),
             text = stringResource(R.string.no_list_message),
@@ -95,12 +167,7 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel, setShowDialog: (B
                         .fillMaxWidth()
                 )
                 Spacer(Modifier.padding(8.dp))
-
-                if (homeScreenUIState.value.isError) {
-                    Text(
-                        text = stringResource(R.string.error_message),
-                        color = Color.Red)
-                }
+                ErrorMessageDisplayWithinDialog(homeScreenUIState)
 
                 OutlinedTextField(
                     state = subjectState,
@@ -126,7 +193,7 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel, setShowDialog: (B
                     }
                     Button(
                         onClick = {
-                            homeScreenViewModel.createNewList()
+                            homeScreenViewModel.createNewList(titleState.text, subjectState.text)
                         },
                         shape = MaterialTheme.shapes.small
                     ) {
@@ -137,5 +204,20 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel, setShowDialog: (B
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ErrorMessageDisplayWithinDialog(homeScreenUIState: State<HomeScreenUIState>) {
+    val errMsg = when {
+        homeScreenUIState.value.isError -> R.string.error_message_no_title
+        homeScreenUIState.value.hasSQLError -> R.string.error_message_duplicate_title
+        else -> -1
+    }
+
+    if (errMsg != -1) {
+        Text(
+            text = stringResource(errMsg),
+            color = Color.Red)
     }
 }

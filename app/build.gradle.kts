@@ -50,35 +50,32 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.activity.compose)
+
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.core.ktx)
 
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
+
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
-    //annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.common.jvm)
     ksp(libs.androidx.room.compiler)
     implementation("com.google.dagger:hilt-android:2.59.1")
     ksp("com.google.dagger:hilt-android-compiler:2.59.1")
-    //kapt("com.google.dagger:hilt-android-compiler:2.59.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
-    //implementation("org.jetbrains:annotations:26.0.2-1")
-
-//    implementation("com.intellij:annotations:12.0") {
-//        exclude(group = "com.intellij", module = "annotations")
-//    }
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
