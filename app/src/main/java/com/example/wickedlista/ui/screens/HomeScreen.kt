@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -43,19 +44,22 @@ import com.example.wickedlista.R
 import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.database.HomeLists
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
 fun HomeScreen(
-    homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
+    homeScreenViewModel: HomeScreenViewModel,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
-
+    val showCreateListDialog = rememberSaveable { mutableStateOf(false) }
     val allListsAsState = homeScreenViewModel.getLists().collectAsState(emptyList())
     val allLists = allListsAsState.value
-
-    if (allLists.isEmpty()) {
+    if (homeScreenViewModel.uiState.collectAsState().value.showCreateDialog) {
+        CreateListDialog(homeScreenViewModel)
+    }
+    else if (allLists.isEmpty()) {
         NoListFoundScreen(homeScreenViewModel, contentPaddingValues)
     } else {
         ListsScreen(allLists, contentPaddingValues)
@@ -109,11 +113,6 @@ fun NoListFoundScreen(
     homeScreenViewModel: HomeScreenViewModel,
     contentPaddingValues: PaddingValues
 ) {
-    val showCreateListDialog = rememberSaveable { mutableStateOf(false) }
-    if (showCreateListDialog.value) {
-        CreateListDialog(homeScreenViewModel) {showCreateListDialog.value = it}
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -129,7 +128,7 @@ fun NoListFoundScreen(
         Button(
             shape = MaterialTheme.shapes.small,
             onClick = {
-                showCreateListDialog.value = true
+                homeScreenViewModel.setCreateDialogVisibility(true)
             }
         ) {
             Text(
@@ -140,13 +139,13 @@ fun NoListFoundScreen(
 }
 
 @Composable
-fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel, setShowDialog: (Boolean) -> Unit) {
+fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
     val homeScreenUIState = homeScreenViewModel.uiState.collectAsState()
     val titleState = homeScreenViewModel.titleSavedState
     val subjectState = homeScreenViewModel.subjectSavedState
 
     Dialog(
-        onDismissRequest = {setShowDialog(false)}
+        onDismissRequest = {}
     ) {
         Card {
             Column(
@@ -186,7 +185,9 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel, setShowDialog: (B
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
-                        onClick = {setShowDialog(false)},
+                        onClick = {
+                            homeScreenViewModel.setCreateDialogVisibility(false)
+                         },
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(text = stringResource(R.string.cancel))

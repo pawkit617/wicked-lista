@@ -45,6 +45,9 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
                             subject = subject.toString()
                         )
                     )
+                    _uiState.update {
+                        it.copy(showCreateDialog = false)
+                    }
                 } catch (sqlEx: SQLiteException) {
                     _uiState.update {
                         it.copy(
@@ -57,5 +60,11 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
     }
 
     fun getLists(): Flow<List<HomeLists>> = homeListsRepositoryImp.getAllHomeListsStream()
+
+    fun setCreateDialogVisibility(isVisible: Boolean) {
+        _uiState.update { it ->
+            it.copy(showCreateDialog = isVisible)
+        }
+    }
 }
 

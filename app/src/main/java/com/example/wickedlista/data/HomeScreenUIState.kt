@@ -6,5 +6,6 @@ data class HomeScreenUIState(
     val subjectOfNewList: String = "",
     val errorMessage: String = "",
     val isError: Boolean = false,
-    val hasSQLError: Boolean = false
+    val hasSQLError: Boolean = false,
+    val showCreateDialog: Boolean = false
 )

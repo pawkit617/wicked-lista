@@ -17,4 +17,6 @@
     <string name="error_message_no_title">&#x2A;Please provide a title</string>
     <string name="error_message_duplicate_title">&#x2A;Unique title required</string>
 
+    <!--Content Description-->
+    <string name="icon_cdescript">add icon</string>
 </resources>

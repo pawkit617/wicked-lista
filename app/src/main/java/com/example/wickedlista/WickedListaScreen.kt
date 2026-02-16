@@ -15,16 +15,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.wickedlista.ui.screens.CreateListDialog
 import com.example.wickedlista.ui.screens.HomeScreen
+import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
 enum class WickedListaScreen(@StringRes val title: Int) {
@@ -37,7 +43,8 @@ enum class WickedListaScreen(@StringRes val title: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WickedListaApp(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
 ) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -50,12 +57,14 @@ fun WickedListaApp(
         topBar = {
             TopWickedListaAppBar(
                 currentScreen = currentScreen,
+                homeScreenViewModel = homeScreenViewModel,
                 scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
         Surface(modifier = Modifier.fillMaxSize()) {
             //config navHost
+          //  ShowUp(homeScreenViewModel)
             NavHost(
                 navController = navController,
                 startDestination = WickedListaScreen.HomeScreen.name, //why not current screen?
@@ -68,6 +77,7 @@ fun WickedListaApp(
 //                        createNewList = {
 //                            navController.navigate(WickedListaScreen.CreateList.name)
 //                        },
+                        homeScreenViewModel,
                         contentPaddingValues = innerPadding
                     )
                 }
@@ -84,6 +94,7 @@ fun WickedListaApp(
 @Composable
 fun TopWickedListaAppBar(
     currentScreen: WickedListaScreen,
+    homeScreenViewModel: HomeScreenViewModel,
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier
 ) {
@@ -93,10 +104,15 @@ fun TopWickedListaAppBar(
         },
         actions = {
             IconButton(
-                onClick = {}
+                onClick = {homeScreenViewModel.setCreateDialogVisibility(true) }
             ) {
-                //Icon(imageVector = Icons.Defaults)
+                Icon(
+                    painter = painterResource(R.drawable.add_24dp),
+                    modifier = Modifier.fillMaxSize(),
+                    contentDescription = stringResource(R.string.icon_cdescript)
+                )
             }
         }
     )
 }
+
