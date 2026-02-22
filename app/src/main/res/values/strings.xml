@@ -17,6 +17,12 @@
     <string name="error_message_no_title">&#x2A;Please provide a title</string>
     <string name="error_message_duplicate_title">&#x2A;Unique title required</string>
 
+    <!--Deletion Dialog-->
+    <string name="deletion_message">You are about to delete\n</string>
+    <string name="delete">Delete</string>
+
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>
+    <string name="icon_delete_cdescript">delete icon</string>
+    <string name="icon_delete_list_cdescript">delete list</string>
 </resources>

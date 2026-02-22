@@ -3,6 +3,7 @@ package com.example.wickedlista.ui.viewmodels
 
 import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +32,10 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
     val uiState: StateFlow<HomeScreenUIState> = _uiState.asStateFlow()   //Backing Property
     val titleSavedState = TextFieldState("")
     val subjectSavedState = TextFieldState("")
+
+    private val _allListState = MutableStateFlow(listOf<HomeLists>())
+    val allListState: StateFlow<List<HomeLists>> = _allListState.asStateFlow()
+
     fun createNewList(title: CharSequence, subject: CharSequence) {
         if (titleSavedState.text.isEmpty()) {
             _uiState.update { titleSavedState ->
@@ -39,7 +47,7 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
         } else {
             viewModelScope.launch {
                 try {
-                    val confirmId = homeListsRepositoryImp.addHomeList(
+                    homeListsRepositoryImp.addHomeList(
                         HomeLists(
                             title = title.toString(),
                             subject = subject.toString()
@@ -48,7 +56,7 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
                     _uiState.update {
                         it.copy(showCreateDialog = false)
                     }
-                } catch (sqlEx: SQLiteException) {
+                } catch ( _: SQLiteException) {
                     _uiState.update {
                         it.copy(
                             hasSQLError = true,
@@ -59,11 +67,44 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
         }
     }
 
+    fun getListsX() {
+        viewModelScope.launch {
+            val theList = homeListsRepositoryImp.getAllHomeListsStreamX()
+            _allListState.value = theList
+            if (theList.isEmpty()) {
+                _uiState.update {
+                    it.copy(showNoListMessage = true)
+                }
+            }
+
+        }
+    }
+
+
     fun getLists(): Flow<List<HomeLists>> = homeListsRepositoryImp.getAllHomeListsStream()
 
+
+    fun deleteHomeList() {
+        viewModelScope.launch {
+            val homeListId = _uiState.value.currentlySelectedHomeList.first
+            homeListsRepositoryImp.deleteHomeList(homeListId)
+        }
+    }
+    fun setCurrentlySelectedHomeList(id: Int, title: String) {
+        _uiState.update {
+            it.copy(currentlySelectedHomeList = Pair(id, title))
+        }
+    }
+
     fun setCreateDialogVisibility(isVisible: Boolean) {
-        _uiState.update { it ->
+        _uiState.update {
             it.copy(showCreateDialog = isVisible)
+        }
+    }
+
+    fun setDeletionDialogVisibility(isVisible: Boolean) {
+        _uiState.update {
+            it.copy(showDeletionDialog = isVisible)
         }
     }
 }
