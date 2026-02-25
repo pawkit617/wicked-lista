@@ -59,26 +59,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun HomeScreen(
     homeScreenViewModel: HomeScreenViewModel,
+    onClickOfHomeListCard: () -> Unit,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
-    //val allListsAsState = homeScreenViewModel.getLists().collectAsState(emptyList()) //Curt - can be used without coroutine
-    //val allLists = allListsAsState.value //Curt - can be used without coroutine
 
-    homeScreenViewModel.getListsX()
-    val allLists = homeScreenViewModel.allListState.collectAsState().value
-
+    homeScreenViewModel.getLists() //CURT - move this to WickedListaScreen?
     val homeScreenUIStateCollected = homeScreenViewModel.uiState.collectAsState()
 
     val showCreateDialog = homeScreenUIStateCollected.value.showCreateDialog
     val showDeletionDialog = homeScreenUIStateCollected.value.showDeletionDialog
     val showNoListMessage = homeScreenUIStateCollected.value.showNoListMessage
-    CreateListDialog(homeScreenViewModel)
+    val allLists = homeScreenUIStateCollected.value.existingHomeLists
+
     when {
         showCreateDialog -> CreateListDialog(homeScreenViewModel)
         showDeletionDialog -> DeletionDialog(homeScreenViewModel)
         showNoListMessage -> NoListFoundScreen(homeScreenViewModel, contentPaddingValues)
-        else -> ListsScreen(allLists, homeScreenViewModel, contentPaddingValues)
+        else -> ListsScreen(allLists, homeScreenViewModel, onClickOfHomeListCard, contentPaddingValues)
     }
 }
 
@@ -86,9 +84,9 @@ fun HomeScreen(
 fun ListsScreen(
     allLists: List<HomeLists>,
     homeScreenViewModel: HomeScreenViewModel,
+    onHomeListClick: () -> Unit,
     contentPaddingValues: PaddingValues
 ) {
-
     LazyVerticalGrid(
         columns = GridCells.Adaptive(200.dp),
         modifier = Modifier
@@ -99,7 +97,11 @@ fun ListsScreen(
         items(items = allLists, key = {list -> list.id}) { list ->
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                onClick = {
+                    homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.title)
+                    onHomeListClick()
+                }
             ) {
                 Box {
                     IconButton(

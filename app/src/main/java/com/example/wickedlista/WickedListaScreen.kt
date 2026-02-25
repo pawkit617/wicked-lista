@@ -30,11 +30,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wickedlista.ui.screens.CreateListDialog
 import com.example.wickedlista.ui.screens.HomeScreen
+import com.example.wickedlista.ui.screens.SavedListScreen
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
 enum class WickedListaScreen(@StringRes val title: Int) {
     HomeScreen(title = R.string.app_name),
+    SavedListScreen(title = R.string.saved_list_screen),
     CreateList(title = R.string.create_list),
     AddItem(title = R.string.add_item)
 }
@@ -63,27 +65,25 @@ fun WickedListaApp(
         }
     ) { innerPadding ->
         Surface(modifier = Modifier.fillMaxSize()) {
-            //config navHost
-          //  ShowUp(homeScreenViewModel)
             NavHost(
                 navController = navController,
-                startDestination = WickedListaScreen.HomeScreen.name, //why not current screen?
+                startDestination = WickedListaScreen.HomeScreen.name, //CURT - WickedListaScreen.HomeScreen.name why not current screen? B/C it has to be explicit
                 modifier = Modifier.fillMaxSize()
-                   // .verticalScroll(rememberScrollState()) //uncomment will lead to “Infinite Height” Crash in Jetpack since i have a LazyVertcialGrid in HomeScreen
+                   //CURT -  .verticalScroll(rememberScrollState()) //uncomment will lead to “Infinite Height” Crash in Jetpack since i have a LazyVertcialGrid in HomeScreen
                     .padding(innerPadding)
             ) {
-                composable(route = WickedListaScreen.HomeScreen.name) {
+                composable(route = WickedListaScreen.HomeScreen.name) { backStackEntry ->
                     HomeScreen(
-//                        createNewList = {
-//                            navController.navigate(WickedListaScreen.CreateList.name)
-//                        },
-                        homeScreenViewModel,
+                        homeScreenViewModel = homeScreenViewModel,
+                        onClickOfHomeListCard = {
+                            navController.navigate(WickedListaScreen.SavedListScreen.name)
+                        },
                         contentPaddingValues = innerPadding
                     )
                 }
-//                composable (route = WickedListaScreen.CreateList.name){
-//                    NewListCreation()
-//                }
+                composable (route = WickedListaScreen.SavedListScreen.name){
+                    SavedListScreen()
+                }
             }
 
         }
@@ -95,12 +95,18 @@ fun WickedListaApp(
 fun TopWickedListaAppBar(
     currentScreen: WickedListaScreen,
     homeScreenViewModel: HomeScreenViewModel,
+
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = stringResource(currentScreen.title))
+            val titleOfList = if (!currentScreen.name.equals(WickedListaScreen.SavedListScreen.name) ) {
+                stringResource(currentScreen.title)
+            } else {
+               homeScreenViewModel.uiState.value.currentlySelectedHomeList.second
+            }
+            Text(text = titleOfList)// titleOfList
         },
         actions = {
             IconButton(

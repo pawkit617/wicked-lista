@@ -5,6 +5,7 @@
 
     <!-- screen key/title for nav host -->
     <string name="home_screen">Home</string>
+    <string name="saved_list_screen">Saved List</string>
     <string name="create_list">Create List</string>
     <string name="add_item">Add Item</string>
 

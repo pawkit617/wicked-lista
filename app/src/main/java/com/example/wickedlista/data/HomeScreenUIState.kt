@@ -1,7 +1,9 @@
 package com.example.wickedlista.data
 
+import com.example.wickedlista.database.HomeLists
+
 data class HomeScreenUIState(
-    val existingLists: List<String> = listOf(),
+    val existingHomeLists: List<HomeLists> = listOf(),
     val currentlySelectedHomeList: Pair<Int, String> = Pair(-1, ""),
     val titleOfNewList:String = "",
     val subjectOfNewList: String = "",

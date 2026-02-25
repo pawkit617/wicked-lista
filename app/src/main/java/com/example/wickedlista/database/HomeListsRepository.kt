@@ -3,8 +3,6 @@ package com.example.wickedlista.database
 import kotlinx.coroutines.flow.Flow
 
 interface HomeListsRepository {
-    suspend fun getAllHomeListsStreamX(): List<HomeLists>
-
 
     fun getAllHomeListsStream(): Flow<List<HomeLists>>
 

@@ -33,9 +33,6 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
     val titleSavedState = TextFieldState("")
     val subjectSavedState = TextFieldState("")
 
-    private val _allListState = MutableStateFlow(listOf<HomeLists>())
-    val allListState: StateFlow<List<HomeLists>> = _allListState.asStateFlow()
-
     fun createNewList(title: CharSequence, subject: CharSequence) {
         if (titleSavedState.text.isEmpty()) {
             _uiState.update { titleSavedState ->
@@ -54,7 +51,9 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
                         )
                     )
                     _uiState.update {
-                        it.copy(showCreateDialog = false)
+                        it.copy(
+                            showCreateDialog = false,
+                            showNoListMessage = false)
                     }
                 } catch ( _: SQLiteException) {
                     _uiState.update {
@@ -67,21 +66,23 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
         }
     }
 
-    fun getListsX() {
+    fun getLists() {
         viewModelScope.launch {
-            val theList = homeListsRepositoryImp.getAllHomeListsStreamX()
-            _allListState.value = theList
-            if (theList.isEmpty()) {
-                _uiState.update {
+            val homeListsFlow = homeListsRepositoryImp.getAllHomeListsStream()
+            val homeLists = homeListsFlow.first()
+            val hasLists = homeLists.isNotEmpty()
+            _uiState.update {
+                if (hasLists) {
+                    it.copy(
+                        existingHomeLists = homeLists,
+                        showNoListMessage = false)
+
+                } else {
                     it.copy(showNoListMessage = true)
                 }
             }
-
         }
     }
-
-
-    fun getLists(): Flow<List<HomeLists>> = homeListsRepositoryImp.getAllHomeListsStream()
 
 
     fun deleteHomeList() {
