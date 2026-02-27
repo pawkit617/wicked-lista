@@ -104,9 +104,9 @@ fun TopWickedListaAppBar(
             val titleOfList = if (!currentScreen.name.equals(WickedListaScreen.SavedListScreen.name) ) {
                 stringResource(currentScreen.title)
             } else {
-               homeScreenViewModel.uiState.value.currentlySelectedHomeList.second
+                homeScreenViewModel.uiState.value.currentlySelectedHomeList.second
             }
-            Text(text = titleOfList)// titleOfList
+            Text(text = titleOfList)
         },
         actions = {
             IconButton(
