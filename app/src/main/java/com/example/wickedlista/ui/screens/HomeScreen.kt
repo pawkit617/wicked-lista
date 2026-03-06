@@ -8,21 +8,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,11 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,12 +41,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.R
 import com.example.wickedlista.data.HomeScreenUIState
-import com.example.wickedlista.database.HomeLists
+import com.example.wickedlista.database.homecategories.HomeCategories
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
@@ -82,7 +73,7 @@ fun HomeScreen(
 
 @Composable
 fun ListsScreen(
-    allLists: List<HomeLists>,
+    allLists: List<HomeCategories>,
     homeScreenViewModel: HomeScreenViewModel,
     onHomeListClick: () -> Unit,
     contentPaddingValues: PaddingValues
@@ -99,7 +90,7 @@ fun ListsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 onClick = {
-                    homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.title)
+                    homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category)
                     onHomeListClick()
                 }
             ) {
@@ -107,7 +98,7 @@ fun ListsScreen(
                     IconButton(
                         onClick = {
                             homeScreenViewModel.setDeletionDialogVisibility(true)
-                            homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.title)
+                            homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category)
                         },
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {
@@ -132,8 +123,8 @@ fun ListsScreen(
                                 .background(Color.White),
                             contentDescription = ""
                         )
-                        Text(text = list.title)
-                        Text(text = list.subject, modifier = Modifier.padding(bottom = 8.dp))
+                        Text(text = list.category)
+                        Text(text = list.topic, modifier = Modifier.padding(bottom = 8.dp))
                     }
                 }
             }
@@ -155,7 +146,7 @@ fun NoListFoundScreen(
     ) {
         Text(
             modifier = Modifier.padding(0.dp, 0.dp,0.dp, 16.dp),
-            text = stringResource(R.string.no_list_message),
+            text = stringResource(R.string.no_categories_found),
             style = MaterialTheme.typography.titleLarge
         )
         Button(
@@ -165,7 +156,7 @@ fun NoListFoundScreen(
             }
         ) {
             Text(
-                text = stringResource(R.string.create_a_list),
+                text = stringResource(R.string.create_category),
                 style = MaterialTheme.typography.labelLarge)
         }
     }
@@ -209,13 +200,15 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth() //Curt - necessary if u want SpaceEvenly to work
                 ) {
-                    Button(onClick = {homeScreenViewModel.setDeletionDialogVisibility(false)}) {
+                    Button(onClick = { homeScreenViewModel.setDeletionDialogVisibility(false) }) {
                         Text(text = stringResource(R.string.cancel))
                     }
-                    Button(onClick = {
-                        homeScreenViewModel.deleteHomeList()
-                        homeScreenViewModel.setDeletionDialogVisibility(false)
-                    }) {
+                    Button(
+                        onClick = {
+                            homeScreenViewModel.deleteHomeList()
+                            homeScreenViewModel.setDeletionDialogVisibility(false)
+                        }
+                    ) {
                         Text(text = stringResource(R.string.delete))
                     }
                 }
@@ -228,10 +221,11 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
 fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
 
     val homeScreenUIState = homeScreenViewModel.uiState.collectAsState() //CURT - will not be call on state change. Seems state change is only recognized in HomeScreen(...)
-    val x = homeScreenUIState.value.showCreateDialog
-    if (x) {
-        val titleState = homeScreenViewModel.titleSavedState
-        val subjectState = homeScreenViewModel.subjectSavedState
+    val shouldShow = homeScreenUIState.value.showCreateDialog
+    if (shouldShow) {
+        val titleState = homeScreenViewModel.categorySavedState
+        val topicState = homeScreenViewModel.topicSavedState
+        val listForState = homeScreenViewModel.listForSavedState
 
         Dialog(
             onDismissRequest = {}
@@ -246,27 +240,34 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                 ) {
                     OutlinedTextField(
                         state = titleState,
-                        label = {
-                            Text(text = stringResource(R.string.title))
-                        },
+                        label = { Text(text = stringResource(R.string.category)) },
+                        placeholder = { Text(stringResource(R.string.category_placeholder)) },
                         isError = homeScreenUIState.value.isError,
                         lineLimits = TextFieldLineLimits.SingleLine,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
                     Spacer(Modifier.padding(8.dp))
-                    ErrorMessageDisplayWithinDialog(homeScreenUIState)
 
                     OutlinedTextField(
-                        state = subjectState,
-                        label = {
-                            Text(text = stringResource(R.string.subject))
-                        },
+                        state = topicState,
+                        label = { Text(text = stringResource(R.string.topic)) },
                         lineLimits = TextFieldLineLimits.SingleLine,
-                        placeholder = { Text(text = stringResource(R.string.optional)) },
+                        placeholder = { Text(text = stringResource(R.string.topic_placeholder)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.padding(8.dp))
+
+                    OutlinedTextField(
+                        state = listForState,
+                        label = { Text(text = stringResource(R.string.lists_for)) },
+                        isError = homeScreenUIState.value.hasNoListFor,
+                        lineLimits = TextFieldLineLimits.SingleLine,
+                        placeholder = { Text(text = stringResource(R.string.lists_for_placeholder)) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.padding(8.dp))
+                    ErrorMessageDisplayWithinDialog(homeScreenUIState)
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,
@@ -276,6 +277,8 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                         Button(
                             onClick = {
                                 homeScreenViewModel.setCreateDialogVisibility(false)
+                                homeScreenViewModel.clearErrors()
+                                homeScreenViewModel.clearTextFieldStates()
                             },
                             shape = MaterialTheme.shapes.small
                         ) {
@@ -285,7 +288,8 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                             onClick = {
                                 homeScreenViewModel.createNewList(
                                     titleState.text,
-                                    subjectState.text
+                                    topicState.text,
+                                    listFor = listForState.text
                                 )
                             },
                             shape = MaterialTheme.shapes.small
@@ -304,8 +308,9 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
 @Composable
 fun ErrorMessageDisplayWithinDialog(homeScreenUIState: State<HomeScreenUIState>) {
     val errMsg = when {
-        homeScreenUIState.value.isError -> R.string.error_message_no_title
-        homeScreenUIState.value.hasSQLError -> R.string.error_message_duplicate_title
+        homeScreenUIState.value.isError -> R.string.error_message_no_category
+        homeScreenUIState.value.hasSQLError -> R.string.error_message_duplicate_category
+        homeScreenUIState.value.hasNoListFor -> R.string.error_message_no_initial_list
         else -> -1
     }
 

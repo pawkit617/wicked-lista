@@ -82,7 +82,7 @@ fun WickedListaApp(
                     )
                 }
                 composable (route = WickedListaScreen.SavedListScreen.name){
-                    SavedListScreen()
+                    SavedListScreen(homeScreenViewModel.uiState.collectAsState().value.currentlySelectedHomeList.first)
                 }
             }
 

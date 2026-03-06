@@ -2,9 +2,11 @@ package com.example.wickedlista.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.wickedlista.database.HomeListsDao
-import com.example.wickedlista.database.HomeListsRepositoryImp
+import com.example.wickedlista.database.homecategories.HomeCategoriesDao
+import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
 import com.example.wickedlista.database.WickedListaDatabase
+import com.example.wickedlista.database.savedlists.SavedListsDao
+import com.example.wickedlista.database.savedlists.SavedListsRepositoryImp
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,13 +29,25 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHomeListDao(wickedListaDatabase: WickedListaDatabase): HomeListsDao {
-        return wickedListaDatabase.homeListDao()
+    fun provideHomeListDao(wickedListaDatabase: WickedListaDatabase): HomeCategoriesDao {
+        return wickedListaDatabase.homeCategoriesDao()
     }
 
     @Provides
     @Singleton
-    fun provideHomeListRepositoryImp(homeListsDao: HomeListsDao): HomeListsRepositoryImp {
-        return HomeListsRepositoryImp(homeListsDao)
+    fun provideHomeListRepositoryImp(homeCategoriesDao: HomeCategoriesDao): HomeCategoriesRepositoryImp {
+        return HomeCategoriesRepositoryImp(homeCategoriesDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedListsDao(wickedListaDatabase: WickedListaDatabase): SavedListsDao {
+        return wickedListaDatabase.savedListsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedListsRepositoryImp(savedListsDao: SavedListsDao): SavedListsRepositoryImp {
+        return SavedListsRepositoryImp(savedListsDao)
     }
 }

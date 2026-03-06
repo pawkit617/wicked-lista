@@ -1,74 +1,93 @@
 package com.example.wickedlista.ui.viewmodels
 
-
-import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.sqlite.SQLiteException
-import com.example.wickedlista.R
 import com.example.wickedlista.data.HomeScreenUIState
-import com.example.wickedlista.database.HomeLists
-import com.example.wickedlista.database.HomeListsRepositoryImp
+import com.example.wickedlista.database.homecategories.HomeCategories
+import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
+import com.example.wickedlista.database.savedlists.SavedLists
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 @OptIn(SavedStateHandleSaveableApi::class)
-class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeListsRepositoryImp): ViewModel() {
+class HomeScreenViewModel @Inject constructor(val homeCategoriesRepositoryImp: HomeCategoriesRepositoryImp): ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUIState()) //Backing field
     val uiState: StateFlow<HomeScreenUIState> = _uiState.asStateFlow()   //Backing Property
-    val titleSavedState = TextFieldState("")
-    val subjectSavedState = TextFieldState("")
+    val categorySavedState = TextFieldState("")
+    val topicSavedState = TextFieldState("")
+    val listForSavedState = TextFieldState("")
 
-    fun createNewList(title: CharSequence, subject: CharSequence) {
-        if (titleSavedState.text.isEmpty()) {
-            _uiState.update { titleSavedState ->
-                titleSavedState.copy(
+    fun createNewList(category: CharSequence, title: CharSequence, listFor: CharSequence) {
+        if (categorySavedState.text.isEmpty()) {
+            _uiState.update {
+                it.copy(
                     isError = true,
-                    hasSQLError = false
+                    hasSQLError = false,
+                    hasNoListFor = false
                 )
             }
-        } else {
+        } else if (listForSavedState.text.isEmpty()) {
+            _uiState.update {
+                it.copy(
+                    isError = false,
+                    hasSQLError = false,
+                    hasNoListFor = true
+                )
+            }
+        } else{
             viewModelScope.launch {
                 try {
-                    homeListsRepositoryImp.addHomeList(
-                        HomeLists(
-                            title = title.toString(),
-                            subject = subject.toString()
+                    val categoryId = homeCategoriesRepositoryImp.addHomeCategories(
+                        HomeCategories(
+                            category = category.toString(),
+                            topic = title.toString()
                         )
                     )
+                    createInitialListForCategory(categoryId, listFor)
                     _uiState.update {
                         it.copy(
                             showCreateDialog = false,
-                            showNoListMessage = false)
+                            showNoListMessage = false
+                        )
                     }
+                    clearTextFieldStates()
                 } catch ( _: SQLiteException) {
                     _uiState.update {
                         it.copy(
                             hasSQLError = true,
-                            isError = false)
+                            isError = false,
+                            hasNoListFor = false
+                        )
                     }
                 }
             }
         }
     }
 
+    fun createInitialListForCategory(categoryId: Long, listForTitle: CharSequence) {
+        viewModelScope.launch {
+            homeCategoriesRepositoryImp.addInitialListForCategory(
+                SavedLists(
+                    homeCategoriesForeignId = categoryId,
+                    owner = listForTitle.toString()
+                )
+            )
+        }
+    }
     fun getLists() {
         viewModelScope.launch {
-            val homeListsFlow = homeListsRepositoryImp.getAllHomeListsStream()
+            val homeListsFlow = homeCategoriesRepositoryImp.getAllHomeCategoriesStream()
             val homeLists = homeListsFlow.first()
             val hasLists = homeLists.isNotEmpty()
             _uiState.update {
@@ -88,7 +107,7 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
     fun deleteHomeList() {
         viewModelScope.launch {
             val homeListId = _uiState.value.currentlySelectedHomeList.first
-            homeListsRepositoryImp.deleteHomeList(homeListId)
+            homeCategoriesRepositoryImp.deleteHomeCategory(homeListId)
         }
     }
     fun setCurrentlySelectedHomeList(id: Int, title: String) {
@@ -107,6 +126,22 @@ class HomeScreenViewModel @Inject constructor(val homeListsRepositoryImp: HomeLi
         _uiState.update {
             it.copy(showDeletionDialog = isVisible)
         }
+    }
+
+    fun clearErrors() {
+        _uiState.update {
+            it.copy(
+                isError = false,
+                hasSQLError = false,
+                hasNoListFor = false
+            )
+        }
+    }
+
+    fun clearTextFieldStates() {
+        categorySavedState.clearText()
+        topicSavedState.clearText()
+        listForSavedState.clearText()
     }
 }
 

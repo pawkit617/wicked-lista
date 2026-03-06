@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Wicked Lista</string>
+    <string name="no_categories_found">You have no categories saved.</string>
+    <string name="create_category">Create category</string>
     <string name="no_list_message">You have no lists saved.</string>
     <string name="create_a_list">Create a List</string>
 
@@ -10,20 +12,36 @@
     <string name="add_item">Add Item</string>
 
     <!--Create List Labels-->
-    <string name="title">Title</string>
-    <string name="subject">Subject</string>
+    <string name="category">Category</string>
+    <string name="category_placeholder">e.g. Recipes</string>
+    <string name="topic">Topic</string>
+    <string name="topic_placeholder">e.g. Pie</string>
+    <string name="lists_for">Lists needed for...</string>
+    <string name="lists_for_placeholder">e.g. Apple Pie</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
     <string name="optional">Optional</string>
-    <string name="error_message_no_title">&#x2A;Please provide a title</string>
-    <string name="error_message_duplicate_title">&#x2A;Unique title required</string>
+    <string name="error_message_no_category">&#x2A;Please provide a category</string>
+    <string name="error_message_duplicate_category">&#x2A;Unique category required</string>
+    <string name="error_message_no_initial_list">Please provide initial list.</string>
 
     <!--Deletion Dialog-->
     <string name="deletion_message">You are about to delete\n</string>
     <string name="delete">Delete</string>
 
+    <!-- Add Owner Dialog-->
+    <string name="add_owner_message">Add an owner of a new list this category.</string>
+    <string name="new_owner">New owner</string>
+    <string name="add_owner">Add owner</string>
+    <string name="error_duplicate_owner">&#x2A;Unique owner required</string>
+    <string name="error_message_no_owner">&#x2A;Please provide an owner</string>
+
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>
     <string name="icon_delete_cdescript">delete icon</string>
-    <string name="icon_delete_list_cdescript">delete list</string>
+    <string name="icon_delete_list_cdescript">delete list icon</string>
+    <string name="icon_delete_owner_cdescript">delete owner icon</string>
+    <string name="icon_add_listitem_cdescript">add item icon </string>
+    <string name="add_owner_button_cdescript">add item button</string>
+
 </resources>
