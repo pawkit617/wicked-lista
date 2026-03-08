@@ -29,14 +29,13 @@ val Typography = Typography(
         fontSize = 20.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+    ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
+        fontSize = 14.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )
-    */
+/* Other default text styles to override */
 )

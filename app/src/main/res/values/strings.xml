@@ -35,6 +35,8 @@
     <string name="add_owner">Add owner</string>
     <string name="error_duplicate_owner">&#x2A;Unique owner required</string>
     <string name="error_message_no_owner">&#x2A;Please provide an owner</string>
+    <string name="add_items_hint">To add items.</string>
+
 
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>

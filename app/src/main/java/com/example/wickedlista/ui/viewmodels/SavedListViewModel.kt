@@ -32,6 +32,14 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
         }
     }
 
+    fun setSelectedOwnerId(ownerId: Int) {
+        _uiState.update {
+            it.copy(
+                selectedOwnerId = ownerId
+            )
+        }
+    }
+
     fun getAllSavedListsForCategoryId(categoryId: Int) {
         viewModelScope.launch {
             val listsForCategoryId =

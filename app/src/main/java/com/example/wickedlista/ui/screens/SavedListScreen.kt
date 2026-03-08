@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -30,17 +27,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.R
@@ -53,7 +49,10 @@ fun SavedListScreen(
     categoryId: Int,
     savedListViewModel: SavedListViewModel = hiltViewModel()
 ) {
-    savedListViewModel.getAllSavedListsForCategoryId(categoryId)
+    val x by savedListViewModel.uiState.collectAsState()
+    LaunchedEffect(key1 = x.allSavedLists) {
+        savedListViewModel.getAllSavedListsForCategoryId(categoryId)
+    }
     val savedListViewModelState = savedListViewModel.uiState.collectAsState().value
     val listOfSavedListsOwners = savedListViewModelState.allSavedLists
 
@@ -72,42 +71,53 @@ fun OwnersWithListItems(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.Green)
+                    .background(Color.White)
                     .weight(0.9f)
             ) {
                 OwnersOfSavedList(
                     listOfSavedListsOwners,
-                    savedListViewModel.uiState.collectAsState().value.selectedOwnerId,
+                    savedListViewModel,
                     Modifier
                         .weight(0.25f)
                         .background(color = Color.Gray)
                 )
                 ItemsOfSavedLists(
-                    listOfSavedListsOwners,
+                    savedListViewModel,
                     Modifier
                         .weight(0.75f)
                         .background(color = Color.White)
                 )
             }
-            Row(
+            BottomButtonEditRow(
+                savedListViewModel,
                 Modifier
                     .fillMaxWidth()
                     .weight(0.1f),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BottomIconButton(
-                    R.drawable.add_box_48,
-                    R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
-
-                BottomIconButton(
-                    R.drawable.listitem_add_48,
-                    R.string.icon_add_listitem_cdescript) {}
-                BottomIconButton(
-                    R.drawable.delete_box_owner_48,
-                    R.string.icon_delete_owner_cdescript) {}
-            }
+            )
         }
+    }
+}
+
+@Composable
+fun BottomButtonEditRow(
+    savedListViewModel: SavedListViewModel,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BottomIconButton(
+            R.drawable.add_box_48,
+            R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
+
+        BottomIconButton(
+            R.drawable.listitem_add_48,
+            R.string.icon_add_listitem_cdescript) {}
+        BottomIconButton(
+            R.drawable.delete_box_owner_48,
+            R.string.icon_delete_owner_cdescript) {}
     }
 }
 
@@ -126,13 +136,10 @@ fun BottomIconButton(
     }
 }
 
-/*
-Selected - Blk circle, white text, white bkgrd
-Unselected - white circle, blk text, blk bkgrd
- */
 
 @Composable
-fun OwnersOfSavedList(savedLists: List<SavedLists>, currentlySelectedOwner: Int, modifier: Modifier) {
+fun OwnersOfSavedList(savedLists: List<SavedLists>, savedListViewModel: SavedListViewModel, modifier: Modifier) {
+    val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwnerId
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
 
@@ -142,7 +149,7 @@ fun OwnersOfSavedList(savedLists: List<SavedLists>, currentlySelectedOwner: Int,
             if (it.savedListId == currentlySelectedOwner) {
                 OwnerSelected(it)
             } else {
-                OwnerUnSelected(it)
+                OwnerUnSelected(it, savedListViewModel = savedListViewModel)
             }
         }
     }
@@ -170,14 +177,18 @@ fun OwnerSelected(savedLists: SavedLists) {
         )
 
     ) {
-        Text(text= savedLists.owner)
+        Text(
+            text= savedLists.owner,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
 @Composable
-fun OwnerUnSelected(savedLists: SavedLists) {
+fun OwnerUnSelected(savedLists: SavedLists, savedListViewModel: SavedListViewModel) {
     Button(
-        onClick = {},
+        onClick = {savedListViewModel.setSelectedOwnerId(savedLists.savedListId)},
         shape = RectangleShape,
         modifier = Modifier.fillMaxWidth().height(80.dp).padding(top=2.dp, end = 2.dp),
         colors = ButtonDefaults.buttonColors(
@@ -185,19 +196,47 @@ fun OwnerUnSelected(savedLists: SavedLists) {
             contentColor = Color.Black
         ),
     ) {
-        Text(text= savedLists.owner )
+        Text(
+            text= savedLists.owner,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
 @Composable
-fun ItemsOfSavedLists(savedLists: List<SavedLists>, modifier: Modifier) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(savedLists) {
-            Text(text = "Here is where the listed items go, man.")
-        }
+fun ItemsOfSavedLists(savedListViewModel: SavedListViewModel, modifier: Modifier) {
+    val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwnerId
+    HintToAddItemsToOwner("Hank", modifier = modifier)
+//    LazyColumn(
+//        modifier = modifier
+//    ) {
+//        items(savedLists) {
+//            Text(text = "Here is where the listed items go, man.")
+//        }
+//
+//    }
+}
 
+@Composable
+fun HintToAddItemsToOwner(ownerName: String, modifier: Modifier) {
+    Column (
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.listitem_add_48),
+            "",
+            modifier = Modifier.size(65.dp).padding(bottom = 8.dp)
+        )
+        Text(
+            text = stringResource(
+                R.string.add_items_hint
+            ),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }
 
