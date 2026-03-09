@@ -1,5 +1,6 @@
 package com.example.wickedlista.ui.screens
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -49,11 +50,11 @@ fun SavedListScreen(
     categoryId: Int,
     savedListViewModel: SavedListViewModel = hiltViewModel()
 ) {
-    val x by savedListViewModel.uiState.collectAsState()
-    LaunchedEffect(key1 = x.allSavedLists) {
+    val savedListViewModelState by savedListViewModel.uiState.collectAsState() //using 'by' allows u to avoid .value()
+    LaunchedEffect(savedListViewModelState.allSavedLists.size) {
         savedListViewModel.getAllSavedListsForCategoryId(categoryId)
     }
-    val savedListViewModelState = savedListViewModel.uiState.collectAsState().value
+
     val listOfSavedListsOwners = savedListViewModelState.allSavedLists
 
     AddOwnerDialog(savedListViewModel, categoryId)
@@ -142,7 +143,6 @@ fun OwnersOfSavedList(savedLists: List<SavedLists>, savedListViewModel: SavedLis
     val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwnerId
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
-
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(savedLists) {

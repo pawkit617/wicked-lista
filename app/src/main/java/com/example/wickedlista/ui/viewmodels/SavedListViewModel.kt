@@ -45,10 +45,13 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
             val listsForCategoryId =
                 savedListsRepositoryImp.getAllSavedListsWithCategoryId(categoryId)
             val theFirst = listsForCategoryId.first()
+
+            val currentSelectedId = _uiState.value.selectedOwnerId
+
             _uiState.update {
                 it.copy(
                     allSavedLists = theFirst,
-                    selectedOwnerId = theFirst.first().savedListId
+                    selectedOwnerId = if (currentSelectedId == -1) theFirst.first().savedListId else currentSelectedId
                 )
             }
         }
@@ -62,11 +65,14 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
                         homeCategoriesForeignId = categoryId.toLong(),
                         owner = newOwner
                     )
-                    savedListsRepositoryImp.addOwner(newSavedLists)
+                    val addedId = savedListsRepositoryImp.addOwner(newSavedLists)
                     clearTextFieldState()
                     clearErrors()
                     _uiState.update {
-                        it.copy(showAddOwnerDialog = false)
+                        it.copy(
+                            allSavedLists = listOf(),
+                            selectedOwnerId = addedId.toInt(),
+                            showAddOwnerDialog = false)
                     }
                 } else {
                     _uiState.update {
