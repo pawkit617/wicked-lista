@@ -1,4 +1,4 @@
-package com.example.wickedlista.database
+package com.example.wickedlista.database.saveditems
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -14,7 +14,6 @@ import com.example.wickedlista.database.savedlists.SavedLists
             parentColumns = ["saved_list_id"],
             childColumns = ["saved_list_foreign_id"]
         )
-
     ]
 )
 data class SavedItems(
@@ -23,5 +22,7 @@ data class SavedItems(
     val savedItemId: Int = 0,
     @ColumnInfo("saved_list_foreign_id")
     val savedListForeignId: Int,
-    val name: String
+    val label: String,
+    val description: String,
+    val status: String
 )

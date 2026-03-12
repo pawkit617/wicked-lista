@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -48,7 +49,8 @@ import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 @Composable
 fun SavedListScreen(
     categoryId: Int,
-    savedListViewModel: SavedListViewModel = hiltViewModel()
+    savedListViewModel: SavedListViewModel = hiltViewModel(),
+    onAddItemClick: (ownerId: Int) -> Unit
 ) {
     val savedListViewModelState by savedListViewModel.uiState.collectAsState() //using 'by' allows u to avoid .value()
     LaunchedEffect(savedListViewModelState.allSavedLists.size) {
@@ -58,14 +60,16 @@ fun SavedListScreen(
     val listOfSavedListsOwners = savedListViewModelState.allSavedLists
 
     AddOwnerDialog(savedListViewModel, categoryId)
-    OwnersWithListItems(listOfSavedListsOwners, savedListViewModel)
-
+    DeleteOwnerDialog(savedListViewModelState.selectedOwner, savedListViewModel)
+    OwnersWithListItems(listOfSavedListsOwners, savedListViewModel, onAddItemClick)
 }
 
+// region Owners UI
 @Composable
 fun OwnersWithListItems(
     listOfSavedListsOwners: List<SavedLists>,
-    savedListViewModel: SavedListViewModel
+    savedListViewModel: SavedListViewModel,
+    onAddItemClick: (ownerId: Int) -> Unit
 ) {
     if (listOfSavedListsOwners.isNotEmpty()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -94,59 +98,21 @@ fun OwnersWithListItems(
                 Modifier
                     .fillMaxWidth()
                     .weight(0.1f),
+                onAddItemClick
             )
         }
     }
 }
 
 @Composable
-fun BottomButtonEditRow(
-    savedListViewModel: SavedListViewModel,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier,
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        BottomIconButton(
-            R.drawable.add_box_48,
-            R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
-
-        BottomIconButton(
-            R.drawable.listitem_add_48,
-            R.string.icon_add_listitem_cdescript) {}
-        BottomIconButton(
-            R.drawable.delete_box_owner_48,
-            R.string.icon_delete_owner_cdescript) {}
-    }
-}
-
-@Composable
-fun BottomIconButton(
-    @DrawableRes drawableId: Int,
-    @StringRes desc: Int,
-    onIconClick: () -> Unit
-) {
-    IconButton(onClick = onIconClick) {
-        Icon(
-            painter = painterResource(drawableId),
-            modifier = Modifier.size(65.dp),
-            contentDescription = stringResource(desc)
-        )
-    }
-}
-
-
-@Composable
 fun OwnersOfSavedList(savedLists: List<SavedLists>, savedListViewModel: SavedListViewModel, modifier: Modifier) {
-    val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwnerId
+    val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwner
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(savedLists) {
-            if (it.savedListId == currentlySelectedOwner) {
+            if (it.savedListId == currentlySelectedOwner.first) {
                 OwnerSelected(it)
             } else {
                 OwnerUnSelected(it, savedListViewModel = savedListViewModel)
@@ -188,7 +154,11 @@ fun OwnerSelected(savedLists: SavedLists) {
 @Composable
 fun OwnerUnSelected(savedLists: SavedLists, savedListViewModel: SavedListViewModel) {
     Button(
-        onClick = {savedListViewModel.setSelectedOwnerId(savedLists.savedListId)},
+        onClick = {
+            savedListViewModel.setSelectedOwner(
+                Pair(savedLists.savedListId, savedLists.owner)
+            )
+        },
         shape = RectangleShape,
         modifier = Modifier.fillMaxWidth().height(80.dp).padding(top=2.dp, end = 2.dp),
         colors = ButtonDefaults.buttonColors(
@@ -203,11 +173,13 @@ fun OwnerUnSelected(savedLists: SavedLists, savedListViewModel: SavedListViewMod
         )
     }
 }
+// endregion
 
+//region Items of Owner UI
 @Composable
 fun ItemsOfSavedLists(savedListViewModel: SavedListViewModel, modifier: Modifier) {
-    val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwnerId
-    HintToAddItemsToOwner("Hank", modifier = modifier)
+    val currentlySelectedOwner = savedListViewModel.uiState.collectAsState().value.selectedOwner
+    HintToAddItemsToOwner(modifier = modifier)
 //    LazyColumn(
 //        modifier = modifier
 //    ) {
@@ -219,7 +191,7 @@ fun ItemsOfSavedLists(savedListViewModel: SavedListViewModel, modifier: Modifier
 }
 
 @Composable
-fun HintToAddItemsToOwner(ownerName: String, modifier: Modifier) {
+fun HintToAddItemsToOwner(modifier: Modifier) {
     Column (
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -227,7 +199,7 @@ fun HintToAddItemsToOwner(ownerName: String, modifier: Modifier) {
     ) {
         Image(
             painter = painterResource(R.drawable.listitem_add_48),
-            "",
+            stringResource(R.string.icon_add_listitem_cdescript),
             modifier = Modifier.size(65.dp).padding(bottom = 8.dp)
         )
         Text(
@@ -239,7 +211,51 @@ fun HintToAddItemsToOwner(ownerName: String, modifier: Modifier) {
         )
     }
 }
+//endregion
 
+// region Bottom Button UI
+@Composable
+fun BottomButtonEditRow(
+    savedListViewModel: SavedListViewModel,
+    modifier: Modifier = Modifier,
+    onButtonClick: (Int) -> Unit
+) {
+    val selectedOwnerId = savedListViewModel.uiState.collectAsState().value.selectedOwner.first
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BottomIconButton(
+            R.drawable.add_box_48,
+            R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
+
+        BottomIconButton(
+            R.drawable.listitem_add_48,
+            R.string.icon_add_listitem_cdescript) {onButtonClick(selectedOwnerId)}
+        BottomIconButton(
+            R.drawable.delete_box_owner_48,
+            R.string.icon_delete_owner_cdescript) { savedListViewModel.setShowDeletionOwner(true)}
+    }
+}
+
+@Composable
+fun BottomIconButton(
+    @DrawableRes drawableId: Int,
+    @StringRes desc: Int,
+    onIconClick: () -> Unit
+) {
+    IconButton(onClick = onIconClick) {
+        Icon(
+            painter = painterResource(drawableId),
+            modifier = Modifier.size(65.dp),
+            contentDescription = stringResource(desc)
+        )
+    }
+}
+// endregion
+
+//region Operations Dialogs
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
@@ -303,6 +319,55 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: SavedListViewModel) {
+    if (savedListViewModel.uiState.collectAsState().value.showDeletionDialog) {
+        BasicAlertDialog(
+            onDismissRequest = { savedListViewModel.setShowDeletionOwner(false) }
+        ) {
+            Card {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painterResource(R.drawable.list_remove_48),
+                        modifier = Modifier.size(48.dp),
+                        contentDescription = stringResource(R.string.icon_delete_owner_cdescript)
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.delete_owner_message,
+                            ownerToDelete.second
+                        ),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Button(
+                            onClick = { savedListViewModel.setShowDeletionOwner(false) },
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text(text = stringResource(R.string.cancel))
+                        }
+                        Button(
+                            onClick = { savedListViewModel.deleteOwner(ownerToDelete.first) },
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text(text = stringResource(R.string.delete))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun ErrorMessageWithinDialog(savedListUiState: SavedListUIState) {
     val errorMsg = when {
@@ -317,3 +382,4 @@ fun ErrorMessageWithinDialog(savedListUiState: SavedListUIState) {
             color = Color.Red)
     }
 }
+//endregion

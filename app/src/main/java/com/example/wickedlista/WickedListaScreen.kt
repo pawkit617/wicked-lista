@@ -1,5 +1,6 @@
 package com.example.wickedlista
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,19 +29,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.wickedlista.ui.screens.AddItemScreen
 import com.example.wickedlista.ui.screens.CreateListDialog
 import com.example.wickedlista.ui.screens.HomeScreen
 import com.example.wickedlista.ui.screens.SavedListScreen
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
-enum class WickedListaScreen(@StringRes val title: Int) {
-    HomeScreen(title = R.string.app_name),
-    SavedListScreen(title = R.string.saved_list_screen),
-    CreateList(title = R.string.create_list),
-    AddItem(title = R.string.add_item)
+enum class WickedListaScreen(@StringRes val title: Int, val path: String) {
+    HomeScreen(title = R.string.app_name, path = "wickedLista"),
+    SavedListScreen(title = R.string.saved_list_screen, path = "savedList"),
+    AddItem(title = R.string.add_item, path = "addItem/{ownerId}")
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,9 +50,12 @@ fun WickedListaApp(
 ) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = WickedListaScreen.valueOf(
-        backStackEntry?.destination?.route ?: WickedListaScreen.HomeScreen.name
-    )
+    val x = WickedListaScreen.entries.filter {
+        it.path == backStackEntry?.destination?.route
+    }
+
+    val currentScreen = if(x.isEmpty()) WickedListaScreen.HomeScreen else x.first()
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -67,22 +70,31 @@ fun WickedListaApp(
         Surface(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
-                startDestination = WickedListaScreen.HomeScreen.name, //CURT - WickedListaScreen.HomeScreen.name why not current screen? B/C it has to be explicit
+                startDestination = WickedListaScreen.HomeScreen.path, //CURT - WickedListaScreen.HomeScreen.name why not current screen? B/C it has to be explicit
                 modifier = Modifier.fillMaxSize()
                    //CURT -  .verticalScroll(rememberScrollState()) //uncomment will lead to “Infinite Height” Crash in Jetpack since i have a LazyVertcialGrid in HomeScreen
                     .padding(innerPadding)
             ) {
-                composable(route = WickedListaScreen.HomeScreen.name) { backStackEntry ->
+                composable(route = WickedListaScreen.HomeScreen.path) {
                     HomeScreen(
                         homeScreenViewModel = homeScreenViewModel,
                         onClickOfHomeListCard = {
-                            navController.navigate(WickedListaScreen.SavedListScreen.name)
+                            navController.navigate(WickedListaScreen.SavedListScreen.path)
                         },
                         contentPaddingValues = innerPadding
                     )
                 }
-                composable (route = WickedListaScreen.SavedListScreen.name){
-                    SavedListScreen(homeScreenViewModel.uiState.collectAsState().value.currentlySelectedHomeList.first)
+                composable (route = WickedListaScreen.SavedListScreen.path) {
+                    SavedListScreen(
+                        categoryId = homeScreenViewModel.uiState.collectAsState().value.currentlySelectedHomeList.first,
+                        onAddItemClick = { ownerId ->
+                            navController.navigate("addItem/$ownerId")
+                        }
+                    )
+                }
+                composable (route = WickedListaScreen.AddItem.path) { backStackEntry ->
+                    val ownerId = backStackEntry.arguments?.getString("ownerId")
+                    AddItemScreen(ownerId?.toInt())
                 }
             }
 

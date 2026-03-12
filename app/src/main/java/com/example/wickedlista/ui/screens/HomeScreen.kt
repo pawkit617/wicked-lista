@@ -219,7 +219,6 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
 
 @Composable
 fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
-
     val homeScreenUIState = homeScreenViewModel.uiState.collectAsState() //CURT - will not be call on state change. Seems state change is only recognized in HomeScreen(...)
     val shouldShow = homeScreenUIState.value.showCreateDialog
     if (shouldShow) {

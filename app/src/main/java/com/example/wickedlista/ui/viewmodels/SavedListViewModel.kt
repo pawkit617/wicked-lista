@@ -26,32 +26,20 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
 
     val addOwnerTextFieldState = TextFieldState("")
 
-    fun setShowAddOwner(shouldShow: Boolean) {
-        _uiState.update {
-            it.copy(showAddOwnerDialog = shouldShow)
-        }
-    }
-
-    fun setSelectedOwnerId(ownerId: Int) {
-        _uiState.update {
-            it.copy(
-                selectedOwnerId = ownerId
-            )
-        }
-    }
-
     fun getAllSavedListsForCategoryId(categoryId: Int) {
         viewModelScope.launch {
             val listsForCategoryId =
                 savedListsRepositoryImp.getAllSavedListsWithCategoryId(categoryId)
             val theFirst = listsForCategoryId.first()
 
-            val currentSelectedId = _uiState.value.selectedOwnerId
+            val currentSelectedId = _uiState.value.selectedOwner
 
             _uiState.update {
                 it.copy(
                     allSavedLists = theFirst,
-                    selectedOwnerId = if (currentSelectedId == -1) theFirst.first().savedListId else currentSelectedId
+                    selectedOwner = if (currentSelectedId.first == -1) {
+                        Pair(theFirst.first().savedListId, theFirst.first().owner)
+                    } else currentSelectedId
                 )
             }
         }
@@ -71,8 +59,9 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
                     _uiState.update {
                         it.copy(
                             allSavedLists = listOf(),
-                            selectedOwnerId = addedId.toInt(),
-                            showAddOwnerDialog = false)
+                            selectedOwner = Pair(addedId.toInt(), newOwner),
+                            showAddOwnerDialog = false
+                        )
                     }
                 } else {
                     _uiState.update {
@@ -87,6 +76,38 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
         }
     }
 
+    fun deleteOwner(ownerId: Int) {
+        viewModelScope.launch {
+            savedListsRepositoryImp.deleteOwner(ownerId)
+            _uiState.update {
+                it.copy(
+                    selectedOwner = Pair(-1, ""),
+                    allSavedLists = listOf(),
+                    showDeletionDialog = false
+                )
+            }
+        }
+    }
+
+    fun setSelectedOwner(selectedOwner: Pair<Int, String>) {
+        _uiState.update {
+            it.copy(
+                selectedOwner = selectedOwner
+            )
+        }
+    }
+
+    fun setShowAddOwner(shouldShow: Boolean) {
+        _uiState.update {
+            it.copy(showAddOwnerDialog = shouldShow)
+        }
+    }
+
+    fun setShowDeletionOwner(shouldShow: Boolean) {
+        _uiState.update {
+            it.copy(showDeletionDialog = shouldShow)
+        }
+    }
     fun clearErrors() {
         _uiState.update {
             it.copy(

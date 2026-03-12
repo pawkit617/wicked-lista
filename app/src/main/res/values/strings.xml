@@ -5,7 +5,7 @@
     <string name="no_list_message">You have no lists saved.</string>
     <string name="create_a_list">Create a List</string>
 
-    <!-- screen key/title for nav host -->
+    <!-- screen title for nav host -->
     <string name="home_screen">Home</string>
     <string name="saved_list_screen">Saved List</string>
     <string name="create_list">Create List</string>
@@ -37,6 +37,8 @@
     <string name="error_message_no_owner">&#x2A;Please provide an owner</string>
     <string name="add_items_hint">To add items.</string>
 
+    <!-- Delete Owner Dialog -->
+    <string name="delete_owner_message">Deleting %1$s and all listed items.</string>
 
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>
@@ -44,6 +46,19 @@
     <string name="icon_delete_list_cdescript">delete list icon</string>
     <string name="icon_delete_owner_cdescript">delete owner icon</string>
     <string name="icon_add_listitem_cdescript">add item icon </string>
+    <string name="icon_add_owner_cdescript">add owner icon</string>
     <string name="add_owner_button_cdescript">add item button</string>
 
+    <!-- Add Items -->
+    <string name="add_item_label">Label</string>
+    <string name="add_item_hint">Item name</string>
+    <string name="add_item_description_label">Description</string>
+    <string name="add_item_description_hint">Details of item</string>
+    <string name="add_item_status_help_message">Provide up to 4 possible statuses</string>
+    <string name="add_item_initial_status_label">Initial status</string>
+    <string name="add_item_initial_status_hint">e.g. Need to orders</string>
+    <string name="add_item_additional_status_label">Additional status</string>
+    <string name="add_item_additional_status_hint">e.g. Ordered</string>
+    <string name="add_item_additional_status_hint2">e.g. Received</string>
+    <string name="add_item_additional_status_hint3">e.g. Done</string>
 </resources>
