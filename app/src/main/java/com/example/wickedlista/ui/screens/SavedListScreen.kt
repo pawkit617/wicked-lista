@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -140,13 +142,16 @@ fun OwnerSelected(savedLists: SavedLists) {
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 20.dp,
             pressedElevation = 10.dp,
-        )
+        ),
+        contentPadding = PaddingValues(4.dp)
 
     ) {
         Text(
             text= savedLists.owner,
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.weight(1f),
+            maxLines = 2
         )
     }
 }
@@ -160,16 +165,19 @@ fun OwnerUnSelected(savedLists: SavedLists, savedListViewModel: SavedListViewMod
             )
         },
         shape = RectangleShape,
-        modifier = Modifier.fillMaxWidth().height(80.dp).padding(top=2.dp, end = 2.dp),
+        modifier = Modifier.height(80.dp).padding(top=2.dp, end = 2.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White,
             contentColor = Color.Black
         ),
+        contentPadding = PaddingValues(4.dp)
     ) {
         Text(
             text= savedLists.owner,
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.weight(1f),
+            maxLines = 2
         )
     }
 }
@@ -302,14 +310,14 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                             shape = MaterialTheme.shapes.small
                         ) {
                             Text(text = stringResource(R.string.cancel))
-
                         }
                         Button(
                             onClick = {savedListViewModel.addOwner(
                                 categoryId,
                                 savedListViewModel.addOwnerTextFieldState.text.toString())
                             },
-                            shape = MaterialTheme.shapes.small) {
+                            shape = MaterialTheme.shapes.small
+                        ) {
                             Text(text = stringResource(R.string.add_owner))
                         }
                     }
@@ -341,7 +349,8 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
                             R.string.delete_owner_message,
                             ownerToDelete.second
                         ),
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        textAlign = TextAlign.Center
                     )
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,

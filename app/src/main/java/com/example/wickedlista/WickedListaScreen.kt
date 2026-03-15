@@ -93,8 +93,10 @@ fun WickedListaApp(
                     )
                 }
                 composable (route = WickedListaScreen.AddItem.path) { backStackEntry ->
-                    val ownerId = backStackEntry.arguments?.getString("ownerId")
-                    AddItemScreen(ownerId?.toInt())
+                    backStackEntry.arguments?.let {
+                        val x = it.getString("ownerId") ?: "-1"
+                        AddItemScreen(x.toInt() )
+                    }
                 }
             }
 

@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.example.wickedlista.database.homecategories.HomeCategoriesDao
 import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
 import com.example.wickedlista.database.WickedListaDatabase
+import com.example.wickedlista.database.saveditems.SavedItemsDao
+import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import com.example.wickedlista.database.savedlists.SavedListsDao
 import com.example.wickedlista.database.savedlists.SavedListsRepositoryImp
 import dagger.Module
@@ -49,5 +51,17 @@ object AppModule {
     @Singleton
     fun provideSavedListsRepositoryImp(savedListsDao: SavedListsDao): SavedListsRepositoryImp {
         return SavedListsRepositoryImp(savedListsDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedItemDao(wickedListaDatabase: WickedListaDatabase): SavedItemsDao {
+        return wickedListaDatabase.savedItemsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedItemsRepositoryImp(savedItemsDao: SavedItemsDao): SavedItemsRepositoryImp {
+        return SavedItemsRepositoryImp(savedItemsDao)
     }
 }

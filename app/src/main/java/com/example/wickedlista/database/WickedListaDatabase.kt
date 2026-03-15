@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.example.wickedlista.database.homecategories.HomeCategories
 import com.example.wickedlista.database.homecategories.HomeCategoriesDao
 import com.example.wickedlista.database.saveditems.SavedItems
+import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.database.savedlists.SavedListsDao
 
@@ -12,5 +13,7 @@ import com.example.wickedlista.database.savedlists.SavedListsDao
 abstract class WickedListaDatabase: RoomDatabase() {
     abstract fun homeCategoriesDao(): HomeCategoriesDao
     abstract fun savedListsDao(): SavedListsDao
+
+    abstract fun savedItemsDao(): SavedItemsDao
 }
 
