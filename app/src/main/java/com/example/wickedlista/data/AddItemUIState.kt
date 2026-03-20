@@ -7,7 +7,7 @@ data class AddItemUIState(
     val itemAdditionalStatus: String = "",
     val itemAdditionalStatus2: String = "",
     val itemAdditionalStatus3: String = "",
-    val itemStatuses: List<CharSequence> = listOf(),
+    val itemStatuses: List<String> = listOf(),
     val showSuccessAddAMoreItemDialog: Boolean = false,
     val showAdditionalItemsDialog: Boolean = false,
     val hasBlankLabelError: Boolean = false,

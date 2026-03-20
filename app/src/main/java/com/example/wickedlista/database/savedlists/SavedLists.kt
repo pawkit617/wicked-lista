@@ -17,7 +17,7 @@ import com.example.wickedlista.database.homecategories.HomeCategories
             onDelete = ForeignKey.Companion.CASCADE
         )
     ],
-    indices = [Index(value = ["owner"], unique = true)]
+    indices = [Index(value = ["owner"], unique = true), Index(value = ["category_id"])]
 )
 data class SavedLists(
     @PrimaryKey(autoGenerate = true)

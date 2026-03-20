@@ -10,6 +10,7 @@ data class SavedListUIState(
     val selectedOwner: Pair<Int, String> = Pair(-1, ""),
     val showAddOwnerDialog: Boolean = false,
     val showDeletionDialog: Boolean = false,
+    val showHintScreenToAddItems: Boolean = false,
     val hasSQLError: Boolean = false,
     val hasBlankError: Boolean = false
 )

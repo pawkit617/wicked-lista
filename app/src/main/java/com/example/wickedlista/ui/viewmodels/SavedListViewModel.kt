@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.sqlite.SQLiteException
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
+import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.database.savedlists.SavedListsRepositoryImp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,26 +21,32 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedListsRepositoryImp): ViewModel() {
+class SavedListViewModel @Inject constructor(
+    val savedListsRepositoryImp: SavedListsRepositoryImp,
+    val itemsRepositoryImp: SavedItemsRepositoryImp
+): ViewModel() {
     private val _uiState = MutableStateFlow(SavedListUIState())
     val uiState: StateFlow<SavedListUIState> = _uiState.asStateFlow()
 
     val addOwnerTextFieldState = TextFieldState("")
 
+    //region Owner Operations
     fun getAllSavedListsForCategoryId(categoryId: Int) {
         viewModelScope.launch {
             val listsForCategoryId =
                 savedListsRepositoryImp.getAllSavedListsWithCategoryId(categoryId)
-            val theFirst = listsForCategoryId.first()
 
+            val theFirst = listsForCategoryId.first()
             val currentSelectedId = _uiState.value.selectedOwner
 
             _uiState.update {
                 it.copy(
                     allSavedLists = theFirst,
-                    selectedOwner = if (currentSelectedId.first == -1) {
+                    selectedOwner = if (currentSelectedId.first == -1 && theFirst.isNotEmpty()) {
                         Pair(theFirst.first().savedListId, theFirst.first().owner)
-                    } else currentSelectedId
+                    } else {
+                        currentSelectedId
+                    }
                 )
             }
         }
@@ -108,6 +115,28 @@ class SavedListViewModel @Inject constructor(val savedListsRepositoryImp: SavedL
             it.copy(showDeletionDialog = shouldShow)
         }
     }
+    //endregion
+
+    //region List of Items for Owner
+    fun getAllSavedItemsForSelectedOwner() {
+        val selectedOwner = _uiState.value.selectedOwner
+        viewModelScope.launch {
+            val listOfItemsForOwnerFlow = itemsRepositoryImp
+                .getAllSavedItemsForListId(selectedOwner.first)
+
+            val itemsForListOwner = listOfItemsForOwnerFlow.first()
+
+            _uiState.update {
+                val hasNoItems = itemsForListOwner.isEmpty()
+                it.copy(
+                    allSavedItemsForList = itemsForListOwner,
+                    showHintScreenToAddItems = hasNoItems
+                )
+            }
+        }
+    }
+
+    //endregion
     fun clearErrors() {
         _uiState.update {
             it.copy(

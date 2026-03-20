@@ -58,7 +58,7 @@ fun WickedListaApp(
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        //modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), //CURT - uncomment makes nothing scrollable
         topBar = {
             TopWickedListaAppBar(
                 currentScreen = currentScreen,
@@ -94,12 +94,16 @@ fun WickedListaApp(
                 }
                 composable (route = WickedListaScreen.AddItem.path) { backStackEntry ->
                     backStackEntry.arguments?.let {
-                        val x = it.getString("ownerId") ?: "-1"
-                        AddItemScreen(x.toInt() )
+                        val ownerId = it.getString("ownerId") ?: "-1"
+                        AddItemScreen(
+                            ownerId.toInt(),
+                            {
+                                navController.popBackStack(WickedListaScreen.SavedListScreen.path, false)
+                            }
+                        )
                     }
                 }
             }
-
         }
     }
 }
@@ -134,5 +138,9 @@ fun TopWickedListaAppBar(
             }
         }
     )
+}
+
+private fun onDoneAddingItems() {
+
 }
 

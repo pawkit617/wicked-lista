@@ -55,6 +55,8 @@
     <string name="add_item_description_label">Description</string>
     <string name="add_item_description_hint">Details of item</string>
     <string name="add_item_status_help_message">Provide up to 4 possible statuses</string>
+    <string name="add_item_status_choose_message">Choose from provided statuses</string>
+
     <string name="add_item_initial_status_label">Initial status</string>
     <string name="add_item_initial_status_hint">e.g. Need to orders</string>
     <string name="add_item_additional_status_label">Additional status</string>
@@ -63,4 +65,7 @@
     <string name="add_item_additional_status_hint3">e.g. Done</string>
     <string name="add_item_successful_add_message">Item successfully added.</string>
     <string name="done">Done</string>
+    <string name="status">Status</string>
+    <string name="add_more">Add more</string>
+    <string name="select_status_hint">Select status</string>
 </resources>
