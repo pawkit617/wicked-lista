@@ -1,11 +1,8 @@
 package com.example.wickedlista
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,10 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,7 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wickedlista.ui.screens.AddItemScreen
-import com.example.wickedlista.ui.screens.CreateListDialog
+import com.example.wickedlista.ui.screens.EditItemScreen
 import com.example.wickedlista.ui.screens.HomeScreen
 import com.example.wickedlista.ui.screens.SavedListScreen
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
@@ -39,7 +34,8 @@ import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 enum class WickedListaScreen(@StringRes val title: Int, val path: String) {
     HomeScreen(title = R.string.app_name, path = "wickedLista"),
     SavedListScreen(title = R.string.saved_list_screen, path = "savedList"),
-    AddItem(title = R.string.add_item, path = "addItem/{ownerId}")
+    AddItem(title = R.string.add_item, path = "addItem/{ownerId}"),
+    EditItem(title = R.string.edit_item, path = "editItem/{savedItemId}/{savedItemLabel}/{savedItemDesc}/{currentStatus}/{ownerId}")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,6 +85,9 @@ fun WickedListaApp(
                         categoryId = homeScreenViewModel.uiState.collectAsState().value.currentlySelectedHomeList.first,
                         onAddItemClick = { ownerId ->
                             navController.navigate("addItem/$ownerId")
+                        },
+                        onEditIconButtonClick = { savedItemId, savedItemLabel, savedItemDesc, currentStatus, ownerId ->
+                            navController.navigate("editItem/$savedItemId/$savedItemLabel/$savedItemDesc/$currentStatus/$ownerId")
                         }
                     )
                 }
@@ -96,6 +95,23 @@ fun WickedListaApp(
                     backStackEntry.arguments?.let {
                         val ownerId = it.getString("ownerId") ?: "-1"
                         AddItemScreen(
+                            ownerId.toInt(),
+                            {
+                                navController.popBackStack(WickedListaScreen.SavedListScreen.path, false)
+                            }
+                        )
+                    }
+                }
+                composable (route = WickedListaScreen.EditItem.path) { backStackEntry ->
+                    backStackEntry.arguments?.let {
+                        val ownerId = it.getString("ownerId") ?: ""
+                        val savedItemId = it.getString("savedItemId") ?: "-1"
+                        val savedItemLabel = it.getString("savedItemLabel") ?: ""
+                        val savedItemDesc = it.getString("savedItemDesc") ?: ""
+                        val currentStatus = it.getString("currentStatus") ?: ""
+                        EditItemScreen(
+                            savedItemId.toInt(), savedItemLabel,
+                            savedItemDesc, currentStatus,
                             ownerId.toInt(),
                             {
                                 navController.popBackStack(WickedListaScreen.SavedListScreen.path, false)
@@ -139,8 +155,3 @@ fun TopWickedListaAppBar(
         }
     )
 }
-
-private fun onDoneAddingItems() {
-
-}
-

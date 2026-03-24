@@ -13,15 +13,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.sql.SQLException
 import javax.inject.Inject
 
 @HiltViewModel
-class AddItemViewModel @Inject constructor(
-    val savedListRepositoryImp: SavedItemsRepositoryImp,
-    val itemsRepositoryImp: ItemStatusRepositoryImp
+class ModifyItemViewModel @Inject constructor(
+    private val savedListRepositoryImp: SavedItemsRepositoryImp,
+    private val itemsRepositoryImp: ItemStatusRepositoryImp
 ): ViewModel() {
     private val _uiState = MutableStateFlow(AddItemUIState())
     val uiState: StateFlow<AddItemUIState> = _uiState.asStateFlow()
@@ -34,6 +35,7 @@ class AddItemViewModel @Inject constructor(
     val additionalStatus3TextFieldState = TextFieldState()
     val statusTextFieldForMenuState = TextFieldState()
 
+    //region Repo Operations
     fun addItemToList(savedListId: Int) {
         viewModelScope.launch {
             try {
@@ -86,7 +88,7 @@ class AddItemViewModel @Inject constructor(
                     thirdStatus = additionalStatus2,
                     fourthStatus = additionalStatus3
                 )
-                itemsRepositoryImp.itemStatusDao.addItemStatus(itemStatus)
+                itemsRepositoryImp.addItemStatus(itemStatus)
             }
             val statuses = listOf(
                 initialStatus,
@@ -102,6 +104,55 @@ class AddItemViewModel @Inject constructor(
         }
     }
 
+    fun updateSavedItem(
+        savedItemId: Int,
+        ownerId: Int
+    ) {
+        viewModelScope.launch {
+            val updatedItem = SavedItems(
+                savedItemId,
+                ownerId,
+                labelTextFieldState.text.toString(),
+                descTextFieldState.text.toString(),
+                statusTextFieldForMenuState.text.toString()
+            )
+            savedListRepositoryImp.updateSavedItem(updatedItem)
+        }
+    }
+
+    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {
+        viewModelScope.launch {
+            val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
+            val itemStatusList = listOfStatusFlow.first()
+            if (itemStatusList.isNotEmpty()) {
+                val itemStatuses = itemStatusList.first()
+                labelTextFieldState.edit {
+                    replace(0, labelTextFieldState.text.length, itemLabel)
+                }
+                descTextFieldState.edit {
+                    replace(0, descTextFieldState.text.length, itemDesc)
+                }
+                statusTextFieldForMenuState.edit {
+                    replace(0, statusTextFieldForMenuState.text.length, currentStatus)
+                }
+                _uiState.update { it ->
+                    it.copy(
+                        itemStatuses = itemStatuses.let { item ->
+                            listOf(item.firstStatus, item.secondStatus, item.thirdStatus, item.fourthStatus)
+                        }.filter { it.isNotEmpty() }
+                    )
+                }
+            }
+        }
+    }
+
+    fun deleteSavedItem(savedItemId: Int) {
+        viewModelScope.launch {
+            savedListRepositoryImp.deleteSavedItem(savedItemId)
+        }
+    }
+
+    //endregion
     fun setShowSuccessAddAMoreItemDialog(shouldShow: Boolean) {
         _uiState.update {
             it.copy(

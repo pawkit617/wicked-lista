@@ -18,7 +18,7 @@ import com.example.wickedlista.database.savedlists.SavedLists
             onDelete = ForeignKey.Companion.CASCADE
         )
     ],
-    indices = [Index(value = ["saved_list_foreign_id"])]
+    indices = [Index(value = ["saved_list_foreign_id"], unique = true)]
 )
 data class ItemStatus(
     @PrimaryKey(autoGenerate = true)

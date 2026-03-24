@@ -22,7 +22,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -41,20 +40,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.wickedlista.ui.viewmodels.AddItemViewModel
+import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
 @Composable
 fun AddItemScreen(
     ownerId: Int,
     onDoneAddingItems: () -> Unit = {},
-    addItemViewModel: AddItemViewModel = hiltViewModel()
+    modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
 ) {
-    SuccessAddMoreDialog(ownerId, addItemViewModel, onDoneAddingItems)
-    AddItemForm(addItemViewModel, ownerId)
+    SuccessAddMoreDialog(ownerId, modifyItemViewModel, onDoneAddingItems)
+    AddItemForm(modifyItemViewModel, ownerId)
 }
-//region Add Item Form
+
 @Composable
-fun AddItemForm(addItemViewModel: AddItemViewModel, ownerId: Int) {
+fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -62,12 +61,13 @@ fun AddItemForm(addItemViewModel: AddItemViewModel, ownerId: Int) {
             modifier = Modifier.fillMaxWidth().background(Color.White).align(Alignment.TopCenter),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            ItemInfo(addItemViewModel)
-            ItemStatuses(addItemViewModel)
+            ItemInfo(modifyItemViewModel)
+            HelpMessageForStatus()
+            ItemStatuses(modifyItemViewModel)
         }
 
         Button(
-            onClick = {addItemViewModel.addItemToList(ownerId)},
+            onClick = {modifyItemViewModel.addItemToList(ownerId)},
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.BottomCenter)
         ) {
@@ -81,7 +81,70 @@ fun AddItemForm(addItemViewModel: AddItemViewModel, ownerId: Int) {
 }
 
 @Composable
-fun ItemInfo(addItemViewModel: AddItemViewModel) {
+fun EditItemScreen(
+    savedItemId: Int,
+    savedItemLabel: String,
+    savedItemDesc: String,
+    currentStatus: String,
+    ownerId: Int,
+    onDoneEditingItems: () -> Unit = {},
+    modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
+) {
+    modifyItemViewModel.fillFormForItemEdit(ownerId, savedItemLabel, savedItemDesc, currentStatus)
+
+    Box(Modifier.fillMaxSize()){
+        Column(
+            modifier = Modifier.fillMaxWidth().background(Color.White),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ItemInfo(modifyItemViewModel)
+            HelpMessageForStatus(true)
+            ItemStatuses(modifyItemViewModel, true)
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment =Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 16.dp).align(Alignment.BottomCenter)
+        ) {
+            Button(
+                onClick = { onDoneEditingItems() },
+                shape = MaterialTheme.shapes.small
+            ) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Button(
+                onClick = {
+                    modifyItemViewModel.deleteSavedItem(savedItemId)
+                    onDoneEditingItems()
+                },
+                shape = MaterialTheme.shapes.small
+            ) {
+                Text(text = stringResource(R.string.delete), textAlign = TextAlign.Center)
+            }
+            Button(
+                onClick = {
+                    modifyItemViewModel.updateSavedItem(
+                        savedItemId,
+                        ownerId
+                    )
+                    onDoneEditingItems()
+                },
+                shape = MaterialTheme.shapes.small
+            ) {
+                Text(text = stringResource(R.string.update), textAlign = TextAlign.Center)
+            }
+        }
+    }
+
+}
+//region Modify Item Shared Form
+
+@Composable
+fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
@@ -94,13 +157,13 @@ fun ItemInfo(addItemViewModel: AddItemViewModel) {
             FormTextField(
                 R.string.add_item_label,
                 R.string.add_items_hint,
-                addItemViewModel.labelTextFieldState,
+                modifyItemViewModel.labelTextFieldState,
                 Modifier.fillMaxWidth().padding(8.dp)
             )
             FormTextField(
                 R.string.add_item_description_label,
                 R.string.add_item_description_hint,
-                addItemViewModel.descTextFieldState,
+                modifyItemViewModel.descTextFieldState,
                 Modifier.fillMaxWidth().padding(8.dp),
                 4
             )
@@ -109,59 +172,60 @@ fun ItemInfo(addItemViewModel: AddItemViewModel) {
 }
 
 @Composable
-fun ItemStatuses(addItemViewModel: AddItemViewModel) {
-    val addItemViewModelStatus by addItemViewModel.uiState.collectAsState()
-
-    val helpMessage = if (!addItemViewModelStatus.showAdditionalItemsDialog)
-        R.string.add_item_status_help_message
-    else
+fun HelpMessageForStatus(isEditing: Boolean = false) {
+    val helpMessage = if (isEditing)
         R.string.add_item_status_choose_message
+    else
+        R.string.add_item_status_help_message
 
     Text(
         text = stringResource(helpMessage),
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         textAlign = TextAlign.Center
     )
-
+}
+@Composable
+fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, isEditing: Boolean = false) {
+    val addItemViewModelStatus by modifyItemViewModel.uiState.collectAsState()
     Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth().background(Color.LightGray)
         ) {
-            if (addItemViewModelStatus.showAdditionalItemsDialog) {
-                StatusAsMenu(addItemViewModel)
+            if (addItemViewModelStatus.showAdditionalItemsDialog || isEditing) {
+                StatusAsMenu(modifyItemViewModel)
             } else {
-                StatusAsFormFields(addItemViewModel)
+                StatusAsFormFields(modifyItemViewModel)
             }
         }
     }
 }
 
 @Composable
-fun StatusAsFormFields(addItemViewModel: AddItemViewModel) {
+fun StatusAsFormFields(modifyItemViewModel: ModifyItemViewModel) {
     FormTextField(
         R.string.add_item_initial_status_label,
         R.string.add_item_initial_status_hint,
-        addItemViewModel.initialStatusTextFieldState,
+        modifyItemViewModel.initialStatusTextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
     FormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint,
-        addItemViewModel.additionalStatusTextFieldState,
+        modifyItemViewModel.additionalStatusTextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
     FormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint2,
-        addItemViewModel.additionalStatus2TextFieldState,
+        modifyItemViewModel.additionalStatus2TextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
     FormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint3,
-        addItemViewModel.additionalStatus3TextFieldState,
+        modifyItemViewModel.additionalStatus3TextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
 }
@@ -188,10 +252,10 @@ fun FormTextField(
 }
 
 @Composable
-fun StatusAsMenu(addItemViewModel: AddItemViewModel) {
+fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val iconForTextField = if (expanded) R.drawable.arrow_drop_up_48 else R.drawable.arrow_drop_down_48
-    val stateOfTextField = addItemViewModel.statusTextFieldForMenuState
+    val stateOfTextField = modifyItemViewModel.statusTextFieldForMenuState
 
     OutlinedTextField(
         label = { Text(text = stringResource(R.string.status)) },
@@ -214,12 +278,12 @@ fun StatusAsMenu(addItemViewModel: AddItemViewModel) {
     DropdownMenu(
         expanded = expanded,
         modifier = Modifier.background(Color.White),
-        onDismissRequest = {}
+        onDismissRequest = { expanded = false }
     ) {
-        val createdStatuses = addItemViewModel.uiState.collectAsState().value.itemStatuses
+        val createdStatuses = modifyItemViewModel.uiState.collectAsState().value.itemStatuses
 
-        createdStatuses.forEach { it ->
-            val nameOfStatus = it.toString()
+        createdStatuses.forEach {
+            val nameOfStatus = it
             DropdownMenuItem(
                 { Text(text = nameOfStatus, modifier = Modifier.background(Color.White)) },
                 onClick = {
@@ -236,10 +300,10 @@ fun StatusAsMenu(addItemViewModel: AddItemViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SuccessAddMoreDialog(ownerId: Int, addItemViewModel: AddItemViewModel, onDoneAction: () ->Unit) {
-    if (addItemViewModel.uiState.collectAsState().value.showSuccessAddAMoreItemDialog) {
+fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel, onDoneAction: () ->Unit) {
+    if (modifyItemViewModel.uiState.collectAsState().value.showSuccessAddAMoreItemDialog) {
         BasicAlertDialog(
-            onDismissRequest = { addItemViewModel.setShowSuccessAddAMoreItemDialog(false) }
+            onDismissRequest = { modifyItemViewModel.setShowSuccessAddAMoreItemDialog(false) }
         ) {
             Card {
                 Column(
@@ -265,8 +329,8 @@ fun SuccessAddMoreDialog(ownerId: Int, addItemViewModel: AddItemViewModel, onDon
                         Button(
                             onClick = {
                                 //dialog with label, desc, and spinner
-                                addItemViewModel.setShowSuccessAddAMoreItemDialog(false)
-                                addItemViewModel.setAdditionalItemsDialog(true)
+                                modifyItemViewModel.setShowSuccessAddAMoreItemDialog(false)
+                                modifyItemViewModel.setAdditionalItemsDialog(true)
                             },
                             shape = MaterialTheme.shapes.small
                         ) {
@@ -277,7 +341,7 @@ fun SuccessAddMoreDialog(ownerId: Int, addItemViewModel: AddItemViewModel, onDon
                         }
                         Button(
                             onClick = {
-                                addItemViewModel.setShowSuccessAddAMoreItemDialog(false)
+                                modifyItemViewModel.setShowSuccessAddAMoreItemDialog(false)
                                 onDoneAction()
                             },
                             shape = MaterialTheme.shapes.small

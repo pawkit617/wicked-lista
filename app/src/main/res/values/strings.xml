@@ -10,6 +10,7 @@
     <string name="saved_list_screen">Saved List</string>
     <string name="create_list">Create List</string>
     <string name="add_item">Add Item</string>
+    <string name="edit_item">Edit Item</string>
 
     <!--Create List Labels-->
     <string name="category">Category</string>
@@ -49,7 +50,7 @@
     <string name="icon_add_owner_cdescript">add owner icon</string>
     <string name="add_owner_button_cdescript">add item button</string>
 
-    <!-- Add Items -->
+    <!-- Modify Items -->
     <string name="add_item_label">Label</string>
     <string name="add_item_hint">Item name</string>
     <string name="add_item_description_label">Description</string>
@@ -68,4 +69,5 @@
     <string name="status">Status</string>
     <string name="add_more">Add more</string>
     <string name="select_status_hint">Select status</string>
+    <string name="update">Update</string>
 </resources>

@@ -1,7 +1,9 @@
 package com.example.wickedlista.database.itemstatus
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.Companion.ABORT
 import androidx.room.OnConflictStrategy.Companion.IGNORE
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
@@ -13,5 +15,6 @@ interface ItemStatusDao {
 
     @Query("SELECT * FROM item_statuses WHERE saved_list_foreign_id = :savedListId")
     fun getStatusesForSavedItem(savedListId: Int): Flow<List<ItemStatus>>
+
 
 }

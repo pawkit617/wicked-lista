@@ -1,5 +1,6 @@
 package com.example.wickedlista.ui.screens
 
+import android.graphics.pdf.models.ListItem
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
+import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 
@@ -53,7 +55,8 @@ import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 fun SavedListScreen(
     categoryId: Int,
     savedListViewModel: SavedListViewModel = hiltViewModel(),
-    onAddItemClick: (ownerId: Int) -> Unit
+    onAddItemClick: (ownerId: Int) -> Unit,
+    onEditIconButtonClick:(savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
 ) {
     val savedListViewModelState by savedListViewModel.uiState.collectAsState() //using 'by' allows u to avoid .value()
     LaunchedEffect(savedListViewModelState.allSavedLists.size) {
@@ -64,15 +67,16 @@ fun SavedListScreen(
 
     AddOwnerDialog(savedListViewModel, categoryId)
     DeleteOwnerDialog(savedListViewModelState.selectedOwner, savedListViewModel)
-    OwnersWithListItems(listOfSavedListsOwners, savedListViewModel, onAddItemClick)
+    OwnersWithListItems(listOfSavedListsOwners, savedListViewModel, onAddItemClick, onEditIconButtonClick)
 }
 
-// region Owners UI
+// region Owners UI, Left Column
 @Composable
 fun OwnersWithListItems(
     listOfSavedListsOwners: List<SavedLists>,
     savedListViewModel: SavedListViewModel,
-    onAddItemClick: (ownerId: Int) -> Unit
+    onAddItemClick: (ownerId: Int) -> Unit,
+    onEditIconButtonClick: (savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
 ) {
     if (listOfSavedListsOwners.isNotEmpty()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -91,6 +95,7 @@ fun OwnersWithListItems(
                 )
                 ItemsOfSavedLists(
                     savedListViewModel,
+                    onEditIconButtonClick,
                     Modifier
                         .weight(0.75f)
                         .background(color = Color.White)
@@ -186,7 +191,11 @@ fun OwnerUnSelected(savedLists: SavedLists, savedListViewModel: SavedListViewMod
 
 //region Items of Owner UI
 @Composable
-fun ItemsOfSavedLists(savedListViewModel: SavedListViewModel, modifier: Modifier) {
+fun ItemsOfSavedLists(
+    savedListViewModel: SavedListViewModel,
+    onEditIconButtonClick: (savedItemId: Int, savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit,
+    modifier: Modifier
+) {
     //CURT - revisit this logic with maybe a launcheffected higher up
     val savedListUIState by savedListViewModel.uiState.collectAsState()
     savedListViewModel.getAllSavedItemsForSelectedOwner()
@@ -195,54 +204,82 @@ fun ItemsOfSavedLists(savedListViewModel: SavedListViewModel, modifier: Modifier
     if (savedListUIState.showHintScreenToAddItems) {
         HintToAddItemsToOwner(modifier = modifier)
     } else {
-        LazyColumn(
-            modifier = modifier.fillMaxWidth()
-        ) {
-            items(savedLists) {
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(10.dp)
+        val ownerId = savedListViewModel.uiState.collectAsState().value.selectedOwner.first
+        ContainerOfListItems(ownerId,savedLists, onEditIconButtonClick, modifier)
+    }
+}
+
+@Composable
+fun ContainerOfListItems(
+    ownerId: Int,
+    savedListItem: List<SavedItems>,
+    onEditIconButtonClick: (savedItemId: Int, savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit,
+    modifier: Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        items(savedListItem) {
+            ElevatedCard(
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(8.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.fillMaxWidth().background(Color.LightGray)
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.Start,
-                        modifier = Modifier.fillMaxWidth().background(Color.LightGray)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+
                     ) {
                         Text(
                             text = it.label,
-                            modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                         )
-                        Text(
-                            text = it.description,
-                            minLines = 2,
-                            maxLines = 4,
-                            modifier = Modifier
-                                .padding(top = 8.dp, start = 8.dp, end = 8.dp)
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp)) //CURT - must come before background
-                                .background(Color.White)
-                                .padding(8.dp) //CURT - padding for inside the shape... weird
-                        )
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = Color.Black,
-                            modifier = Modifier.padding(
-                                start = 4.dp,
-                                top = 8.dp,
-                                bottom = 8.dp,
-                                end = 4.dp
+                        IconButton(onClick = {
+                            onEditIconButtonClick(it.savedItemId, it.label, it.description, it.status,ownerId)
+                        }, modifier = Modifier.padding(end = 8.dp)) {
+                            Icon(
+                                painterResource(R.drawable.edit_note_48),
+                                contentDescription = "",
+                                modifier = Modifier.size(36.dp)
                             )
-                        )
-                        Text(
-                            text = stringResource(R.string.status) + " : " + it.status,
-                            textAlign = TextAlign.Right,
-                            modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
-                        )
+                        }
                     }
+                    Text(
+                        text = it.description,
+                        minLines = 2,
+                        maxLines = 4,
+                        modifier = Modifier
+                            .padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp)) //CURT - must come before background
+                            .background(Color.White)
+                            .padding(8.dp) //CURT - padding for inside the shape... weird
+                    )
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.Black,
+                        modifier = Modifier.padding(
+                            start = 4.dp,
+                            top = 8.dp,
+                            bottom = 8.dp,
+                            end = 4.dp
+                        )
+                    )
+                    Text(
+                        text = stringResource(R.string.status) + " : " + it.status,
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
+                    )
                 }
             }
         }
