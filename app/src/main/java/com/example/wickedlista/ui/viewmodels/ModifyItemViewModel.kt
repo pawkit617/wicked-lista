@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.sql.SQLException
 import javax.inject.Inject
+import kotlin.text.isNotEmpty
 
 @HiltViewModel
 class ModifyItemViewModel @Inject constructor(
@@ -120,21 +121,25 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {
+    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {//Curt - change name
+        labelTextFieldState.edit {
+            replace(0, labelTextFieldState.text.length, itemLabel)
+        }
+        descTextFieldState.edit {
+            replace(0, descTextFieldState.text.length, itemDesc)
+        }
+        statusTextFieldForMenuState.edit {
+            replace(0, statusTextFieldForMenuState.text.length, currentStatus)
+        }
+        updateStatusesForItem(ownerId)
+    }
+
+    fun updateStatusesForItem(ownerId: Int) {
         viewModelScope.launch {
             val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
             val itemStatusList = listOfStatusFlow.first()
             if (itemStatusList.isNotEmpty()) {
                 val itemStatuses = itemStatusList.first()
-                labelTextFieldState.edit {
-                    replace(0, labelTextFieldState.text.length, itemLabel)
-                }
-                descTextFieldState.edit {
-                    replace(0, descTextFieldState.text.length, itemDesc)
-                }
-                statusTextFieldForMenuState.edit {
-                    replace(0, statusTextFieldForMenuState.text.length, currentStatus)
-                }
                 _uiState.update { it ->
                     it.copy(
                         itemStatuses = itemStatuses.let { item ->

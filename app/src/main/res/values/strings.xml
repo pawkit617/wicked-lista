@@ -26,6 +26,8 @@
     <string name="error_message_duplicate_category">&#x2A;Unique category required</string>
     <string name="error_message_no_initial_list">Please provide initial list.</string>
 
+    <string name="topic_subtitle">Topic: </string>
+
     <!--Deletion Dialog-->
     <string name="deletion_message">You are about to delete\n</string>
     <string name="delete">Delete</string>
@@ -40,6 +42,8 @@
 
     <!-- Delete Owner Dialog -->
     <string name="delete_owner_message">Deleting %1$s and all listed items.</string>
+    <string name="delete_last_owner_message">This is only list for the category. Please delete category from home screen if list is unnecessary.</string>
+    <string name="ok">Ok</string>
 
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>

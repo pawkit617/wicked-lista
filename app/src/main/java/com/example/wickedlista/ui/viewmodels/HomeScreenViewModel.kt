@@ -110,9 +110,9 @@ class HomeScreenViewModel @Inject constructor(val homeCategoriesRepositoryImp: H
             homeCategoriesRepositoryImp.deleteHomeCategory(homeListId)
         }
     }
-    fun setCurrentlySelectedHomeList(id: Int, title: String) {
+    fun setCurrentlySelectedHomeList(id: Int, title: String, topic: String) {
         _uiState.update {
-            it.copy(currentlySelectedHomeList = Pair(id, title))
+            it.copy(currentlySelectedHomeList = Triple(id, title, topic))
         }
     }
 

@@ -115,6 +115,12 @@ class SavedListViewModel @Inject constructor(
             it.copy(showDeletionDialog = shouldShow)
         }
     }
+
+    fun setShowDeletionOfLastOwnerWarning(shouldShow: Boolean) {
+        _uiState.update {
+            it.copy(showDeletionOfLastOwnerDialog = shouldShow)
+        }
+    }
     //endregion
 
     //region List of Items for Owner

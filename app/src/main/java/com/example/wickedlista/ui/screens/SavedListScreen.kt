@@ -54,9 +54,13 @@ import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 @Composable
 fun SavedListScreen(
     categoryId: Int,
+    topicName: String,
     savedListViewModel: SavedListViewModel = hiltViewModel(),
-    onAddItemClick: (ownerId: Int) -> Unit,
-    onEditIconButtonClick:(savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
+    onAddItemClick: (ownerId: Int, isAddingMore: Boolean) -> Unit,
+    onEditIconButtonClick:(
+        savedItemId: Int,savedItemLabel: String,
+        savedItemDesc: String, currentStatus: String,
+        ownerId: Int) -> Unit
 ) {
     val savedListViewModelState by savedListViewModel.uiState.collectAsState() //using 'by' allows u to avoid .value()
     LaunchedEffect(savedListViewModelState.allSavedLists.size) {
@@ -66,20 +70,31 @@ fun SavedListScreen(
     val listOfSavedListsOwners = savedListViewModelState.allSavedLists
 
     AddOwnerDialog(savedListViewModel, categoryId)
+    WarningForDeletingLastOwnerDialog(savedListViewModel)
     DeleteOwnerDialog(savedListViewModelState.selectedOwner, savedListViewModel)
-    OwnersWithListItems(listOfSavedListsOwners, savedListViewModel, onAddItemClick, onEditIconButtonClick)
+    OwnersWithListItems(topicName, listOfSavedListsOwners, savedListViewModel, onAddItemClick, onEditIconButtonClick)
 }
 
 // region Owners UI, Left Column
 @Composable
 fun OwnersWithListItems(
+    topicName: String,
     listOfSavedListsOwners: List<SavedLists>,
     savedListViewModel: SavedListViewModel,
-    onAddItemClick: (ownerId: Int) -> Unit,
+    onAddItemClick: (ownerId: Int, isAddingMore: Boolean) -> Unit,
     onEditIconButtonClick: (savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
 ) {
     if (listOfSavedListsOwners.isNotEmpty()) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+            if (topicName.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.topic_subtitle) + topicName,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .background(Color.White)
+                )
+            }
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -314,9 +329,12 @@ fun HintToAddItemsToOwner(modifier: Modifier = Modifier) {
 fun BottomButtonEditRow(
     savedListViewModel: SavedListViewModel,
     modifier: Modifier = Modifier,
-    onButtonClick: (Int) -> Unit
+    onButtonClick: (Int, Boolean) -> Unit
 ) {
-    val selectedOwnerId = savedListViewModel.uiState.collectAsState().value.selectedOwner.first
+    val savedListUIState by savedListViewModel.uiState.collectAsState()
+    val selectedOwnerId = savedListUIState.selectedOwner.first
+    val useMenu = savedListUIState.allSavedItemsForList.isNotEmpty()
+
     Row(
         modifier,
         horizontalArrangement = Arrangement.SpaceAround,
@@ -328,10 +346,15 @@ fun BottomButtonEditRow(
 
         BottomIconButton(
             R.drawable.listitem_add_48,
-            R.string.icon_add_listitem_cdescript) {onButtonClick(selectedOwnerId)}
+            R.string.icon_add_listitem_cdescript) { onButtonClick(selectedOwnerId, useMenu) }
         BottomIconButton(
             R.drawable.delete_box_owner_48,
-            R.string.icon_delete_owner_cdescript) { savedListViewModel.setShowDeletionOwner(true)}
+            R.string.icon_delete_owner_cdescript) {
+            if (savedListUIState.allSavedLists.size > 1) {
+                savedListViewModel.setShowDeletionOwner(true)
+            } else
+                savedListViewModel.setShowDeletionOfLastOwnerWarning(true)
+        }
     }
 }
 
@@ -458,6 +481,42 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
                         ) {
                             Text(text = stringResource(R.string.delete))
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
+    if (savedListViewModel.uiState.collectAsState().value.showDeletionOfLastOwnerDialog) {
+        BasicAlertDialog(
+            onDismissRequest = {savedListViewModel.setShowDeletionOfLastOwnerWarning(false)}
+        ) {
+            Card {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painterResource(R.drawable.list_remove_48),
+                        modifier = Modifier.size(48.dp),
+                        contentDescription = stringResource(R.string.icon_delete_owner_cdescript)
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.delete_last_owner_message
+                        ),
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    Button(
+                        onClick = { savedListViewModel.setShowDeletionOfLastOwnerWarning(false) },
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(text = stringResource(R.string.ok))
                     }
                 }
             }

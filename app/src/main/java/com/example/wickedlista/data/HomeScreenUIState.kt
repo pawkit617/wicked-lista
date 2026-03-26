@@ -4,11 +4,7 @@ import com.example.wickedlista.database.homecategories.HomeCategories
 
 data class HomeScreenUIState(
     val existingHomeLists: List<HomeCategories> = listOf(),
-    val currentlySelectedHomeList: Pair<Int, String> = Pair(-1, ""),
-    val titleOfNewList:String = "",
-    val topicOfNewList: String = "",
-    val initialListOwner: String = "",
-    val errorMessage: String = "",
+    val currentlySelectedHomeList: Triple<Int, String, String> = Triple(-1, "", ""),
     val isError: Boolean = false,
     val hasSQLError: Boolean = false,
     val hasNoListFor: Boolean = false,

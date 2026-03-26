@@ -90,7 +90,7 @@ fun ListsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 onClick = {
-                    homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category)
+                    homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category, list.topic)
                     onHomeListClick()
                 }
             ) {
@@ -98,7 +98,7 @@ fun ListsScreen(
                     IconButton(
                         onClick = {
                             homeScreenViewModel.setDeletionDialogVisibility(true)
-                            homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category)
+                            homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category, list.topic)
                         },
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {

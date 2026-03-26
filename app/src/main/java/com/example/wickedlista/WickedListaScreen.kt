@@ -1,5 +1,6 @@
 package com.example.wickedlista
 
+import android.text.BoringLayout
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,10 +21,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.wickedlista.ui.screens.AddItemScreen
 import com.example.wickedlista.ui.screens.EditItemScreen
 import com.example.wickedlista.ui.screens.HomeScreen
@@ -34,7 +37,7 @@ import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 enum class WickedListaScreen(@StringRes val title: Int, val path: String) {
     HomeScreen(title = R.string.app_name, path = "wickedLista"),
     SavedListScreen(title = R.string.saved_list_screen, path = "savedList"),
-    AddItem(title = R.string.add_item, path = "addItem/{ownerId}"),
+    AddItem(title = R.string.add_item, path = "addItem/{ownerId}/{isAddingMore}"),
     EditItem(title = R.string.edit_item, path = "editItem/{savedItemId}/{savedItemLabel}/{savedItemDesc}/{currentStatus}/{ownerId}")
 }
 
@@ -81,21 +84,33 @@ fun WickedListaApp(
                     )
                 }
                 composable (route = WickedListaScreen.SavedListScreen.path) {
+                    val homeScreenUIState by homeScreenViewModel.uiState.collectAsState()
                     SavedListScreen(
-                        categoryId = homeScreenViewModel.uiState.collectAsState().value.currentlySelectedHomeList.first,
-                        onAddItemClick = { ownerId ->
-                            navController.navigate("addItem/$ownerId")
+                        topicName = homeScreenUIState.currentlySelectedHomeList.third,
+                        categoryId = homeScreenUIState.currentlySelectedHomeList.first,
+                        onAddItemClick = { ownerId, isAddingMore ->
+                            navController.navigate("addItem/$ownerId/$isAddingMore")
                         },
                         onEditIconButtonClick = { savedItemId, savedItemLabel, savedItemDesc, currentStatus, ownerId ->
                             navController.navigate("editItem/$savedItemId/$savedItemLabel/$savedItemDesc/$currentStatus/$ownerId")
                         }
                     )
                 }
-                composable (route = WickedListaScreen.AddItem.path) { backStackEntry ->
+                composable (
+                    route = WickedListaScreen.AddItem.path,
+                    arguments = listOf(
+                        navArgument("isAddingMore") {
+                            type = NavType.BoolType
+                            defaultValue = false
+                        }
+                    )
+                ) { backStackEntry ->
                     backStackEntry.arguments?.let {
                         val ownerId = it.getString("ownerId") ?: "-1"
+                        val useMenu = it.getBoolean("isAddingMore")
                         AddItemScreen(
                             ownerId.toInt(),
+                            useMenu,
                             {
                                 navController.popBackStack(WickedListaScreen.SavedListScreen.path, false)
                             }
@@ -143,14 +158,16 @@ fun TopWickedListaAppBar(
             Text(text = titleOfList)
         },
         actions = {
-            IconButton(
-                onClick = {homeScreenViewModel.setCreateDialogVisibility(true) }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.add_24dp),
-                    modifier = Modifier.fillMaxSize(),
-                    contentDescription = stringResource(R.string.icon_cdescript)
-                )
+            if (currentScreen.name.equals(WickedListaScreen.HomeScreen.name)) {
+                IconButton(
+                    onClick = { homeScreenViewModel.setCreateDialogVisibility(true) }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.add_24dp),
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = stringResource(R.string.icon_cdescript)
+                    )
+                }
             }
         }
     )

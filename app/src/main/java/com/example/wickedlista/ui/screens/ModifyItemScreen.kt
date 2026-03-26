@@ -45,15 +45,19 @@ import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 @Composable
 fun AddItemScreen(
     ownerId: Int,
+    isAddingMore: Boolean = false,
     onDoneAddingItems: () -> Unit = {},
     modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
 ) {
     SuccessAddMoreDialog(ownerId, modifyItemViewModel, onDoneAddingItems)
-    AddItemForm(modifyItemViewModel, ownerId)
+    AddItemForm(modifyItemViewModel, ownerId, isAddingMore)
 }
 
 @Composable
-fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
+fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAddingMore: Boolean) {
+    if (isAddingMore) {
+        modifyItemViewModel.updateStatusesForItem(ownerId)
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -63,7 +67,7 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
         ) {
             ItemInfo(modifyItemViewModel)
             HelpMessageForStatus()
-            ItemStatuses(modifyItemViewModel)
+            ItemStatuses(modifyItemViewModel, isAddingMore)
         }
 
         Button(
@@ -185,7 +189,7 @@ fun HelpMessageForStatus(isEditing: Boolean = false) {
     )
 }
 @Composable
-fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, isEditing: Boolean = false) {
+fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = false) {
     val addItemViewModelStatus by modifyItemViewModel.uiState.collectAsState()
     Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
         Column(
@@ -193,7 +197,7 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, isEditing: Boolean = 
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth().background(Color.LightGray)
         ) {
-            if (addItemViewModelStatus.showAdditionalItemsDialog || isEditing) {
+            if (addItemViewModelStatus.showAdditionalItemsDialog || useMenu) {
                 StatusAsMenu(modifyItemViewModel)
             } else {
                 StatusAsFormFields(modifyItemViewModel)
