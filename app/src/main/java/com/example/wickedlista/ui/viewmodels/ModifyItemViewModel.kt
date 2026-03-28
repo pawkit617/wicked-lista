@@ -57,10 +57,11 @@ class ModifyItemViewModel @Inject constructor(
 
                     _uiState.update {
                         it.copy(
-                            showSuccessAddAMoreItemDialog = true
+                            showSuccessAddMoreItemDialog = true
                         )
                     }
                     clearTextFieldStates()
+                    clearErrors()
                 } else {
                     _uiState.update {
                         it.copy(hasBlankLabelError = true)
@@ -158,10 +159,10 @@ class ModifyItemViewModel @Inject constructor(
     }
 
     //endregion
-    fun setShowSuccessAddAMoreItemDialog(shouldShow: Boolean) {
+    fun setShowSuccessAddMoreItemDialog(shouldShow: Boolean) {
         _uiState.update {
             it.copy(
-                showSuccessAddAMoreItemDialog = shouldShow
+                showSuccessAddMoreItemDialog = shouldShow
             )
         }
     }

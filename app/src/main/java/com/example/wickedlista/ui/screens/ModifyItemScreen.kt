@@ -305,9 +305,9 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel, onDoneAction: () ->Unit) {
-    if (modifyItemViewModel.uiState.collectAsState().value.showSuccessAddAMoreItemDialog) {
+    if (modifyItemViewModel.uiState.collectAsState().value.showSuccessAddMoreItemDialog) {
         BasicAlertDialog(
-            onDismissRequest = { modifyItemViewModel.setShowSuccessAddAMoreItemDialog(false) }
+            onDismissRequest = { modifyItemViewModel.setShowSuccessAddMoreItemDialog(false) }
         ) {
             Card {
                 Column(
@@ -333,7 +333,7 @@ fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel,
                         Button(
                             onClick = {
                                 //dialog with label, desc, and spinner
-                                modifyItemViewModel.setShowSuccessAddAMoreItemDialog(false)
+                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
                                 modifyItemViewModel.setAdditionalItemsDialog(true)
                             },
                             shape = MaterialTheme.shapes.small
@@ -345,7 +345,7 @@ fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel,
                         }
                         Button(
                             onClick = {
-                                modifyItemViewModel.setShowSuccessAddAMoreItemDialog(false)
+                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
                                 onDoneAction()
                             },
                             shape = MaterialTheme.shapes.small

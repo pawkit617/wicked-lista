@@ -96,6 +96,24 @@ class SavedListViewModel @Inject constructor(
         }
     }
 
+    fun getAllSavedItemsForSelectedOwner() {
+        val selectedOwner = _uiState.value.selectedOwner
+        viewModelScope.launch {
+            val listOfItemsForOwnerFlow = itemsRepositoryImp
+                .getAllSavedItemsForListId(selectedOwner.first)
+
+            val itemsForListOwner = listOfItemsForOwnerFlow.first()
+
+            _uiState.update {
+                val hasNoItems = itemsForListOwner.isEmpty()
+                it.copy(
+                    allSavedItemsForList = itemsForListOwner,
+                    showHintScreenToAddItems = hasNoItems
+                )
+            }
+        }
+    }
+
     fun setSelectedOwner(selectedOwner: Pair<Int, String>) {
         _uiState.update {
             it.copy(
@@ -123,26 +141,6 @@ class SavedListViewModel @Inject constructor(
     }
     //endregion
 
-    //region List of Items for Owner
-    fun getAllSavedItemsForSelectedOwner() {
-        val selectedOwner = _uiState.value.selectedOwner
-        viewModelScope.launch {
-            val listOfItemsForOwnerFlow = itemsRepositoryImp
-                .getAllSavedItemsForListId(selectedOwner.first)
-
-            val itemsForListOwner = listOfItemsForOwnerFlow.first()
-
-            _uiState.update {
-                val hasNoItems = itemsForListOwner.isEmpty()
-                it.copy(
-                    allSavedItemsForList = itemsForListOwner,
-                    showHintScreenToAddItems = hasNoItems
-                )
-            }
-        }
-    }
-
-    //endregion
     fun clearErrors() {
         _uiState.update {
             it.copy(
