@@ -122,20 +122,47 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {//Curt - change name
-        labelTextFieldState.edit {
-            replace(0, labelTextFieldState.text.length, itemLabel)
+    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {
+        viewModelScope.launch {
+            val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
+            val itemStatusList = listOfStatusFlow.first()
+            if (itemStatusList.isNotEmpty()) {
+                val itemStatuses = itemStatusList.first()
+                labelTextFieldState.edit {
+                    replace(0, labelTextFieldState.text.length, itemLabel)
+                }
+                descTextFieldState.edit {
+                    replace(0, descTextFieldState.text.length, itemDesc)
+                }
+                statusTextFieldForMenuState.edit {
+                    replace(0, statusTextFieldForMenuState.text.length, currentStatus)
+                }
+                _uiState.update { it ->
+                    it.copy(
+                        itemStatuses = itemStatuses.let { item ->
+                            listOf(item.firstStatus, item.secondStatus, item.thirdStatus, item.fourthStatus)
+                        }.filter { it.isNotEmpty() }
+                    )
+                }
+            }
         }
-        descTextFieldState.edit {
-            replace(0, descTextFieldState.text.length, itemDesc)
-        }
-        statusTextFieldForMenuState.edit {
-            replace(0, statusTextFieldForMenuState.text.length, currentStatus)
-        }
-        updateStatusesForItem(ownerId)
     }
 
-    fun updateStatusesForItem(ownerId: Int) {
+
+//    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {//Curt - change name
+//        labelTextFieldState.edit {
+//            replace(0, labelTextFieldState.text.length, itemLabel)
+//        }
+//        descTextFieldState.edit {
+//            replace(0, descTextFieldState.text.length, itemDesc)
+//        }
+//        statusTextFieldForMenuState.edit {
+//            replace(0, statusTextFieldForMenuState.text.length, currentStatus)
+//        }
+//        updateStatusesForItem(ownerId)
+//    }
+//
+    fun updateStatusesForItem(ownerId: Int) { //CURT -  REVISIT This for cleaner logic for add vs. edit
         viewModelScope.launch {
             val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
             val itemStatusList = listOfStatusFlow.first()
