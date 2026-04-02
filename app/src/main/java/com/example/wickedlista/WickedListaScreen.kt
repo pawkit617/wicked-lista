@@ -1,6 +1,5 @@
 package com.example.wickedlista
 
-import android.text.BoringLayout
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

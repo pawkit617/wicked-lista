@@ -148,20 +148,6 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-
-//    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {//Curt - change name
-//        labelTextFieldState.edit {
-//            replace(0, labelTextFieldState.text.length, itemLabel)
-//        }
-//        descTextFieldState.edit {
-//            replace(0, descTextFieldState.text.length, itemDesc)
-//        }
-//        statusTextFieldForMenuState.edit {
-//            replace(0, statusTextFieldForMenuState.text.length, currentStatus)
-//        }
-//        updateStatusesForItem(ownerId)
-//    }
-//
     fun updateStatusesForItem(ownerId: Int) { //CURT -  REVISIT This for cleaner logic for add vs. edit
         viewModelScope.launch {
             val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
