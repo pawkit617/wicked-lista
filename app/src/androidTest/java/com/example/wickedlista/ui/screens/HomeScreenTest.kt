@@ -8,8 +8,10 @@ import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.wickedlista.HiltTestActivity
 import com.example.wickedlista.MainActivity
@@ -22,8 +24,10 @@ import org.junit.Test
 
 import com.example.wickedlista.R
 import com.example.wickedlista.WickedListaApp
+import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.ui.theme.WickedListaTheme
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -35,6 +39,9 @@ class HomeScreenTest {
     var composeTestRuleActivity = createAndroidComposeRule<MainActivity>()
 
     private lateinit var baseContext: Context
+
+
+
 
     @Before
     fun setUp() {
@@ -55,6 +62,9 @@ class HomeScreenTest {
     fun displayCreateCategoryDialogButtonsFromTopAppBarButton() {
         composeTestRuleActivity.let {
             it.onNodeWithContentDescription(baseContext.getString(R.string.icon_cdescript)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.category)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.topic)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.lists_for)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.cancel)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.create)).assertIsDisplayed()
         }
@@ -64,6 +74,9 @@ class HomeScreenTest {
     fun displayCreateCategoryDialogButtonsFromCenterButton() {
         composeTestRuleActivity.let {
             it.onNodeWithText(baseContext.getString(R.string.create_category)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.category)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.topic)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.lists_for)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.cancel)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.create)).assertIsDisplayed()
         }
@@ -77,6 +90,39 @@ class HomeScreenTest {
             it.onNodeWithText(baseContext.getString(R.string.cancel)).performClick()
             it.onNodeWithText(baseContext.getString(R.string.create)).assertIsNotDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.no_categories_found)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun clickTextFieldsToShowPlaceHolderForCreateCategory() {
+        composeTestRuleActivity.let {
+            it.onNodeWithText(baseContext.getString(R.string.create_category)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.category)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.category_placeholder)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.topic)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.topic_placeholder)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.lists_for)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.lists_for_placeholder)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun showBlankCategoryMessage() {
+        composeTestRuleActivity.let{
+            it.onNodeWithText(baseContext.getString(R.string.create_category)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.create)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.error_message_no_category)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun showNoInitialListMessage() {
+        composeTestRuleActivity.let {
+            it.onNodeWithText(baseContext.getString(R.string.create_category)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.category)).performTextInput("Treats")
+            it.onNodeWithText(baseContext.getString(R.string.topic)).performTextInput("Dessert")
+            it.onNodeWithText(baseContext.getString(R.string.create)).performClick()
+            it.onNodeWithText(baseContext.getString(R.string.error_message_no_initial_list)).assertIsDisplayed()
         }
     }
 }

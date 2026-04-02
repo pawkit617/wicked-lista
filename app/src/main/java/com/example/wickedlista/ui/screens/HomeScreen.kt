@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -243,8 +244,7 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                         placeholder = { Text(stringResource(R.string.category_placeholder)) },
                         isError = homeScreenUIState.value.isError,
                         lineLimits = TextFieldLineLimits.SingleLine,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.padding(8.dp))
 
