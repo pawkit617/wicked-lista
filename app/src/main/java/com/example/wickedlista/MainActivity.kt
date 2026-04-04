@@ -9,7 +9,7 @@ import com.example.wickedlista.ui.theme.WickedListaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint()
-class MainActivity : ComponentActivity() {
+open class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

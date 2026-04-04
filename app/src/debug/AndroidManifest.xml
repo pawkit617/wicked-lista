@@ -5,7 +5,7 @@
     <application tools:ignore="MissingApplicationIcon">
         <activity
             android:name="com.example.wickedlista.HiltTestActivity"
-            android:exported="true">
+            android:exported="false">
         </activity>
     </application>
 

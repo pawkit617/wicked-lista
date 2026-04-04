@@ -28,7 +28,7 @@ object AppModule {
                 context,
                 WickedListaDatabase::class.java,
                 "wickalista_database"
-            ).fallbackToDestructiveMigration(true).build()
+            ).fallbackToDestructiveMigration(false).build()
     }
 
     @Provides

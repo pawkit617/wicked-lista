@@ -42,11 +42,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin{
+//        target {
+//            compilerOptions {
+//                optIn.add("kotlin.RequiresOptIn")
+//            }
+//        }
+        jvmToolchain(21)
     }
     buildFeatures {
         compose = true
@@ -76,8 +81,8 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.common.jvm)
     ksp(libs.androidx.room.compiler)
-    implementation("com.google.dagger:hilt-android:2.59.1")
-    ksp("com.google.dagger:hilt-android-compiler:2.59.1")
+    implementation("com.google.dagger:hilt-android:2.59.2")
+    ksp("com.google.dagger:hilt-android-compiler:2.59.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
 
@@ -91,6 +96,7 @@ dependencies {
 
     androidTestImplementation(libs.hilt.test)
     kspAndroidTest("com.google.dagger:hilt-android-compiler:2.59.2")
+    kspAndroidTest(libs.hilt.test)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
