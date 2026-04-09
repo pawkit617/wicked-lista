@@ -189,7 +189,7 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
                     modifier = Modifier
                         .size(48.dp)
                         .padding(bottom = 8.dp),
-                    contentDescription = stringResource(R.string.icon_delete_cdescript)
+                    contentDescription = stringResource(R.string.icon_delete_dialog_cdescript)
                 )
                 Text(
                     text = stringResource(R.string.deletion_message) + current.second,

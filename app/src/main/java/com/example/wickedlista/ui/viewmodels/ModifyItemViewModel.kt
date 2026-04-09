@@ -36,12 +36,35 @@ class ModifyItemViewModel @Inject constructor(
     val additionalStatus3TextFieldState = TextFieldState()
     val statusTextFieldForMenuState = TextFieldState()
 
+    private fun isFormValid(): Boolean {
+        var hasNoErrors = true
+        hasNoErrors = labelTextFieldState.text.isNotEmpty() && initialStatusTextFieldState.text.isNotEmpty()
+
+        if(!hasNoErrors) {
+            _uiState.update {
+                it.copy(
+                    hasBlankLabelError = labelTextFieldState.text.isEmpty(),
+                    hasBlankStatusError = initialStatusTextFieldState.text.isEmpty()
+                )
+            }
+        }
+
+        return hasNoErrors
+    }
+
+
     //region Repo Operations
     fun addItemToList(savedListId: Int) {
+        if (isFormValid()) {
+            addItemStatusWithListId(savedListId)
+            addItemInfoWithListId(savedListId)
+        }
+    }
+
+    private fun addItemInfoWithListId(savedListId: Int) {
         viewModelScope.launch {
             try {
                 if (labelTextFieldState.text.isNotEmpty()) {
-
                     val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
                         initialStatusTextFieldState.text.toString()
                     }
@@ -53,7 +76,6 @@ class ModifyItemViewModel @Inject constructor(
                         status = givenStatus.toString()
                     )
                     savedListRepositoryImp.addItemToList(savedItems)
-                    addItemStatusWithListId(savedListId)
 
                     _uiState.update {
                         it.copy(
@@ -74,7 +96,6 @@ class ModifyItemViewModel @Inject constructor(
             }
         }
     }
-
     private fun addItemStatusWithListId(savedListId: Int) {
         _uiState.value.itemStatuses.ifEmpty {
             val initialStatus = initialStatusTextFieldState.text.toString()
@@ -99,8 +120,10 @@ class ModifyItemViewModel @Inject constructor(
                 additionalStatus3
             )
             _uiState.update {
+                val statusesFiltered = statuses.filter { it.isNotEmpty() }
                 it.copy(
-                    itemStatuses =  statuses.filter { it.isNotEmpty() },
+                    itemStatuses =  statusesFiltered,
+                    hasBlankStatusError = statusesFiltered.isEmpty()
                 )
             }
         }
@@ -202,7 +225,8 @@ class ModifyItemViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 hasSQLError = false,
-                hasBlankLabelError = false
+                hasBlankLabelError = false,
+                hasBlankStatusError = false
             )
         }
     }

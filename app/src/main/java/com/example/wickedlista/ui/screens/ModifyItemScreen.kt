@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.wickedlista.data.AddItemUIState
+import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
 @Composable
@@ -66,6 +69,7 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             ItemInfo(modifyItemViewModel)
+            ErrorMessageDisplayWithinCard(modifyItemViewModel.uiState.collectAsState())
             HelpMessageForStatus()
             ItemStatuses(modifyItemViewModel, isAddingMore)
         }
@@ -362,10 +366,22 @@ fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel,
     }
 }
 
-@Preview
 @Composable
-fun PreviewScreen(id: Int = 1) {
-    //AdditionalItemsDialog(1)
-    //AddItemScreen(id)
-   //SuccessAddMoreDialog()
+fun ErrorMessageDisplayWithinCard(addItemUIState: State<AddItemUIState>) {
+    val errMsg = when {
+        addItemUIState.value.hasBlankLabelError -> R.string.error_add_item_blank_label
+        addItemUIState.value.hasSQLError -> R.string.error_sql_add_item
+        addItemUIState.value.hasBlankStatusError -> R.string.error_add_item_blank_status
+        else -> -1
+    }
+
+    if (errMsg != -1) {
+        Text(
+            text = stringResource(errMsg),
+            color = Color.Red,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center)
+    }
 }

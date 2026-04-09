@@ -48,9 +48,12 @@
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>
     <string name="icon_delete_cdescript">delete icon</string>
+    <string name="icon_delete_dialog_cdescript">dialog delete icon</string>
     <string name="icon_delete_list_cdescript">delete list icon</string>
     <string name="icon_delete_owner_cdescript">delete owner icon</string>
+    <string name="icon_delete_owner_button_cdescript">delete owner icon button</string>
     <string name="icon_add_listitem_cdescript">add item icon </string>
+    <string name="icon_add_listitem_button_cdescript">add item icon button</string>
     <string name="icon_add_owner_cdescript">add owner icon</string>
     <string name="add_owner_button_cdescript">add item button</string>
 
@@ -74,4 +77,7 @@
     <string name="add_more">Add more</string>
     <string name="select_status_hint">Select status</string>
     <string name="update">Update</string>
+    <string name="error_add_item_blank_label">&#x2A;Please provide a label</string>
+    <string name="error_add_item_blank_status">&#x2A;Please provide at least one status</string>
+    <string name="error_sql_add_item">&#x2A;Trouble add/updating item.</string>
 </resources>

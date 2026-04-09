@@ -343,13 +343,12 @@ fun BottomButtonEditRow(
         BottomIconButton(
             R.drawable.add_box_48,
             R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
-
         BottomIconButton(
             R.drawable.listitem_add_48,
-            R.string.icon_add_listitem_cdescript) { onButtonClick(selectedOwnerId, useMenu) }
+            R.string.icon_add_listitem_button_cdescript) { onButtonClick(selectedOwnerId, useMenu) }
         BottomIconButton(
             R.drawable.delete_box_owner_48,
-            R.string.icon_delete_owner_cdescript) {
+            R.string.icon_delete_owner_button_cdescript) {
             if (savedListUIState.allSavedLists.size > 1) {
                 savedListViewModel.setShowDeletionOwner(true)
             } else

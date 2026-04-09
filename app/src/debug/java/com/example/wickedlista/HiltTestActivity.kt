@@ -2,6 +2,7 @@ package com.example.wickedlista
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,11 +13,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class HiltTestActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("CURT", "onCreate: HiltTestActivity")
         enableEdgeToEdge()
-        setContent {
-            WickedListaTheme {
-                WickedListaApp()
-            }
-        }
+
     }
 }

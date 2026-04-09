@@ -46,11 +46,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     kotlin{
-//        target {
-//            compilerOptions {
-//                optIn.add("kotlin.RequiresOptIn")
-//            }
-//        }
         jvmToolchain(21)
     }
     buildFeatures {

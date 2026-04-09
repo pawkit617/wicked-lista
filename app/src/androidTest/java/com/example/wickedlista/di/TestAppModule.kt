@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.database.homecategories.HomeCategoriesDao
+import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
 import com.example.wickedlista.database.itemstatus.ItemStatusDao
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.savedlists.SavedListsDao
@@ -32,6 +33,12 @@ object TestAppModule {
     @Singleton
     fun provideHomeCategoriesDao(database: WickedListaDatabase): HomeCategoriesDao {
         return database.homeCategoriesDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHomeListRepositoryImp(homeCategoriesDao: HomeCategoriesDao): HomeCategoriesRepositoryImp {
+        return HomeCategoriesRepositoryImp(homeCategoriesDao)
     }
 
     @Provides

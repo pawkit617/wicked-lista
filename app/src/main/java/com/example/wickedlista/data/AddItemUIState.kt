@@ -5,5 +5,6 @@ data class AddItemUIState(
     val showSuccessAddMoreItemDialog: Boolean = false,
     val showAdditionalItemsDialog: Boolean = false,
     val hasBlankLabelError: Boolean = false,
+    val hasBlankStatusError: Boolean = false,
     val hasSQLError: Boolean = false
 )
