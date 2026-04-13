@@ -49,7 +49,7 @@ fun AddItemScreen(
     onDoneAddingItems: () -> Unit = {},
     modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
 ) {
-    SuccessAddMoreDialog(ownerId, modifyItemViewModel, onDoneAddingItems)
+    SuccessAddMoreDialog(modifyItemViewModel, onDoneAddingItems)
     AddItemForm(modifyItemViewModel, ownerId, isAddingMore)
 }
 
@@ -198,7 +198,6 @@ fun HelpMessageForStatus(useMenu: Boolean = false) {
 }
 @Composable
 fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = false) {
-    val addItemViewModelStatus by modifyItemViewModel.uiState.collectAsState()
     Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -312,7 +311,7 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel, onDoneAction: () ->Unit) {
+fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction: () ->Unit) {
     if (modifyItemViewModel.uiState.collectAsState().value.showSuccessAddMoreItemDialog) {
         BasicAlertDialog(
             onDismissRequest = { modifyItemViewModel.setShowSuccessAddMoreItemDialog(false) }

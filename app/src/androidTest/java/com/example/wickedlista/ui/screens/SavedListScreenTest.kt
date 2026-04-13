@@ -20,7 +20,6 @@ import com.example.wickedlista.database.homecategories.HomeCategories
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.ui.theme.WickedListaTheme
-import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking

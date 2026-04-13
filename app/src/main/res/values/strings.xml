@@ -17,7 +17,7 @@
     <string name="category_placeholder">e.g. Recipes</string>
     <string name="topic">Topic</string>
     <string name="topic_placeholder">e.g. Pie</string>
-    <string name="lists_for">Lists needed for...</string>
+    <string name="lists_for">Lists needed for…</string>
     <string name="lists_for_placeholder">e.g. Apple Pie</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
@@ -43,7 +43,7 @@
     <!-- Delete Owner Dialog -->
     <string name="delete_owner_message">Deleting %1$s and all listed items.</string>
     <string name="delete_last_owner_message">This is only list for the category. Please delete category from home screen if list is unnecessary.</string>
-    <string name="ok">Ok</string>
+    <string name="ok">@android:string/ok</string>
 
     <!--Content Description-->
     <string name="icon_cdescript">add icon</string>
