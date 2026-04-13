@@ -26,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,11 +37,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.data.AddItemUIState
-import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
 @Composable
@@ -58,6 +55,8 @@ fun AddItemScreen(
 
 @Composable
 fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAddingMore: Boolean) {
+    val addItemUIState by modifyItemViewModel.uiState.collectAsState()
+    val useMenuForStatus = isAddingMore || addItemUIState.useMenuForStatus
     if (isAddingMore) {
         modifyItemViewModel.updateStatusesForItem(ownerId)
     }
@@ -68,14 +67,15 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
             modifier = Modifier.fillMaxWidth().background(Color.White).align(Alignment.TopCenter),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+
             ItemInfo(modifyItemViewModel)
-            ErrorMessageDisplayWithinCard(modifyItemViewModel.uiState.collectAsState())
-            HelpMessageForStatus()
-            ItemStatuses(modifyItemViewModel, isAddingMore)
+            ErrorMessageDisplayWithinCard(addItemUIState)
+            HelpMessageForStatus(useMenuForStatus )//useMenuForStatus isAddingMore
+            ItemStatuses(modifyItemViewModel, useMenuForStatus)//isAddingMore
         }
 
         Button(
-            onClick = {modifyItemViewModel.addItemToList(ownerId)},
+            onClick = {modifyItemViewModel.addItemToList(ownerId, useMenuForStatus)},
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.BottomCenter)
         ) {
@@ -98,7 +98,8 @@ fun EditItemScreen(
     onDoneEditingItems: () -> Unit = {},
     modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
 ) {
-    modifyItemViewModel.fillFormForItemEdit(ownerId, savedItemLabel, savedItemDesc, currentStatus)
+    val modifyItemUIState by modifyItemViewModel.uiState.collectAsState()
+    modifyItemViewModel.prepopulateFormWithItemInfo(ownerId, savedItemLabel, savedItemDesc, currentStatus)
 
     Box(Modifier.fillMaxSize()){
         Column(
@@ -107,6 +108,7 @@ fun EditItemScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ItemInfo(modifyItemViewModel)
+            ErrorMessageDisplayWithinCard(modifyItemUIState)
             HelpMessageForStatus(true)
             ItemStatuses(modifyItemViewModel, true)
         }
@@ -135,11 +137,13 @@ fun EditItemScreen(
             }
             Button(
                 onClick = {
-                    modifyItemViewModel.updateSavedItem(
+                    val status = modifyItemViewModel.updateSavedItem(
                         savedItemId,
                         ownerId
                     )
-                    onDoneEditingItems()
+                    if (status) {
+                        onDoneEditingItems()
+                    }
                 },
                 shape = MaterialTheme.shapes.small
             ) {
@@ -180,8 +184,8 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
 }
 
 @Composable
-fun HelpMessageForStatus(isEditing: Boolean = false) {
-    val helpMessage = if (isEditing)
+fun HelpMessageForStatus(useMenu: Boolean = false) {
+    val helpMessage = if (useMenu)
         R.string.add_item_status_choose_message
     else
         R.string.add_item_status_help_message
@@ -201,7 +205,7 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = fa
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth().background(Color.LightGray)
         ) {
-            if (addItemViewModelStatus.showAdditionalItemsDialog || useMenu) {
+            if (useMenu) {
                 StatusAsMenu(modifyItemViewModel)
             } else {
                 StatusAsFormFields(modifyItemViewModel)
@@ -279,7 +283,7 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
             Icon(
                 painterResource(iconForTextField),
                 modifier = Modifier.clickable { expanded = !expanded },
-                contentDescription = ""
+                contentDescription = stringResource(R.string.status_menu_drop_down_icon)
             )
         }
     )
@@ -321,7 +325,7 @@ fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel,
                 ) {
                     Image(
                         painter = painterResource(R.drawable.success_check_48),
-                        contentDescription = "icon add success",
+                        contentDescription = stringResource(R.string.add_item_success_message_icon),
                         modifier = Modifier.padding(top = 8.dp)
                     )
                     Text(
@@ -338,7 +342,7 @@ fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel,
                             onClick = {
                                 //dialog with label, desc, and spinner
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-                                modifyItemViewModel.setAdditionalItemsDialog(true)
+                                modifyItemViewModel.setuseMenuForStatus(true)
                             },
                             shape = MaterialTheme.shapes.small
                         ) {
@@ -367,11 +371,11 @@ fun SuccessAddMoreDialog(ownerId: Int, modifyItemViewModel: ModifyItemViewModel,
 }
 
 @Composable
-fun ErrorMessageDisplayWithinCard(addItemUIState: State<AddItemUIState>) {
+fun ErrorMessageDisplayWithinCard(addItemUIState: AddItemUIState) {
     val errMsg = when {
-        addItemUIState.value.hasBlankLabelError -> R.string.error_add_item_blank_label
-        addItemUIState.value.hasSQLError -> R.string.error_sql_add_item
-        addItemUIState.value.hasBlankStatusError -> R.string.error_add_item_blank_status
+        addItemUIState.hasBlankLabelError -> R.string.error_add_item_blank_label
+        addItemUIState.hasSQLError -> R.string.error_sql_add_item
+        addItemUIState.hasBlankStatusError -> R.string.error_add_item_blank_status
         else -> -1
     }
 

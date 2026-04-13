@@ -13,6 +13,7 @@ import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -27,7 +28,7 @@ object TestAppModule {
         Room.inMemoryDatabaseBuilder(
             context,
             WickedListaDatabase::class.java
-        ).build()
+        ).setTransactionExecutor(Executors.newSingleThreadExecutor()).build()
 
     @Provides
     @Singleton

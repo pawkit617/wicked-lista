@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SavedItemsDao {
-    @Insert(onConflict = ABORT)
+    @Insert()
     suspend fun addItemToList(savedItems: SavedItems): Long
 
     @Update

@@ -97,6 +97,7 @@ class SavedListScreenTest {
     @Test
     fun checkUiWhenEnteringScreenWithNoSavedItems() {
         setUpScreenContent()
+        composeTestRuleActivity.waitUntilAtLeastOneExists(hasText(baseContext.getString(R.string.topic_subtitle) + "Treats"), delayForUiVisibility)
         composeTestRuleActivity.let {
             it.onNodeWithText(baseContext.getString(R.string.topic_subtitle) + "Treats").assertIsDisplayed()
             it.onNodeWithText("Sundae").assertIsDisplayed()
@@ -111,6 +112,7 @@ class SavedListScreenTest {
     @Test
     fun showAddNewOwnerDialogWithCancelClick() {
         setUpScreenContent()
+        composeTestRuleActivity.waitUntilAtLeastOneExists(hasContentDescription(baseContext.getString(R.string.add_owner_button_cdescript)), delayForUiVisibility)
         composeTestRuleActivity.let {
             it.onNodeWithContentDescription(baseContext.getString(R.string.add_owner_button_cdescript)).performClick()
             it.onAllNodesWithContentDescription(baseContext.getString(R.string.icon_add_listitem_cdescript))[1].assertIsDisplayed()

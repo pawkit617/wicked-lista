@@ -1,5 +1,6 @@
 package com.example.wickedlista.ui.viewmodels
 
+import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
@@ -36,26 +37,29 @@ class ModifyItemViewModel @Inject constructor(
     val additionalStatus3TextFieldState = TextFieldState()
     val statusTextFieldForMenuState = TextFieldState()
 
-    private fun isFormValid(): Boolean {
-        var hasNoErrors = true
-        hasNoErrors = labelTextFieldState.text.isNotEmpty() && initialStatusTextFieldState.text.isNotEmpty()
-
-        if(!hasNoErrors) {
-            _uiState.update {
-                it.copy(
-                    hasBlankLabelError = labelTextFieldState.text.isEmpty(),
-                    hasBlankStatusError = initialStatusTextFieldState.text.isEmpty()
-                )
-            }
+    private fun isFormValid(useMenuForStatus: Boolean = false): Boolean {
+        val isStatusFieldEmpty = if(useMenuForStatus) {
+            statusTextFieldForMenuState.text.isEmpty()
+        } else {
+            initialStatusTextFieldState.text.isEmpty()
         }
 
-        return hasNoErrors
+        val isLabelFieldEmpty = labelTextFieldState.text.isEmpty()
+
+        _uiState.update {
+            it.copy(
+                hasBlankLabelError = isLabelFieldEmpty,
+                hasBlankStatusError = isStatusFieldEmpty
+            )
+        }
+
+        return !isLabelFieldEmpty && !isStatusFieldEmpty
     }
 
 
     //region Repo Operations
-    fun addItemToList(savedListId: Int) {
-        if (isFormValid()) {
+    fun addItemToList(savedListId: Int, isAddingMore: Boolean = false) {
+        if (isFormValid(isAddingMore)) {
             addItemStatusWithListId(savedListId)
             addItemInfoWithListId(savedListId)
         }
@@ -64,31 +68,26 @@ class ModifyItemViewModel @Inject constructor(
     private fun addItemInfoWithListId(savedListId: Int) {
         viewModelScope.launch {
             try {
-                if (labelTextFieldState.text.isNotEmpty()) {
-                    val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
-                        initialStatusTextFieldState.text.toString()
-                    }
-
-                    val savedItems = SavedItems(
-                        label = labelTextFieldState.text.toString(),
-                        savedListForeignId = savedListId,
-                        description = descTextFieldState.text.toString(),
-                        status = givenStatus.toString()
-                    )
-                    savedListRepositoryImp.addItemToList(savedItems)
-
-                    _uiState.update {
-                        it.copy(
-                            showSuccessAddMoreItemDialog = true
-                        )
-                    }
-                    clearTextFieldStates()
-                    clearErrors()
-                } else {
-                    _uiState.update {
-                        it.copy(hasBlankLabelError = true)
-                    }
+                val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
+                    initialStatusTextFieldState.text.toString()
                 }
+
+                val savedItems = SavedItems(
+                    label = labelTextFieldState.text.toString(),
+                    savedListForeignId = savedListId,
+                    description = descTextFieldState.text.toString(),
+                    status = givenStatus.toString()
+                )
+                val rid = savedListRepositoryImp.addItemToList(savedItems)
+                Log.d("RID", rid.toString())
+
+                _uiState.update {
+                    it.copy(
+                        showSuccessAddMoreItemDialog = true
+                    )
+                }
+                clearTextFieldStates()
+                clearErrors()
             } catch (_: SQLException) {
                 _uiState.update {
                     it.copy(hasSQLError = true)
@@ -132,20 +131,30 @@ class ModifyItemViewModel @Inject constructor(
     fun updateSavedItem(
         savedItemId: Int,
         ownerId: Int
-    ) {
-        viewModelScope.launch {
-            val updatedItem = SavedItems(
-                savedItemId,
-                ownerId,
-                labelTextFieldState.text.toString(),
-                descTextFieldState.text.toString(),
-                statusTextFieldForMenuState.text.toString()
-            )
-            savedListRepositoryImp.updateSavedItem(updatedItem)
+    ) : Boolean {
+        val isValid = labelTextFieldState.text.isNotEmpty()
+        if (isValid) {
+            viewModelScope.launch {
+                val updatedItem = SavedItems(
+                    savedItemId,
+                    ownerId,
+                    labelTextFieldState.text.toString(),
+                    descTextFieldState.text.toString(),
+                    statusTextFieldForMenuState.text.toString()
+                )
+                savedListRepositoryImp.updateSavedItem(updatedItem)
+            }
+        } else {
+            _uiState.update {
+                it.copy(
+                    hasBlankLabelError = labelTextFieldState.text.isEmpty()
+                )
+            }
         }
+        return isValid
     }
 
-    fun fillFormForItemEdit(ownerId: Int, itemLabel:String, itemDesc: String, currentStatus: String) {
+    fun prepopulateFormWithItemInfo(ownerId: Int, itemLabel:String = "", itemDesc: String = "", currentStatus: String) {
         viewModelScope.launch {
             val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
             val itemStatusList = listOfStatusFlow.first()
@@ -203,10 +212,10 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun setAdditionalItemsDialog(shouldShow: Boolean) {
+    fun setuseMenuForStatus(useMenu: Boolean) {
         _uiState.update {
             it.copy(
-                showAdditionalItemsDialog = shouldShow
+                useMenuForStatus = useMenu
             )
         }
     }

@@ -39,12 +39,6 @@ class ModifyItemViewModelTest {
     }
 
     @Test
-    fun set_Additional_Items_Dialog() {
-        modifyItemViewModel.setAdditionalItemsDialog(true)
-        assertTrue(modifyItemViewModel.uiState.value.showAdditionalItemsDialog)
-    }
-
-    @Test
     fun clear_Text_Field_States() {
         modifyItemViewModel.clearTextFieldStates()
         val textList = listOf(

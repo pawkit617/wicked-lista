@@ -56,6 +56,7 @@
     <string name="icon_add_listitem_button_cdescript">add item icon button</string>
     <string name="icon_add_owner_cdescript">add owner icon</string>
     <string name="add_owner_button_cdescript">add item button</string>
+    <string name="add_item_success_message_icon">add success icon</string>
 
     <!-- Modify Items -->
     <string name="add_item_label">Label</string>
@@ -74,6 +75,7 @@
     <string name="add_item_successful_add_message">Item successfully added.</string>
     <string name="done">Done</string>
     <string name="status">Status</string>
+    <string name="status_menu_drop_down_icon">status menu drop down icon</string>
     <string name="add_more">Add more</string>
     <string name="select_status_hint">Select status</string>
     <string name="update">Update</string>
