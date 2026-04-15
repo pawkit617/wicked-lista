@@ -29,7 +29,7 @@ class HomeScreenViewModel @Inject constructor(val homeCategoriesRepositoryImp: H
     val listForSavedState = TextFieldState("")
 
     fun createNewList(category: CharSequence, title: CharSequence, listFor: CharSequence) {
-        if (categorySavedState.text.isEmpty()) {
+        if (category.isEmpty()) {
             _uiState.update {
                 it.copy(
                     isError = true,
@@ -37,7 +37,7 @@ class HomeScreenViewModel @Inject constructor(val homeCategoriesRepositoryImp: H
                     hasNoListFor = false
                 )
             }
-        } else if (listForSavedState.text.isEmpty()) {
+        } else if (listFor.isEmpty()) {
             _uiState.update {
                 it.copy(
                     isError = false,

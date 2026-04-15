@@ -2,13 +2,14 @@ package com.example.wickedlista.database.saveditems
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SavedItemsDao {
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addItemToList(savedItems: SavedItems): Long
 
     @Update

@@ -75,7 +75,7 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
         }
 
         Button(
-            onClick = {modifyItemViewModel.addItemToList(ownerId, useMenuForStatus)},
+            onClick = {modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)},
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.BottomCenter)
         ) {
@@ -341,7 +341,7 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                             onClick = {
                                 //dialog with label, desc, and spinner
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-                                modifyItemViewModel.setuseMenuForStatus(true)
+                                modifyItemViewModel.setUseMenuForStatus(true)
                             },
                             shape = MaterialTheme.shapes.small
                         ) {
@@ -373,7 +373,6 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
 fun ErrorMessageDisplayWithinCard(addItemUIState: AddItemUIState) {
     val errMsg = when {
         addItemUIState.hasBlankLabelError -> R.string.error_add_item_blank_label
-        addItemUIState.hasSQLError -> R.string.error_sql_add_item
         addItemUIState.hasBlankStatusError -> R.string.error_add_item_blank_status
         else -> -1
     }

@@ -1,6 +1,5 @@
 package com.example.wickedlista.ui.viewmodels
 
-import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
@@ -17,9 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.sql.SQLException
 import javax.inject.Inject
-import kotlin.text.isNotEmpty
 
 @HiltViewModel
 class ModifyItemViewModel @Inject constructor(
@@ -58,7 +55,7 @@ class ModifyItemViewModel @Inject constructor(
 
 
     //region Repo Operations
-    fun addItemToList(savedListId: Int, isAddingMore: Boolean = false) {
+    fun addItemToListWithId(savedListId: Int, isAddingMore: Boolean = false) {
         if (isFormValid(isAddingMore)) {
             addItemStatusWithListId(savedListId)
             addItemInfoWithListId(savedListId)
@@ -67,32 +64,26 @@ class ModifyItemViewModel @Inject constructor(
 
     private fun addItemInfoWithListId(savedListId: Int) {
         viewModelScope.launch {
-            try {
-                val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
-                    initialStatusTextFieldState.text.toString()
-                }
-
-                val savedItems = SavedItems(
-                    label = labelTextFieldState.text.toString(),
-                    savedListForeignId = savedListId,
-                    description = descTextFieldState.text.toString(),
-                    status = givenStatus.toString()
-                )
-                val rid = savedListRepositoryImp.addItemToList(savedItems)
-                Log.d("RID", rid.toString())
-
-                _uiState.update {
-                    it.copy(
-                        showSuccessAddMoreItemDialog = true
-                    )
-                }
-                clearTextFieldStates()
-                clearErrors()
-            } catch (_: SQLException) {
-                _uiState.update {
-                    it.copy(hasSQLError = true)
-                }
+            val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
+                initialStatusTextFieldState.text.toString()
             }
+
+            val savedItems = SavedItems(
+                label = labelTextFieldState.text.toString(),
+                savedListForeignId = savedListId,
+                description = descTextFieldState.text.toString(),
+                status = givenStatus.toString()
+            )
+            savedListRepositoryImp.addItemToList(savedItems)
+            //Log.d("RID", rid.toString()) CURT - Suppressed: java.lang.RuntimeException: Method d in android.util.Log not mocked - Watch out for testing
+
+            _uiState.update {
+                it.copy(
+                    showSuccessAddMoreItemDialog = true
+                )
+            }
+            clearTextFieldStates()
+            clearErrors()
         }
     }
     private fun addItemStatusWithListId(savedListId: Int) {
@@ -197,10 +188,13 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun deleteSavedItem(savedItemId: Int) {
+    fun deleteSavedItem(savedItemId: Int) : Int {
+        var rowsDeleted = 0
         viewModelScope.launch {
-            savedListRepositoryImp.deleteSavedItem(savedItemId)
+            rowsDeleted = savedListRepositoryImp.deleteSavedItem(savedItemId)
         }
+
+        return rowsDeleted
     }
 
     //endregion
@@ -212,7 +206,7 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun setuseMenuForStatus(useMenu: Boolean) {
+    fun setUseMenuForStatus(useMenu: Boolean) {
         _uiState.update {
             it.copy(
                 useMenuForStatus = useMenu
@@ -233,7 +227,6 @@ class ModifyItemViewModel @Inject constructor(
     fun clearErrors() {
         _uiState.update {
             it.copy(
-                hasSQLError = false,
                 hasBlankLabelError = false,
                 hasBlankStatusError = false
             )
