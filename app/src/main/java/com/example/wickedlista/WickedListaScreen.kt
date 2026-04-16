@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -71,7 +72,7 @@ fun WickedListaApp(
                 startDestination = WickedListaScreen.HomeScreen.path, //CURT - WickedListaScreen.HomeScreen.name why not current screen? B/C it has to be explicit
                 modifier = Modifier.fillMaxSize()
                    //CURT -  .verticalScroll(rememberScrollState()) //uncomment will lead to “Infinite Height” Crash in Jetpack since i have a LazyVertcialGrid in HomeScreen
-                    .padding(innerPadding)
+                    .padding(0.dp)
             ) {
                 composable(route = WickedListaScreen.HomeScreen.path) {
                     HomeScreen(

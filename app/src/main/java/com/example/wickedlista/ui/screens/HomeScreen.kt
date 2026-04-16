@@ -88,7 +88,9 @@ fun ListsScreen(
     ) {
         items(items = allLists, key = {list -> list.id}) { list ->
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 onClick = {
                     homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category, list.topic)

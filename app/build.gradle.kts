@@ -74,22 +74,22 @@ dependencies {
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.junit.ktx)
     ksp(libs.androidx.room.compiler)
-    implementation("com.google.dagger:hilt-android:2.59.2")
-    ksp("com.google.dagger:hilt-android-compiler:2.59.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.kotlinx.conroutines.test)
-    testImplementation("io.mockk:mockk:1.13.13")
+    testImplementation(libs.mockk.io)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     androidTestImplementation(libs.hilt.test)
-    kspAndroidTest("com.google.dagger:hilt-android-compiler:2.59.2")
+    kspAndroidTest(libs.hilt.android.compiler)
     kspAndroidTest(libs.hilt.test)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
