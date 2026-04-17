@@ -35,13 +35,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.wickedlista.DialogButton
 import com.example.wickedlista.R
 import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.database.homecategories.HomeCategories
@@ -52,7 +52,6 @@ import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 fun HomeScreen(
     homeScreenViewModel: HomeScreenViewModel,
     onClickOfHomeListCard: () -> Unit,
-    modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
 
@@ -203,17 +202,17 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth() //Curt - necessary if u want SpaceEvenly to work
                 ) {
-                    Button(onClick = { homeScreenViewModel.setDeletionDialogVisibility(false) }) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
-                    Button(
+                    DialogButton(
+                        onClick = { homeScreenViewModel.setDeletionDialogVisibility(false) },
+                        text = stringResource(R.string.cancel)
+                    )
+                    DialogButton(
                         onClick = {
                             homeScreenViewModel.deleteHomeList()
                             homeScreenViewModel.setDeletionDialogVisibility(false)
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.delete))
-                    }
+                        },
+                        text = stringResource(R.string.delete)
+                    )
                 }
             }
         }

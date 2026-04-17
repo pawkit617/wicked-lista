@@ -1,21 +1,25 @@
 package com.example.wickedlista
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -55,14 +59,13 @@ fun WickedListaApp(
 
     val currentScreen = if(x.isEmpty()) WickedListaScreen.HomeScreen else x.first()
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         //modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), //CURT - uncomment makes nothing scrollable
         topBar = {
             TopWickedListaAppBar(
                 currentScreen = currentScreen,
                 homeScreenViewModel = homeScreenViewModel,
-                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
@@ -72,7 +75,7 @@ fun WickedListaApp(
                 startDestination = WickedListaScreen.HomeScreen.path, //CURT - WickedListaScreen.HomeScreen.name why not current screen? B/C it has to be explicit
                 modifier = Modifier.fillMaxSize()
                    //CURT -  .verticalScroll(rememberScrollState()) //uncomment will lead to “Infinite Height” Crash in Jetpack since i have a LazyVertcialGrid in HomeScreen
-                    .padding(0.dp)
+                    .padding(innerPadding)
             ) {
                 composable(route = WickedListaScreen.HomeScreen.path) {
                     HomeScreen(
@@ -80,7 +83,7 @@ fun WickedListaApp(
                         onClickOfHomeListCard = {
                             navController.navigate(WickedListaScreen.SavedListScreen.path)
                         },
-                        contentPaddingValues = innerPadding
+                        contentPaddingValues = PaddingValues(0.dp)//innerPadding
                     )
                 }
                 composable (route = WickedListaScreen.SavedListScreen.path) {
@@ -144,9 +147,6 @@ fun WickedListaApp(
 fun TopWickedListaAppBar(
     currentScreen: WickedListaScreen,
     homeScreenViewModel: HomeScreenViewModel,
-
-    scrollBehavior: TopAppBarScrollBehavior,
-    modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -171,4 +171,20 @@ fun TopWickedListaAppBar(
             }
         }
     )
+}
+
+@Composable
+fun DialogButton(
+    onClick : () -> Unit,
+    text: String
+) {
+    Button(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.small,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Black,
+        )
+    ) {
+        Text(text = text)
+    }
 }
