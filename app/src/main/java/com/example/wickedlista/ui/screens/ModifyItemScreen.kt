@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.wickedlista.DialogButton
 import com.example.wickedlista.data.AddItemUIState
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
@@ -73,10 +75,10 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
             HelpMessageForStatus(useMenuForStatus )//useMenuForStatus isAddingMore
             ItemStatuses(modifyItemViewModel, useMenuForStatus)//isAddingMore
         }
-
         Button(
             onClick = {modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)},
-            shape = MaterialTheme.shapes.large,
+            shape = MaterialTheme.shapes.small,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
             modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.BottomCenter)
         ) {
             Text(
@@ -119,7 +121,8 @@ fun EditItemScreen(
         ) {
             Button(
                 onClick = { onDoneEditingItems() },
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(
                     text = stringResource(R.string.cancel),
@@ -131,7 +134,8 @@ fun EditItemScreen(
                     modifyItemViewModel.deleteSavedItem(savedItemId)
                     onDoneEditingItems()
                 },
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(text = stringResource(R.string.delete), textAlign = TextAlign.Center)
             }
@@ -145,7 +149,8 @@ fun EditItemScreen(
                         onDoneEditingItems()
                     }
                 },
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(text = stringResource(R.string.update), textAlign = TextAlign.Center)
             }
@@ -337,31 +342,47 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Button(
+                        DialogButton(
                             onClick = {
                                 //dialog with label, desc, and spinner
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
                                 modifyItemViewModel.setUseMenuForStatus(true)
                             },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(
-                                text = stringResource(R.string.add_more),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        Button(
+                            text = stringResource(R.string.add_more)
+                        )
+//                        Button(
+//                            onClick = {
+//                                //dialog with label, desc, and spinner
+//                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
+//                                modifyItemViewModel.setUseMenuForStatus(true)
+//                            },
+//                            shape = MaterialTheme.shapes.small
+//                        ) {
+//                            Text(
+//                                text = stringResource(R.string.add_more),
+//                                textAlign = TextAlign.Center
+//                            )
+//                        }
+                        DialogButton(
                             onClick = {
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
                                 onDoneAction()
                             },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(
-                                text = stringResource(R.string.done),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                            text = stringResource(R.string.done)
+                        )
+//
+//                        Button(
+//                            onClick = {
+//                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
+//                                onDoneAction()
+//                            },
+//                            shape = MaterialTheme.shapes.small
+//                        ) {
+//                            Text(
+//                                text = stringResource(R.string.done),
+//                                textAlign = TextAlign.Center
+//                            )
+//                        }
                     }
                 }
             }

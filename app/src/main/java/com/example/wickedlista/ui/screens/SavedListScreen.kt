@@ -1,6 +1,5 @@
 package com.example.wickedlista.ui.screens
 
-import android.graphics.pdf.models.ListItem
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.wickedlista.DialogButton
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
@@ -411,25 +411,22 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Button(
+                        DialogButton(
                             onClick = {
                                 savedListViewModel.setShowAddOwner(false)
                                 savedListViewModel.clearErrors()
                                 savedListViewModel.clearTextFieldState()
                             },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(text = stringResource(R.string.cancel))
-                        }
-                        Button(
-                            onClick = {savedListViewModel.addOwner(
-                                categoryId,
-                                savedListViewModel.addOwnerTextFieldState.text.toString())
+                            text = stringResource(R.string.cancel)
+                        )
+                        DialogButton(
+                            onClick = {
+                                savedListViewModel.addOwner(
+                                    categoryId,
+                                    savedListViewModel.addOwnerTextFieldState.text.toString())
                             },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(text = stringResource(R.string.add_owner))
-                        }
+                            text = stringResource(R.string.add_owner)
+                        )
                     }
                 }
             }
@@ -468,18 +465,14 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        Button(
+                        DialogButton(
                             onClick = { savedListViewModel.setShowDeletionOwner(false) },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(text = stringResource(R.string.cancel))
-                        }
-                        Button(
+                            text = stringResource(R.string.cancel)
+                        )
+                        DialogButton(
                             onClick = { savedListViewModel.deleteOwner(ownerToDelete.first) },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(text = stringResource(R.string.delete))
-                        }
+                            text = stringResource(R.string.delete)
+                        )
                     }
                 }
             }
@@ -511,12 +504,10 @@ fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
                         modifier = Modifier.padding(bottom = 8.dp),
                         textAlign = TextAlign.Center
                     )
-                    Button(
+                    DialogButton(
                         onClick = { savedListViewModel.setShowDeletionOfLastOwnerWarning(false) },
-                        shape = MaterialTheme.shapes.small
-                    ) {
-                        Text(text = stringResource(R.string.ok))
-                    }
+                        text = stringResource(R.string.ok)
+                    )
                 }
             }
         }
