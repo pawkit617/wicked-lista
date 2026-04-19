@@ -174,7 +174,7 @@ fun TopWickedListaAppBar(
 }
 
 @Composable
-fun DialogButton(
+fun CommonButton(
     onClick : () -> Unit,
     text: String
 ) {

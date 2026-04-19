@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,7 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.wickedlista.DialogButton
+import com.example.wickedlista.CommonButton
 import com.example.wickedlista.R
 import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.database.homecategories.HomeCategories
@@ -116,14 +115,14 @@ fun ListsScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Image(
-                            painter = painterResource(R.drawable.rounded_chess_queen_24),
+                            painter = painterResource(R.drawable.category_24dp),
                             contentScale = ContentScale.None,
                             modifier = Modifier
                                 .size(64.dp)
                                 .padding(8.dp)
                                 .clip(MaterialTheme.shapes.small)
                                 .background(Color.White),
-                            contentDescription = ""
+                            contentDescription = stringResource(R.string.category_icon)
                         )
                         Text(text = list.category)
                         Text(text = list.topic, modifier = Modifier.padding(bottom = 8.dp))
@@ -151,16 +150,10 @@ fun NoListFoundScreen(
             text = stringResource(R.string.no_categories_found),
             style = MaterialTheme.typography.titleLarge
         )
-        Button(
-            shape = MaterialTheme.shapes.small,
-            onClick = {
-                homeScreenViewModel.setCreateDialogVisibility(true)
-            }
-        ) {
-            Text(
-                text = stringResource(R.string.create_category),
-                style = MaterialTheme.typography.labelLarge)
-        }
+        CommonButton(
+            onClick = { homeScreenViewModel.setCreateDialogVisibility(true) },
+            text = stringResource(R.string.create_category)
+        )
     }
 }
 
@@ -202,11 +195,11 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth() //Curt - necessary if u want SpaceEvenly to work
                 ) {
-                    DialogButton(
+                    CommonButton(
                         onClick = { homeScreenViewModel.setDeletionDialogVisibility(false) },
                         text = stringResource(R.string.cancel)
                     )
-                    DialogButton(
+                    CommonButton(
                         onClick = {
                             homeScreenViewModel.deleteHomeList()
                             homeScreenViewModel.setDeletionDialogVisibility(false)
@@ -274,30 +267,24 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Button(
+                        CommonButton(
                             onClick = {
                                 homeScreenViewModel.setCreateDialogVisibility(false)
                                 homeScreenViewModel.clearErrors()
                                 homeScreenViewModel.clearTextFieldStates()
                             },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(text = stringResource(R.string.cancel))
-                        }
-                        Button(
+                            text = stringResource(R.string.cancel)
+                        )
+                        CommonButton(
                             onClick = {
                                 homeScreenViewModel.createNewList(
                                     titleState.text,
                                     topicState.text,
-                                    listFor = listForState.text
+                                    listForState.text
                                 )
                             },
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(
-                                text = stringResource(R.string.create)
-                            )
-                        }
+                            text = stringResource(R.string.create)
+                        )
                     }
                 }
             }
