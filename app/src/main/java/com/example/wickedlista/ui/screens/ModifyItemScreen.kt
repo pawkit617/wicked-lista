@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.wickedlista.DialogButton
+import com.example.wickedlista.CommonButton
 import com.example.wickedlista.data.AddItemUIState
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
@@ -342,7 +342,7 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        DialogButton(
+                        CommonButton(
                             onClick = {
                                 //dialog with label, desc, and spinner
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
@@ -363,7 +363,7 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
 //                                textAlign = TextAlign.Center
 //                            )
 //                        }
-                        DialogButton(
+                        CommonButton(
                             onClick = {
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
                                 onDoneAction()

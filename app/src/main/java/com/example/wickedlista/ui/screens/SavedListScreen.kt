@@ -44,7 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.wickedlista.DialogButton
+import com.example.wickedlista.CommonButton
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
@@ -411,7 +411,7 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        DialogButton(
+                        CommonButton(
                             onClick = {
                                 savedListViewModel.setShowAddOwner(false)
                                 savedListViewModel.clearErrors()
@@ -419,7 +419,7 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                             },
                             text = stringResource(R.string.cancel)
                         )
-                        DialogButton(
+                        CommonButton(
                             onClick = {
                                 savedListViewModel.addOwner(
                                     categoryId,
@@ -465,11 +465,11 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        DialogButton(
+                        CommonButton(
                             onClick = { savedListViewModel.setShowDeletionOwner(false) },
                             text = stringResource(R.string.cancel)
                         )
-                        DialogButton(
+                        CommonButton(
                             onClick = { savedListViewModel.deleteOwner(ownerToDelete.first) },
                             text = stringResource(R.string.delete)
                         )
@@ -504,7 +504,7 @@ fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
                         modifier = Modifier.padding(bottom = 8.dp),
                         textAlign = TextAlign.Center
                     )
-                    DialogButton(
+                    CommonButton(
                         onClick = { savedListViewModel.setShowDeletionOfLastOwnerWarning(false) },
                         text = stringResource(R.string.ok)
                     )
