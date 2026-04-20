@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.CommonButton
+import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.data.AddItemUIState
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
@@ -72,8 +73,8 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
 
             ItemInfo(modifyItemViewModel)
             ErrorMessageDisplayWithinCard(addItemUIState)
-            HelpMessageForStatus(useMenuForStatus )//useMenuForStatus isAddingMore
-            ItemStatuses(modifyItemViewModel, useMenuForStatus)//isAddingMore
+            HelpMessageForStatus(useMenuForStatus )
+            ItemStatuses(modifyItemViewModel, useMenuForStatus)
         }
         Button(
             onClick = {modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)},
@@ -171,18 +172,18 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth().background(Color.LightGray)
         ) {
-            FormTextField(
+            CommonFormTextField(
                 R.string.add_item_label,
-                R.string.add_items_hint,
+                R.string.add_item_hint,
                 modifyItemViewModel.labelTextFieldState,
                 Modifier.fillMaxWidth().padding(8.dp)
             )
-            FormTextField(
+            CommonFormTextField(
                 R.string.add_item_description_label,
                 R.string.add_item_description_hint,
                 modifyItemViewModel.descTextFieldState,
                 Modifier.fillMaxWidth().padding(8.dp),
-                4
+                lineLimits = TextFieldLineLimits.MultiLine(4)
             )
         }
     }
@@ -220,25 +221,25 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = fa
 
 @Composable
 fun StatusAsFormFields(modifyItemViewModel: ModifyItemViewModel) {
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_initial_status_label,
         R.string.add_item_initial_status_hint,
         modifyItemViewModel.initialStatusTextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint,
         modifyItemViewModel.additionalStatusTextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint2,
         modifyItemViewModel.additionalStatus2TextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint3,
         modifyItemViewModel.additionalStatus3TextFieldState,
@@ -350,19 +351,6 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                             },
                             text = stringResource(R.string.add_more)
                         )
-//                        Button(
-//                            onClick = {
-//                                //dialog with label, desc, and spinner
-//                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-//                                modifyItemViewModel.setUseMenuForStatus(true)
-//                            },
-//                            shape = MaterialTheme.shapes.small
-//                        ) {
-//                            Text(
-//                                text = stringResource(R.string.add_more),
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
                         CommonButton(
                             onClick = {
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
@@ -370,19 +358,6 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                             },
                             text = stringResource(R.string.done)
                         )
-//
-//                        Button(
-//                            onClick = {
-//                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-//                                onDoneAction()
-//                            },
-//                            shape = MaterialTheme.shapes.small
-//                        ) {
-//                            Text(
-//                                text = stringResource(R.string.done),
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
                     }
                 }
             }

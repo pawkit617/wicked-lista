@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -41,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.wickedlista.CommonButton
+import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
 import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.database.homecategories.HomeCategories
@@ -232,34 +231,32 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(
-                        state = titleState,
-                        label = { Text(text = stringResource(R.string.category)) },
-                        placeholder = { Text(stringResource(R.string.category_placeholder)) },
+                    CommonFormTextField(
+                        R.string.category,
+                        R.string.category_placeholder,
+                        titleState,
                         isError = homeScreenUIState.value.isError,
-                        lineLimits = TextFieldLineLimits.SingleLine,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.padding(8.dp))
 
-                    OutlinedTextField(
-                        state = topicState,
-                        label = { Text(text = stringResource(R.string.topic)) },
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        placeholder = { Text(text = stringResource(R.string.topic_placeholder)) },
+                    CommonFormTextField(
+                        R.string.topic,
+                        R.string.topic_placeholder,
+                        topicState,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.padding(8.dp))
 
-                    OutlinedTextField(
-                        state = listForState,
-                        label = { Text(text = stringResource(R.string.lists_for)) },
+                    CommonFormTextField(
+                        R.string.lists_for,
+                        R.string.lists_for_placeholder,
+                        listForState,
                         isError = homeScreenUIState.value.hasNoListFor,
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        placeholder = { Text(text = stringResource(R.string.lists_for_placeholder)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.padding(8.dp))
+
                     ErrorMessageDisplayWithinDialog(homeScreenUIState)
 
                     Row(
