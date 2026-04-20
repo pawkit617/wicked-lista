@@ -232,4 +232,12 @@ class ModifyItemViewModel @Inject constructor(
             )
         }
     }
+
+    fun setUseCheckboxStatus(onOrOff: Boolean) {
+        _uiState.update {
+            it.copy(
+                useCheckboxStatus = onOrOff
+            )
+        }
+    }
 }

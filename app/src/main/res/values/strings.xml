@@ -73,6 +73,8 @@
     <string name="add_item_additional_status_hint">e.g. Ordered</string>
     <string name="add_item_additional_status_hint2">e.g. Received</string>
     <string name="add_item_additional_status_hint3">e.g. Done</string>
+    <string name="add_item_checkbox_toggle_message">Use checkbox status</string>
+    <string name="add_item_checkbox_label">Label for checkbox</string>
     <string name="add_item_successful_add_message">Item successfully added.</string>
     <string name="done">Done</string>
     <string name="status">Status</string>

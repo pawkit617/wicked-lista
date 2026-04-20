@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -74,6 +75,7 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
             ErrorMessageDisplayWithinCard(addItemUIState)
             HelpMessageForStatus(useMenuForStatus )//useMenuForStatus isAddingMore
             ItemStatuses(modifyItemViewModel, useMenuForStatus)//isAddingMore
+            ItemStatusAsCheckboxSwitch(modifyItemViewModel)
         }
         Button(
             onClick = {modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)},
@@ -203,16 +205,54 @@ fun HelpMessageForStatus(useMenu: Boolean = false) {
 }
 @Composable
 fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = false) {
+    if (!modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus) {
+        Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth().background(Color.LightGray)
+            ) {
+                if (useMenu) {
+                    StatusAsMenu(modifyItemViewModel)
+                } else {
+                    StatusAsFormFields(modifyItemViewModel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
     Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth().background(Color.LightGray)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            if (useMenu) {
-                StatusAsMenu(modifyItemViewModel)
-            } else {
-                StatusAsFormFields(modifyItemViewModel)
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+                    .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 0.dp)
+            ) {
+                Text(text = stringResource(R.string.add_item_checkbox_toggle_message))
+                Switch(
+                    checked = modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus,
+                    onCheckedChange = {
+                        modifyItemViewModel.setUseCheckboxStatus(it)
+                    }
+                )
+            }
+            if (modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus) {
+                FormTextField(
+                    R.string.add_item_checkbox_label,
+                    R.string.done,
+                    modifyItemViewModel.initialStatusTextFieldState,
+                    Modifier.fillMaxWidth().padding(8.dp)
+                )
             }
         }
     }
@@ -256,7 +296,7 @@ fun FormTextField(
     ) {
     OutlinedTextField(
         label = { Text(text = stringResource(label)) },
-        placeholder = { Text(text = stringResource(hint)) },
+        placeholder = {Text(text = stringResource(hint)) },
         state = textFieldState,
         modifier = modifier,
         lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = maxLines),
