@@ -1,6 +1,6 @@
 # About the Application
 
-WickedLista is an application that provides an organizational tool for managing various lists. Groups of related lists can be placed into categories or hold a single list. The inspiration of the app was how I could keep track of Christmas gifts. I need to know which gifts were bought, ordered, shipped or wrapped. This application, however, is currently not meant to be release to the public. I used the application to introduce myself to Kotlin, Jetpack Compose, Hilt and Room technologies.
+WickedLista is an application that provides an organizational tool for managing various lists. Groups of related lists can be placed into categories or hold a single list. The inspiration of the app was how I could keep track of Christmas gifts. I needed to know which gifts were bought, ordered, shipped or wrapped. This application, however, is currently not meant to be released to the public. I used the application to introduce myself to Kotlin, Jetpack Compose, Hilt and Room technologies.
 
 ## Technical Features Within WickedLista
 - Kotlin
