@@ -35,8 +35,11 @@ The user can add items continuously. After the statuses have been configured, th
 </p>
 
 
+When the user is finished adding their items, they can now see these items as a list. The user can add more lists pertaining to the given topic.
 
-
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a1a085fb-7edf-4c82-a495-cc548914b16a" width="49%" />
+  <img src="https://github.com/user-attachments/assets/e036f1cb-cd62-4184-bb64-7998da1471d1" width="49%"/>
+</p>
 
 
