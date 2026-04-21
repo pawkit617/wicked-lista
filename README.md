@@ -48,3 +48,7 @@ The vertical tabs allow the user to view their many lists base on the configured
   <img src="https://github.com/user-attachments/assets/39257a07-e09c-4503-a701-03e6241b3197" width="40%" />
 </p>
 
+## What's Next?
+## 04/21/2026
+- Single checkbox status that has one label and a checkbox in a row format
+- Implement Material Design Theme for some colors and fonts
