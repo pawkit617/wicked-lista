@@ -11,3 +11,6 @@ WickedLista is an application that provides an organizational tool for managing 
 - Instrumented Testing
 
 ## Usage of WickedLista
+
+On initial launch the user will be prompted to create their first category. A category can be considered a container for 1 or many lists focused on a particular topic.
+
