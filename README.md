@@ -18,9 +18,16 @@ On initial launch the user will be prompted to create their first category. A ca
   <img src="https://github.com/user-attachments/assets/567edbc6-a368-4064-ad44-2e9fc861f88f" width="49%"/>
 </p>
 
+Once a category is create, the user can add lists to it.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ed1c114d-9455-47a6-958c-91850f1b7a49" width="49%" />
+  <img src="https://github.com/user-attachments/assets/52e8a3df-210d-498f-a792-68a6ce816dc4" width="49%"/>
+</p>
 
 
 
- 
+
+
 
 
