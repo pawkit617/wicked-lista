@@ -19,7 +19,7 @@ On initial launch, the user will be prompted to create their first category. A c
 </p>
 
 
-Once a category is successfully created with the first list, the user can add lists items to it.
+Once a category is successfully created with the first list, the user can add list items to it.
 
 <p align="left">
   <img src="https://github.com/user-attachments/assets/ed1c114d-9455-47a6-958c-91850f1b7a49" width="40%" />
