@@ -226,6 +226,7 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
             Card {
                 Column(
                     modifier = Modifier
+                        .background(Color.White)
                         .fillMaxWidth()
                         .padding(8.dp),
                     verticalArrangement = Arrangement.Center,
