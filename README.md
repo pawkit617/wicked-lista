@@ -42,7 +42,7 @@ When the user is finished adding their items, they can now see these items as a 
   <img src="https://github.com/user-attachments/assets/e036f1cb-cd62-4184-bb64-7998da1471d1" width="40%"/>
 </p>
 
-The vertical tabs allow the user to view their many lists based on the configured topic
+The vertical tabs allow the user to view their many lists based on the configured topic.
 
 <p align="left">
   <img src="https://github.com/user-attachments/assets/39257a07-e09c-4503-a701-03e6241b3197" width="40%" />
