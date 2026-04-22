@@ -49,6 +49,5 @@ The vertical tabs allow the user to view their many lists based on the configure
 </p>
 
 ## What's Next?
-## 04/21/2026
 - Single checkbox status that has one label and a checkbox in a row format
 - Implement Material Design Theme for some colors and fonts
