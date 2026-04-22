@@ -34,6 +34,8 @@ class ModifyItemViewModel @Inject constructor(
     val additionalStatus3TextFieldState = TextFieldState()
     val statusTextFieldForMenuState = TextFieldState()
 
+    val checkboxTextFieldState = TextFieldState()
+
     private fun isFormValid(useMenuForStatus: Boolean = false): Boolean {
         val isStatusFieldEmpty = if(useMenuForStatus) {
             statusTextFieldForMenuState.text.isEmpty()

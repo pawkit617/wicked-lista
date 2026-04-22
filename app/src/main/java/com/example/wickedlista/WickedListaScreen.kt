@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -11,9 +13,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -170,6 +175,31 @@ fun TopWickedListaAppBar(
                 }
             }
         }
+    )
+}
+
+@Composable
+fun CommonFormTextField(
+    @StringRes label: Int,
+    @StringRes hint: Int = R.string.empty_string,
+    textFieldState: TextFieldState,
+    modifier: Modifier = Modifier,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
+    isError: Boolean = false
+) {
+    OutlinedTextField(
+        label = { Text(text = stringResource(label)) },
+        placeholder = { Text(text = stringResource(hint)) },
+        state = textFieldState,
+        modifier = modifier,
+        lineLimits = lineLimits,
+        isError = isError,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.Black,
+            focusedLabelColor = Color.Black,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+        )
     )
 }
 

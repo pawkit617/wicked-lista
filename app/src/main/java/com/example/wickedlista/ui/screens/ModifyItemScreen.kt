@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.CommonButton
+import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.data.AddItemUIState
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
@@ -173,18 +175,18 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth().background(Color.LightGray)
         ) {
-            FormTextField(
+            CommonFormTextField(
                 R.string.add_item_label,
-                R.string.add_items_hint,
+                R.string.add_item_hint,
                 modifyItemViewModel.labelTextFieldState,
                 Modifier.fillMaxWidth().padding(8.dp)
             )
-            FormTextField(
+            CommonFormTextField(
                 R.string.add_item_description_label,
                 R.string.add_item_description_hint,
                 modifyItemViewModel.descTextFieldState,
                 Modifier.fillMaxWidth().padding(8.dp),
-                4
+                lineLimits = TextFieldLineLimits.MultiLine(4)
             )
         }
     }
@@ -224,18 +226,21 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = fa
 
 @Composable
 fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
-    Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
+    Card(modifier = Modifier
+        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+    ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray)
                     .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 0.dp)
             ) {
                 Text(text = stringResource(R.string.add_item_checkbox_toggle_message))
@@ -243,14 +248,20 @@ fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
                     checked = modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus,
                     onCheckedChange = {
                         modifyItemViewModel.setUseCheckboxStatus(it)
-                    }
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color.Black,
+                        uncheckedThumbColor = Color.Black,
+                        uncheckedTrackColor = Color.White
+                    )
                 )
             }
             if (modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus) {
-                FormTextField(
+                CommonFormTextField(
                     R.string.add_item_checkbox_label,
                     R.string.done,
-                    modifyItemViewModel.initialStatusTextFieldState,
+                    modifyItemViewModel.checkboxTextFieldState,
                     Modifier.fillMaxWidth().padding(8.dp)
                 )
             }
@@ -260,25 +271,25 @@ fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
 
 @Composable
 fun StatusAsFormFields(modifyItemViewModel: ModifyItemViewModel) {
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_initial_status_label,
         R.string.add_item_initial_status_hint,
         modifyItemViewModel.initialStatusTextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint,
         modifyItemViewModel.additionalStatusTextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint2,
         modifyItemViewModel.additionalStatus2TextFieldState,
         Modifier.fillMaxWidth().padding(8.dp)
     )
-    FormTextField(
+    CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint3,
         modifyItemViewModel.additionalStatus3TextFieldState,
@@ -390,19 +401,6 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                             },
                             text = stringResource(R.string.add_more)
                         )
-//                        Button(
-//                            onClick = {
-//                                //dialog with label, desc, and spinner
-//                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-//                                modifyItemViewModel.setUseMenuForStatus(true)
-//                            },
-//                            shape = MaterialTheme.shapes.small
-//                        ) {
-//                            Text(
-//                                text = stringResource(R.string.add_more),
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
                         CommonButton(
                             onClick = {
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
@@ -410,19 +408,6 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                             },
                             text = stringResource(R.string.done)
                         )
-//
-//                        Button(
-//                            onClick = {
-//                                modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-//                                onDoneAction()
-//                            },
-//                            shape = MaterialTheme.shapes.small
-//                        ) {
-//                            Text(
-//                                text = stringResource(R.string.done),
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
                     }
                 }
             }

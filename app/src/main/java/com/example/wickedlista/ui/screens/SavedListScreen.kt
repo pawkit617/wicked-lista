@@ -28,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.CommonButton
+import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
@@ -385,7 +385,9 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
         ) {
             Card {
                 Column(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -399,9 +401,9 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    OutlinedTextField(
-                        state = savedListViewModel.addOwnerTextFieldState,
-                        label = { Text(text = stringResource(R.string.new_owner)) },
+                    CommonFormTextField(
+                        label =R.string.new_owner,
+                        textFieldState = savedListViewModel.addOwnerTextFieldState,
                         isError = collectedUiState.hasSQLError,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
