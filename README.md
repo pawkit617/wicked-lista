@@ -8,7 +8,7 @@ WickedLista is an application that provides an organizational tool for managing 
 - Hilt dependency injection
 - Room database to create, find, update and delete categories of lists and their items
 - Unit testing
-- Instrumented Testing
+- Instrumented testing
 
 ## Usage of WickedLista
 
