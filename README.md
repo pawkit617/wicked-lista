@@ -34,7 +34,7 @@ The user can add items continuously. After the statuses have been configured, th
   <img src="https://github.com/user-attachments/assets/44e5a3e5-d8c2-41bf-8fe8-99d1c03aacb4" width="40%"/>
 </p>
 
-
+git 
 When the user is finished adding their items, they can now see these items as a list. The user can add more lists pertaining to the given topic.
 
 <p align="left">
