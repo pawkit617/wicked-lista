@@ -6,6 +6,7 @@ import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.database.homecategories.HomeCategoriesDao
 import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
 import com.example.wickedlista.database.itemstatus.ItemStatusDao
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.savedlists.SavedListsDao
 import dagger.Module
@@ -58,5 +59,11 @@ object TestAppModule {
     @Singleton
     fun provideItemStatusDao(database: WickedListaDatabase): ItemStatusDao {
         return database.itemStatusDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesItemStatusCheckedDao(wickedListaDatabase: WickedListaDatabase): ItemStatusCheckedDao {
+        return wickedListaDatabase.itemStatusCheckedDao()
     }
 }

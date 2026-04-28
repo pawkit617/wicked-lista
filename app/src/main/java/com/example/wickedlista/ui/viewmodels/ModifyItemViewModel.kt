@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.wickedlista.data.AddItemUIState
 import com.example.wickedlista.database.itemstatus.ItemStatus
 import com.example.wickedlista.database.itemstatus.ItemStatusRepositoryImp
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusChecked
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ModifyItemViewModel @Inject constructor(
     private val savedListRepositoryImp: SavedItemsRepositoryImp,
-    private val itemsRepositoryImp: ItemStatusRepositoryImp
+    private val itemsRepositoryImp: ItemStatusRepositoryImp,
+    private val itemStatusCheckedRepositoryImp: ItemStatusCheckedRepositoryImp
 ): ViewModel() {
     private val _uiState = MutableStateFlow(AddItemUIState())
     val uiState: StateFlow<AddItemUIState> = _uiState.asStateFlow()
@@ -55,12 +58,50 @@ class ModifyItemViewModel @Inject constructor(
         return !isLabelFieldEmpty && !isStatusFieldEmpty
     }
 
+    private fun isFormValidForCheckboxStatus(): Boolean {
+        val isLabelFieldEmpty = labelTextFieldState.text.isEmpty()
+        val isCheckboxFieldEmpty = checkboxTextFieldState.text.isEmpty()
+
+        _uiState.update {
+            it.copy(
+                hasBlankLabelError = isLabelFieldEmpty,
+                hasBlankStatusError = isCheckboxFieldEmpty
+            )
+        }
+
+        return !isLabelFieldEmpty && !isCheckboxFieldEmpty
+    }
 
     //region Repo Operations
     fun addItemToListWithId(savedListId: Int, isAddingMore: Boolean = false) {
         if (isFormValid(isAddingMore)) {
             addItemStatusWithListId(savedListId)
             addItemInfoWithListId(savedListId)
+        }
+    }
+
+    fun addItemToListWithIdForCheckedLabel(savedListId: Int, isAddingMore: Boolean) {
+        if (isFormValidForCheckboxStatus()) {
+            addItemStatusWithListIdForCheckbox(savedListId)
+            addItemInfoWithListIdForCheckbox(savedListId)
+        }
+    }
+
+    private fun addItemInfoWithListIdForCheckbox(savedListId: Int) {
+        val savedItems = SavedItems(
+            label = labelTextFieldState.text.toString(),
+            savedListForeignId = savedListId,
+            description = descTextFieldState.text.toString(),
+            status = checkboxTextFieldState.text.toString()
+        )
+        viewModelScope.launch {
+            savedListRepositoryImp.addItemToList(savedItems)
+        }
+
+        _uiState.update {
+            it.copy(
+                showSuccessAddMoreItemDialog = true
+            )
         }
     }
 
@@ -84,6 +125,19 @@ class ModifyItemViewModel @Inject constructor(
                     showSuccessAddMoreItemDialog = true
                 )
             }
+            clearTextFieldStates()
+            clearErrors()
+        }
+    }
+
+    private fun addItemStatusWithListIdForCheckbox(savedListId: Int) {
+        viewModelScope.launch {
+            val itemStatusChecked = ItemStatusChecked(
+                savedListForeignId = savedListId,
+                statusLabel = checkboxTextFieldState.text.toString(),
+                isChecked = false
+            )
+            itemStatusCheckedRepositoryImp.addItemStatusChecked(itemStatusChecked)
             clearTextFieldStates()
             clearErrors()
         }

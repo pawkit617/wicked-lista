@@ -3,6 +3,8 @@ package com.example.wickedlista.ui.viewmodels
 import com.example.wickedlista.database.itemstatus.ItemStatus
 import com.example.wickedlista.database.itemstatus.ItemStatusDao
 import com.example.wickedlista.database.itemstatus.ItemStatusRepositoryImp
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import io.mockk.coEvery
@@ -30,8 +32,12 @@ class ModifyItemViewModelTest {
     @Mock
     private lateinit var itemStatusDao: ItemStatusDao
 
+    @Mock
+    private lateinit var itemStatusCheckedDao: ItemStatusCheckedDao
+
     private lateinit var savedItemsRepositoryImp: SavedItemsRepositoryImp
-    private lateinit var itemStatusRepository: ItemStatusRepositoryImp
+    private lateinit var itemStatusRepositoryImp: ItemStatusRepositoryImp
+    private lateinit var itemStatusCheckedRepositoryImp: ItemStatusCheckedRepositoryImp
 
     private lateinit var modifyItemViewModel: ModifyItemViewModel
 
@@ -42,10 +48,12 @@ class ModifyItemViewModelTest {
         savedItemsDao = mockk<SavedItemsDao>()
         itemStatusDao = mockk<ItemStatusDao>()
         savedItemsRepositoryImp = SavedItemsRepositoryImp(savedItemsDao)
-        itemStatusRepository = ItemStatusRepositoryImp(itemStatusDao)
+        itemStatusRepositoryImp = ItemStatusRepositoryImp(itemStatusDao)
+        itemStatusCheckedRepositoryImp = ItemStatusCheckedRepositoryImp(itemStatusCheckedDao)
         modifyItemViewModel = ModifyItemViewModel(
             savedItemsRepositoryImp,
-            itemStatusRepository
+            itemStatusRepositoryImp,
+            itemStatusCheckedRepositoryImp
         )
     }
 

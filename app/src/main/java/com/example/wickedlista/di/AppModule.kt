@@ -7,6 +7,8 @@ import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryI
 import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.database.itemstatus.ItemStatus
 import com.example.wickedlista.database.itemstatus.ItemStatusDao
+import com.example.wickedlista.database.itemstatus.ItemStatusRepositoryImp
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import com.example.wickedlista.database.savedlists.SavedListsDao
@@ -71,5 +73,11 @@ object AppModule {
     @Singleton
     fun providesItemStatusDao(wickedListaDatabase: WickedListaDatabase): ItemStatusDao {
         return wickedListaDatabase.itemStatusDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesItemStatusCheckedDao(wickedListaDatabase: WickedListaDatabase): ItemStatusCheckedDao {
+        return wickedListaDatabase.itemStatusCheckedDao()
     }
 }

@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,25 +67,39 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
     if (isAddingMore) {
         modifyItemViewModel.updateStatusesForItem(ownerId)
     }
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxWidth().background(Color.White).align(Alignment.TopCenter),
-            verticalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .weight(0.9f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .background(Color.White),
+            verticalArrangement = if (!addItemUIState.useCheckboxStatus) Arrangement.SpaceBetween else Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
             ItemInfo(modifyItemViewModel)
             ErrorMessageDisplayWithinCard(addItemUIState)
-            HelpMessageForStatus(useMenuForStatus )//useMenuForStatus isAddingMore
-            ItemStatuses(modifyItemViewModel, useMenuForStatus)//isAddingMore
+            HelpMessageForStatus(isAddingMore, addItemUIState)
+            ItemStatuses(modifyItemViewModel, useMenuForStatus)
             ItemStatusAsCheckboxSwitch(modifyItemViewModel)
         }
         Button(
-            onClick = {modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)},
+            onClick = {
+                if (addItemUIState.useCheckboxStatus) {
+                    modifyItemViewModel.addItemToListWithIdForCheckedLabel(
+                        ownerId,
+                        isAddingMore
+                    )
+                } else {
+                    modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)
+                }
+            },
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-            modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.BottomCenter)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .weight(0.1f)
         ) {
             Text(
                 text = stringResource(R.string.create),
@@ -115,7 +131,7 @@ fun EditItemScreen(
         ) {
             ItemInfo(modifyItemViewModel)
             ErrorMessageDisplayWithinCard(modifyItemUIState)
-            HelpMessageForStatus(true)
+            HelpMessageForStatus(true, modifyItemUIState)
             ItemStatuses(modifyItemViewModel, true)
         }
         Row(
@@ -193,17 +209,20 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
 }
 
 @Composable
-fun HelpMessageForStatus(useMenu: Boolean = false) {
-    val helpMessage = if (useMenu)
-        R.string.add_item_status_choose_message
-    else
-        R.string.add_item_status_help_message
+fun HelpMessageForStatus(isAddingMore: Boolean = false, addItemUIState: AddItemUIState) {
+    if (!addItemUIState.useCheckboxStatus) {
 
-    Text(
-        text = stringResource(helpMessage),
-        modifier = Modifier.padding(16.dp).fillMaxWidth(),
-        textAlign = TextAlign.Center
-    )
+        val helpMessage = if (isAddingMore)
+            R.string.add_item_status_choose_message
+        else
+            R.string.add_item_status_help_message
+
+        Text(
+            text = stringResource(helpMessage),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 @Composable
 fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = false) {
@@ -227,6 +246,7 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = fa
 @Composable
 fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
     Card(modifier = Modifier
+        .fillMaxWidth()
         .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
     ) {
         Column(
