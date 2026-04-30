@@ -14,7 +14,7 @@ import com.example.wickedlista.database.savedlists.SavedLists
             entity = SavedLists::class,
             parentColumns = ["saved_list_id"],
             childColumns = ["saved_list_foreign_id"],
-            onDelete = ForeignKey.Companion.CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["saved_list_foreign_id"], unique = true)]

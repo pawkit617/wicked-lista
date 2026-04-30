@@ -183,7 +183,8 @@ class ModifyItemViewModelTest {
 
     @Test
     fun clear_Text_Field_States() {
-        modifyItemViewModel.clearTextFieldStates()
+        modifyItemViewModel.clearInfoTextFieldStates()
+        modifyItemViewModel.clearTextFieldStatesForStatusMenu()
         val textList = listOf(
             modifyItemViewModel.labelTextFieldState.text,
             modifyItemViewModel.descTextFieldState.text,

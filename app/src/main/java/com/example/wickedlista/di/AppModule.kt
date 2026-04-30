@@ -2,12 +2,10 @@ package com.example.wickedlista.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.database.homecategories.HomeCategoriesDao
 import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
-import com.example.wickedlista.database.WickedListaDatabase
-import com.example.wickedlista.database.itemstatus.ItemStatus
 import com.example.wickedlista.database.itemstatus.ItemStatusDao
-import com.example.wickedlista.database.itemstatus.ItemStatusRepositoryImp
 import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp

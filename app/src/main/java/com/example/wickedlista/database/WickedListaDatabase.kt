@@ -13,7 +13,7 @@ import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.database.savedlists.SavedListsDao
 
-@Database(entities = [HomeCategories::class, SavedLists::class, SavedItems::class, ItemStatus::class, ItemStatusChecked::class], version = 15, exportSchema = false)
+@Database(entities = [HomeCategories::class, SavedLists::class, SavedItems::class, ItemStatus::class, ItemStatusChecked::class], version = 16, exportSchema = false)
 abstract class WickedListaDatabase: RoomDatabase() {
     abstract fun homeCategoriesDao(): HomeCategoriesDao
     abstract fun savedListsDao(): SavedListsDao

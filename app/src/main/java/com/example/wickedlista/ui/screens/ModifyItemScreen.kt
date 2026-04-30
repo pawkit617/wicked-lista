@@ -1,10 +1,8 @@
 package com.example.wickedlista.ui.screens
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import com.example.wickedlista.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,27 +45,26 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.CommonButton
 import com.example.wickedlista.CommonFormTextField
+import com.example.wickedlista.R
 import com.example.wickedlista.data.AddItemUIState
+import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
 @Composable
 fun AddItemScreen(
     ownerId: Int,
-    isAddingMore: Boolean = false,
     onDoneAddingItems: () -> Unit = {},
     modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
 ) {
     SuccessAddMoreDialog(modifyItemViewModel, onDoneAddingItems)
-    AddItemForm(modifyItemViewModel, ownerId, isAddingMore)
+    AddItemForm(modifyItemViewModel, ownerId)
 }
 
 @Composable
-fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAddingMore: Boolean) {
+fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
     val addItemUIState by modifyItemViewModel.uiState.collectAsState()
-    val useMenuForStatus = isAddingMore || addItemUIState.useMenuForStatus
-    if (isAddingMore) {
-        modifyItemViewModel.updateStatusesForItem(ownerId)
-    }
+    modifyItemViewModel.checkItemsStatusesForOwnerId(ownerId)
+
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -74,24 +72,23 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int, isAdding
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .background(Color.White),
-            verticalArrangement = if (!addItemUIState.useCheckboxStatus) Arrangement.SpaceBetween else Arrangement.Top,
+            verticalArrangement = if (addItemUIState.statusType.type == StatusType.UnassignedStatusType.type) Arrangement.SpaceBetween else Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             ItemInfo(modifyItemViewModel)
-            ErrorMessageDisplayWithinCard(addItemUIState)
-            HelpMessageForStatus(isAddingMore, addItemUIState)
-            ItemStatuses(modifyItemViewModel, useMenuForStatus)
             ItemStatusAsCheckboxSwitch(modifyItemViewModel)
+            ErrorMessageDisplayWithinCard(addItemUIState)
+            HelpMessageForStatus(addItemUIState)
+            ItemStatuses(modifyItemViewModel)
         }
         Button(
             onClick = {
                 if (addItemUIState.useCheckboxStatus) {
                     modifyItemViewModel.addItemToListWithIdForCheckedLabel(
                         ownerId,
-                        isAddingMore
                     )
                 } else {
-                    modifyItemViewModel.addItemToListWithId(ownerId, useMenuForStatus)
+                    modifyItemViewModel.addItemToListWithId(ownerId, addItemUIState.useMenuForStatus)
                 }
             },
             shape = MaterialTheme.shapes.small,
@@ -123,21 +120,30 @@ fun EditItemScreen(
     val modifyItemUIState by modifyItemViewModel.uiState.collectAsState()
     modifyItemViewModel.prepopulateFormWithItemInfo(ownerId, savedItemLabel, savedItemDesc, currentStatus)
 
-    Box(Modifier.fillMaxSize()){
+    Box(Modifier
+        .fillMaxSize()
+        .background(Color.White)
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth().background(Color.White),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ItemInfo(modifyItemViewModel)
             ErrorMessageDisplayWithinCard(modifyItemUIState)
-            HelpMessageForStatus(true, modifyItemUIState)
-            ItemStatuses(modifyItemViewModel, true)
+            HelpMessageForStatus(modifyItemViewModel.uiState.collectAsState().value)
+            ItemStatuses(modifyItemViewModel)
         }
         Row(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment =Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 16.dp).align(Alignment.BottomCenter)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
+                .align(Alignment.BottomCenter)
+                .background(Color.White)
         ) {
             Button(
                 onClick = { onDoneEditingItems() },
@@ -189,19 +195,25 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth().background(Color.LightGray)
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
         ) {
             CommonFormTextField(
                 R.string.add_item_label,
                 R.string.add_item_hint,
                 modifyItemViewModel.labelTextFieldState,
-                Modifier.fillMaxWidth().padding(8.dp)
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
             )
             CommonFormTextField(
                 R.string.add_item_description_label,
                 R.string.add_item_description_hint,
                 modifyItemViewModel.descTextFieldState,
-                Modifier.fillMaxWidth().padding(8.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 lineLimits = TextFieldLineLimits.MultiLine(4)
             )
         }
@@ -209,31 +221,38 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
 }
 
 @Composable
-fun HelpMessageForStatus(isAddingMore: Boolean = false, addItemUIState: AddItemUIState) {
-    if (!addItemUIState.useCheckboxStatus) {
+fun HelpMessageForStatus(addItemUIState: AddItemUIState) {
+    if (addItemUIState.statusType.type == StatusType.UnassignedStatusType.type ||
+        addItemUIState.statusType.type == StatusType.MenuStatusType.type) {
 
-        val helpMessage = if (isAddingMore)
+        val helpMessage = if (addItemUIState.statusType.type == StatusType.MenuStatusType.type)
             R.string.add_item_status_choose_message
         else
             R.string.add_item_status_help_message
 
         Text(
             text = stringResource(helpMessage),
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             textAlign = TextAlign.Center
         )
     }
 }
 @Composable
-fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = false) {
-    if (!modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus) {
+fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel) {
+    val addItemUIState = modifyItemViewModel.uiState.collectAsState().value
+    if (addItemUIState.statusType.type == StatusType.UnassignedStatusType.type ||
+        addItemUIState.statusType.type == StatusType.MenuStatusType.type) {
         Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().background(Color.LightGray)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
             ) {
-                if (useMenu) {
+                if (addItemUIState.statusType.type == StatusType.MenuStatusType.type) {
                     StatusAsMenu(modifyItemViewModel)
                 } else {
                     StatusAsFormFields(modifyItemViewModel)
@@ -243,51 +262,7 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel, useMenu: Boolean = fa
     }
 }
 
-@Composable
-fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 0.dp)
-            ) {
-                Text(text = stringResource(R.string.add_item_checkbox_toggle_message))
-                Switch(
-                    checked = modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus,
-                    onCheckedChange = {
-                        modifyItemViewModel.setUseCheckboxStatus(it)
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Color.Black,
-                        uncheckedThumbColor = Color.Black,
-                        uncheckedTrackColor = Color.White
-                    )
-                )
-            }
-            if (modifyItemViewModel.uiState.collectAsState().value.useCheckboxStatus) {
-                CommonFormTextField(
-                    R.string.add_item_checkbox_label,
-                    R.string.done,
-                    modifyItemViewModel.checkboxTextFieldState,
-                    Modifier.fillMaxWidth().padding(8.dp)
-                )
-            }
-        }
-    }
-}
+
 
 @Composable
 fun StatusAsFormFields(modifyItemViewModel: ModifyItemViewModel) {
@@ -295,49 +270,35 @@ fun StatusAsFormFields(modifyItemViewModel: ModifyItemViewModel) {
         R.string.add_item_initial_status_label,
         R.string.add_item_initial_status_hint,
         modifyItemViewModel.initialStatusTextFieldState,
-        Modifier.fillMaxWidth().padding(8.dp)
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     )
     CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint,
         modifyItemViewModel.additionalStatusTextFieldState,
-        Modifier.fillMaxWidth().padding(8.dp)
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     )
     CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint2,
         modifyItemViewModel.additionalStatus2TextFieldState,
-        Modifier.fillMaxWidth().padding(8.dp)
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     )
     CommonFormTextField(
         R.string.add_item_additional_status_label,
         R.string.add_item_additional_status_hint3,
         modifyItemViewModel.additionalStatus3TextFieldState,
-        Modifier.fillMaxWidth().padding(8.dp)
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     )
 }
-
-@Composable
-fun FormTextField(
-    @StringRes label: Int,
-    @StringRes hint: Int,
-    textFieldState: TextFieldState,
-    modifier: Modifier = Modifier,
-    maxLines: Int = 1,
-    ) {
-    OutlinedTextField(
-        label = { Text(text = stringResource(label)) },
-        placeholder = {Text(text = stringResource(hint)) },
-        state = textFieldState,
-        modifier = modifier,
-        lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = maxLines),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White
-        )
-    )
-}
-
 @Composable
 fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
     var expanded by remember { mutableStateOf(false) }
@@ -348,7 +309,9 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
         label = { Text(text = stringResource(R.string.status)) },
         placeholder = { Text(text = stringResource(R.string.select_status_hint)) },
         state = stateOfTextField,
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         readOnly = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.White,
@@ -368,7 +331,6 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
         onDismissRequest = { expanded = false }
     ) {
         val createdStatuses = modifyItemViewModel.uiState.collectAsState().value.itemStatuses
-
         createdStatuses.forEach {
             val nameOfStatus = it
             DropdownMenuItem(
@@ -381,6 +343,101 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
                 }
             )
         }
+    }
+}
+
+@Composable
+fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
+    val addItemUiState = modifyItemViewModel.uiState.collectAsState().value
+    if (addItemUiState.statusType.type == StatusType.UnassignedStatusType.type ||
+        addItemUiState.statusType.type == StatusType.CheckboxStatusType.type) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+        ) {
+            if (modifyItemViewModel.uiState.collectAsState().value.itemStatusCheckboxLabel.isEmpty()) {
+                ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel)
+            } else {
+                ItemStatusAsCheckbox(modifyItemViewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel: ModifyItemViewModel) {
+    val localUiState = modifyItemViewModel.uiState.collectAsState().value
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.LightGray)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 0.dp)
+        ) {
+            Text(text = stringResource(R.string.add_item_checkbox_toggle_message))
+            Switch(
+                checked = localUiState.useCheckboxStatus,
+                onCheckedChange = {
+                    modifyItemViewModel.setUseCheckboxStatus(it)
+                    if (it) {
+                        modifyItemViewModel.clearTextFieldStatesForStatusMenu()
+                        modifyItemViewModel.clearErrors()
+                    }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = Color.Black,
+                    uncheckedThumbColor = Color.Black,
+                    uncheckedTrackColor = Color.White
+                )
+            )
+        }
+        if (localUiState.useCheckboxStatus) {
+            CommonFormTextField(
+                R.string.add_item_checkbox_label,
+                R.string.done,
+                modifyItemViewModel.checkboxTextFieldState,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun ItemStatusAsCheckbox(modifyItemViewModel: ModifyItemViewModel) {
+    val localUiState = modifyItemViewModel.uiState.collectAsState().value
+    Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.LightGray)
+    ) {
+        Text(
+            text = localUiState.itemStatusCheckboxLabel,
+            modifier = Modifier.padding(8.dp)
+        )
+        Checkbox(
+            checked = localUiState.itemStatusCheckboxChecked,
+            onCheckedChange = { checked ->
+                modifyItemViewModel.setItemStatusCheckboxChecked(checked)
+            },
+            colors = CheckboxDefaults.colors(
+                checkedColor = Color.Black,
+                uncheckedColor = Color.Black,
+                checkmarkColor = Color.White,
+            )
+        )
     }
 }
 //endregion
@@ -406,7 +463,9 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                     Text(
                         text = stringResource(R.string.add_item_successful_add_message),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     )
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,

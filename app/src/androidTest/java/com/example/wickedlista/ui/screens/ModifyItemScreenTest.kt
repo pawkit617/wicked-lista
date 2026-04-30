@@ -80,7 +80,6 @@ class ModifyItemScreenTest {
         composeTestRuleActivity.setContent {
             AddItemScreen(
                 ownerId = 1,
-                isAddingMore = isAddingMore,
                 onDoneAddingItems = {},
                 modifyItemViewModel = hiltViewModel()
             )

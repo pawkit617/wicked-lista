@@ -80,7 +80,7 @@ class SavedListScreenTest {
                     categoryId = 1,
                     topicName = "Treats",
                     savedListViewModel = hiltViewModel(),
-                    onAddItemClick = { ownerId, isAddingMore -> },
+                    onAddItemClick = { ownerId-> },
                     onEditIconButtonClick = { savedItemId, savedItemLabel, savedItemDesc, currentStatus, ownerId -> }
                 )
             }

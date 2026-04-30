@@ -48,6 +48,7 @@ import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
+import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 
@@ -56,7 +57,7 @@ fun SavedListScreen(
     categoryId: Int,
     topicName: String,
     savedListViewModel: SavedListViewModel = hiltViewModel(),
-    onAddItemClick: (ownerId: Int, isAddingMore: Boolean) -> Unit,
+    onAddItemClick: (ownerId: Int) -> Unit,
     onEditIconButtonClick:(
         savedItemId: Int,savedItemLabel: String,
         savedItemDesc: String, currentStatus: String,
@@ -81,7 +82,7 @@ fun OwnersWithListItems(
     topicName: String,
     listOfSavedListsOwners: List<SavedLists>,
     savedListViewModel: SavedListViewModel,
-    onAddItemClick: (ownerId: Int, isAddingMore: Boolean) -> Unit,
+    onAddItemClick: (ownerId: Int) -> Unit,
     onEditIconButtonClick: (savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
 ) {
     if (listOfSavedListsOwners.isNotEmpty()) {
@@ -329,11 +330,10 @@ fun HintToAddItemsToOwner(modifier: Modifier = Modifier) {
 fun BottomButtonEditRow(
     savedListViewModel: SavedListViewModel,
     modifier: Modifier = Modifier,
-    onButtonClick: (Int, Boolean) -> Unit
+    onButtonClick: (Int) -> Unit
 ) {
     val savedListUIState by savedListViewModel.uiState.collectAsState()
     val selectedOwnerId = savedListUIState.selectedOwner.first
-    val useMenu = savedListUIState.allSavedItemsForList.isNotEmpty()
 
     Row(
         modifier,
@@ -345,7 +345,12 @@ fun BottomButtonEditRow(
             R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
         BottomIconButton(
             R.drawable.listitem_add_48,
-            R.string.icon_add_listitem_button_cdescript) { onButtonClick(selectedOwnerId, useMenu) }
+            R.string.icon_add_listitem_button_cdescript) {
+
+           //CURT -  put check here to get the status type
+
+            onButtonClick(selectedOwnerId)
+        }
         BottomIconButton(
             R.drawable.delete_box_owner_48,
             R.string.icon_delete_owner_button_cdescript) {

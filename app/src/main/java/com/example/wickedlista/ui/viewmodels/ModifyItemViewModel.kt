@@ -11,11 +11,14 @@ import com.example.wickedlista.database.itemstatuschecked.ItemStatusChecked
 import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
+import com.example.wickedlista.database.saveditems.StatusType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -73,75 +76,13 @@ class ModifyItemViewModel @Inject constructor(
     }
 
     //region Repo Operations
-    fun addItemToListWithId(savedListId: Int, isAddingMore: Boolean = false) {
-        if (isFormValid(isAddingMore)) {
+    fun addItemToListWithId(savedListId: Int, useMenuForStatus: Boolean = false) {
+        if (isFormValid(useMenuForStatus)) {
             addItemStatusWithListId(savedListId)
             addItemInfoWithListId(savedListId)
         }
     }
 
-    fun addItemToListWithIdForCheckedLabel(savedListId: Int, isAddingMore: Boolean) {
-        if (isFormValidForCheckboxStatus()) {
-            addItemStatusWithListIdForCheckbox(savedListId)
-            addItemInfoWithListIdForCheckbox(savedListId)
-        }
-    }
-
-    private fun addItemInfoWithListIdForCheckbox(savedListId: Int) {
-        val savedItems = SavedItems(
-            label = labelTextFieldState.text.toString(),
-            savedListForeignId = savedListId,
-            description = descTextFieldState.text.toString(),
-            status = checkboxTextFieldState.text.toString()
-        )
-        viewModelScope.launch {
-            savedListRepositoryImp.addItemToList(savedItems)
-        }
-
-        _uiState.update {
-            it.copy(
-                showSuccessAddMoreItemDialog = true
-            )
-        }
-    }
-
-    private fun addItemInfoWithListId(savedListId: Int) {
-        viewModelScope.launch {
-            val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
-                initialStatusTextFieldState.text.toString()
-            }
-
-            val savedItems = SavedItems(
-                label = labelTextFieldState.text.toString(),
-                savedListForeignId = savedListId,
-                description = descTextFieldState.text.toString(),
-                status = givenStatus.toString()
-            )
-            savedListRepositoryImp.addItemToList(savedItems)
-            //Log.d("RID", rid.toString()) CURT - Suppressed: java.lang.RuntimeException: Method d in android.util.Log not mocked - Watch out for testing
-
-            _uiState.update {
-                it.copy(
-                    showSuccessAddMoreItemDialog = true
-                )
-            }
-            clearTextFieldStates()
-            clearErrors()
-        }
-    }
-
-    private fun addItemStatusWithListIdForCheckbox(savedListId: Int) {
-        viewModelScope.launch {
-            val itemStatusChecked = ItemStatusChecked(
-                savedListForeignId = savedListId,
-                statusLabel = checkboxTextFieldState.text.toString(),
-                isChecked = false
-            )
-            itemStatusCheckedRepositoryImp.addItemStatusChecked(itemStatusChecked)
-            clearTextFieldStates()
-            clearErrors()
-        }
-    }
     private fun addItemStatusWithListId(savedListId: Int) {
         _uiState.value.itemStatuses.ifEmpty {
             val initialStatus = initialStatusTextFieldState.text.toString()
@@ -175,6 +116,137 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
+    fun updateStatusesForItem(ownerId: Int) { //CURT -  REVISIT This for cleaner logic for add vs. edit
+        viewModelScope.launch {
+            val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
+            val itemStatusList = listOfStatusFlow.first()
+            if (itemStatusList.isNotEmpty()) {
+                val itemStatuses = itemStatusList.first()
+                _uiState.update { it ->
+                    it.copy(
+                        itemStatuses = itemStatuses.let { item ->
+                            listOf(item.firstStatus, item.secondStatus, item.thirdStatus, item.fourthStatus)
+                        }.filter { it.isNotEmpty() }
+                    )
+                }
+            }
+        }
+    }
+
+    fun checkItemsStatusesForOwnerId(ownerId: Int) {
+        viewModelScope.launch {
+            val listOfStatus = itemsRepositoryImp.getItemStatusForOwnerId(ownerId).first()
+            val listOfCheckedStatus = itemStatusCheckedRepositoryImp.getStatusesForSavedItem(ownerId).first()
+
+            if (listOfStatus.isNotEmpty()) {
+                _uiState.update {
+                    it.copy(
+                        statusType = StatusType.MenuStatusType,
+                        useMenuForStatus = true,
+                        itemStatuses = listOfStatus.first().let { item ->
+                            listOf(item.firstStatus, item.secondStatus, item.thirdStatus, item.fourthStatus)
+                        }.filter { it.isNotEmpty() }
+                    )
+                }
+            } else if (listOfCheckedStatus.isNotEmpty()) {
+                _uiState.update {
+                    it.copy(
+                        statusType = StatusType.CheckboxStatusType,
+                        itemStatusCheckboxLabel = listOfCheckedStatus.first().statusLabel,
+                        itemStatusCheckboxChecked = listOfCheckedStatus.first().isChecked
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        statusType = StatusType.UnassignedStatusType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun addItemInfoWithListId(savedListId: Int) {
+        viewModelScope.launch {
+            val givenStatus = statusTextFieldForMenuState.text.ifEmpty {
+                initialStatusTextFieldState.text.toString()
+            }
+
+            val savedItems = SavedItems(
+                label = labelTextFieldState.text.toString(),
+                savedListForeignId = savedListId,
+                description = descTextFieldState.text.toString(),
+                status = givenStatus.toString(),
+                statusType = StatusType.MenuStatusType
+            )
+            savedListRepositoryImp.addItemToList(savedItems)
+            //Log.d("RID", rid.toString()) CURT - Suppressed: java.lang.RuntimeException: Method d in android.util.Log not mocked - Watch out for testing
+
+            _uiState.update {
+                it.copy(
+                    showSuccessAddMoreItemDialog = true,
+                    useMenuForStatus = true,
+                    statusType = StatusType.MenuStatusType
+                )
+            }
+            clearInfoTextFieldStates()
+            clearTextFieldStatesForStatusMenu()
+            clearErrors()
+        }
+    }
+
+    fun addItemToListWithIdForCheckedLabel(savedListId: Int) {
+        if (isFormValidForCheckboxStatus()) {
+            addItemStatusWithListIdForCheckbox(savedListId)
+            addItemInfoWithListIdForCheckbox(savedListId)
+        }
+    }
+
+    private fun addItemInfoWithListIdForCheckbox(savedListId: Int) {
+        val savedItems = SavedItems(
+            label = labelTextFieldState.text.toString(),
+            savedListForeignId = savedListId,
+            description = descTextFieldState.text.toString(),
+            status = checkboxTextFieldState.text.toString(),
+            statusType = StatusType.CheckboxStatusType
+        )
+        viewModelScope.launch {
+            savedListRepositoryImp.addItemToList(savedItems)
+        }
+
+        _uiState.update {
+            it.copy(
+                showSuccessAddMoreItemDialog = true,
+                useCheckboxStatus = true,
+                statusType = StatusType.CheckboxStatusType
+            )
+        }
+    }
+
+    private fun addItemStatusWithListIdForCheckbox(savedListId: Int) {
+        val checkboxLabel = checkboxTextFieldState.text.toString()
+
+        viewModelScope.launch {
+            val itemStatusChecked = ItemStatusChecked(
+                savedListForeignId = savedListId,
+                statusLabel = checkboxLabel,
+                isChecked = false
+            )
+            itemStatusCheckedRepositoryImp.addItemStatusChecked(itemStatusChecked)
+
+            _uiState.update {
+                it.copy(
+                    itemStatusCheckboxLabel = checkboxLabel,
+                    useCheckboxStatus = true
+                )
+            }
+
+            clearInfoTextFieldStates()
+            clearTextFieldStatesForStatusMenu()
+            clearErrors()
+        }
+    }
+
     fun updateSavedItem(
         savedItemId: Int,
         ownerId: Int
@@ -201,18 +273,24 @@ class ModifyItemViewModel @Inject constructor(
         return isValid
     }
 
-    fun prepopulateFormWithItemInfo(ownerId: Int, itemLabel:String = "", itemDesc: String = "", currentStatus: String) {
+    fun prepopulateFormWithItemInfo(ownerId: Int, itemLabel:String = "", itemDesc: String = "", currentStatus: String = "") {
+        labelTextFieldState.edit {
+            replace(0, labelTextFieldState.text.length, itemLabel)
+        }
+        descTextFieldState.edit {
+            replace(0, descTextFieldState.text.length, itemDesc)
+        }
+
+        prepopulateFormWithMenuStatuses(ownerId, currentStatus)
+        prepopulateFormWithCheckboxStatuses(ownerId, currentStatus)
+    }
+
+    private fun prepopulateFormWithMenuStatuses(ownerId: Int, currentStatus: String) {
         viewModelScope.launch {
             val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
             val itemStatusList = listOfStatusFlow.first()
             if (itemStatusList.isNotEmpty()) {
                 val itemStatuses = itemStatusList.first()
-                labelTextFieldState.edit {
-                    replace(0, labelTextFieldState.text.length, itemLabel)
-                }
-                descTextFieldState.edit {
-                    replace(0, descTextFieldState.text.length, itemDesc)
-                }
                 statusTextFieldForMenuState.edit {
                     replace(0, statusTextFieldForMenuState.text.length, currentStatus)
                 }
@@ -220,24 +298,29 @@ class ModifyItemViewModel @Inject constructor(
                     it.copy(
                         itemStatuses = itemStatuses.let { item ->
                             listOf(item.firstStatus, item.secondStatus, item.thirdStatus, item.fourthStatus)
-                        }.filter { it.isNotEmpty() }
+                        }.filter { it.isNotEmpty() },
+                        useMenuForStatus = true,
+                        useCheckboxStatus = false,
+                        statusType = StatusType.MenuStatusType
                     )
                 }
             }
         }
     }
 
-    fun updateStatusesForItem(ownerId: Int) { //CURT -  REVISIT This for cleaner logic for add vs. edit
+    private fun prepopulateFormWithCheckboxStatuses(ownerId: Int, currentStatus: String) {
         viewModelScope.launch {
-            val listOfStatusFlow = itemsRepositoryImp.getItemStatusForOwnerId(ownerId)
-            val itemStatusList = listOfStatusFlow.first()
-            if (itemStatusList.isNotEmpty()) {
-                val itemStatuses = itemStatusList.first()
-                _uiState.update { it ->
+            val checkboxStatusFlow = itemStatusCheckedRepositoryImp.getStatusesForSavedItem(ownerId)
+            val checkboxStatusList = checkboxStatusFlow.first()
+            if (checkboxStatusList.isNotEmpty()) {
+                val checkboxStatus = checkboxStatusList.first()
+                _uiState.update {
                     it.copy(
-                        itemStatuses = itemStatuses.let { item ->
-                            listOf(item.firstStatus, item.secondStatus, item.thirdStatus, item.fourthStatus)
-                        }.filter { it.isNotEmpty() }
+                        itemStatusCheckboxLabel = checkboxStatus.statusLabel,
+                        itemStatusCheckboxChecked = checkboxStatus.isChecked,
+                        useCheckboxStatus = true,
+                        useMenuForStatus = false,
+                        statusType = StatusType.CheckboxStatusType
                     )
                 }
             }
@@ -270,9 +353,28 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun clearTextFieldStates() {
+    fun setItemStatusCheckboxLabel(label: String) {
+        _uiState.update {
+            it.copy(
+                itemStatusCheckboxLabel = label
+            )
+        }
+    }
+
+    fun setItemStatusCheckboxChecked(isChecked: Boolean) {
+        _uiState.update {
+            it.copy(
+                itemStatusCheckboxChecked = isChecked
+            )
+        }
+    }
+
+    fun clearInfoTextFieldStates() {
         labelTextFieldState.clearText()
         descTextFieldState.clearText()
+    }
+
+    fun clearTextFieldStatesForStatusMenu() {
         initialStatusTextFieldState.clearText()
         additionalStatusTextFieldState.clearText()
         additionalStatus2TextFieldState.clearText()
