@@ -22,6 +22,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -228,14 +230,14 @@ fun ItemsOfSavedLists(
 @Composable
 fun ContainerOfListItems(
     ownerId: Int,
-    savedListItem: List<SavedItems>,
+    savedListItems: List<SavedItems>,
     onEditIconButtonClick: (savedItemId: Int, savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit,
     modifier: Modifier
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth()
     ) {
-        items(savedListItem) {
+        items(savedListItems)  {
             ElevatedCard(
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = modifier
@@ -291,13 +293,44 @@ fun ContainerOfListItems(
                             end = 4.dp
                         )
                     )
-                    Text(
-                        text = stringResource(R.string.status) + " : " + it.status,
-                        textAlign = TextAlign.Right,
-                        modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
-                    )
+                    StatusConfigurationForItem(it)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun StatusConfigurationForItem(savedItem: SavedItems) {
+    if (savedItem.statusType == StatusType.MenuStatusType) {
+        Text(
+            text = stringResource(R.string.status) + " : " + savedItem.status,
+            textAlign = TextAlign.Right,
+            modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
+        )
+    } else {
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
+        ) {
+            Text(
+                text = savedItem.status,
+                modifier = Modifier.padding(8.dp)
+            )
+            Checkbox(
+                checked = true,
+                onCheckedChange = { checked ->
+                    //modifyItemViewModel.setItemStatusCheckboxChecked(checked)
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color.Black,
+                    uncheckedColor = Color.Black,
+                    checkmarkColor = Color.White,
+                )
+            )
         }
     }
 }

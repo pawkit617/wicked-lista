@@ -30,6 +30,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +64,9 @@ fun AddItemScreen(
 @Composable
 fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
     val addItemUIState by modifyItemViewModel.uiState.collectAsState()
-    modifyItemViewModel.checkItemsStatusesForOwnerId(ownerId)
+    LaunchedEffect(key1 = ownerId) {
+        modifyItemViewModel.checkItemsStatusesForOwnerId(ownerId)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -72,7 +75,7 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .background(Color.White),
-            verticalArrangement = if (addItemUIState.statusType.type == StatusType.UnassignedStatusType.type) Arrangement.SpaceBetween else Arrangement.Top,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             ItemInfo(modifyItemViewModel)
@@ -117,8 +120,12 @@ fun EditItemScreen(
     onDoneEditingItems: () -> Unit = {},
     modifyItemViewModel: ModifyItemViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(key1 = ownerId) {
+        modifyItemViewModel.prepopulateFormWithItemInfo(ownerId, savedItemLabel, savedItemDesc, currentStatus)
+    }
+
     val modifyItemUIState by modifyItemViewModel.uiState.collectAsState()
-    modifyItemViewModel.prepopulateFormWithItemInfo(ownerId, savedItemLabel, savedItemDesc, currentStatus)
+
 
     Box(Modifier
         .fillMaxSize()
@@ -222,8 +229,7 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
 
 @Composable
 fun HelpMessageForStatus(addItemUIState: AddItemUIState) {
-    if (addItemUIState.statusType.type == StatusType.UnassignedStatusType.type ||
-        addItemUIState.statusType.type == StatusType.MenuStatusType.type) {
+    if (!addItemUIState.useCheckboxStatus) {//addItemUIState.statusType.type != StatusType.CheckboxStatusType.type)
 
         val helpMessage = if (addItemUIState.statusType.type == StatusType.MenuStatusType.type)
             R.string.add_item_status_choose_message
@@ -242,8 +248,7 @@ fun HelpMessageForStatus(addItemUIState: AddItemUIState) {
 @Composable
 fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel) {
     val addItemUIState = modifyItemViewModel.uiState.collectAsState().value
-    if (addItemUIState.statusType.type == StatusType.UnassignedStatusType.type ||
-        addItemUIState.statusType.type == StatusType.MenuStatusType.type) {
+    if (!addItemUIState.useCheckboxStatus) {//addItemUIState.statusType.type != StatusType.CheckboxStatusType.type
         Card(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -261,8 +266,6 @@ fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel) {
         }
     }
 }
-
-
 
 @Composable
 fun StatusAsFormFields(modifyItemViewModel: ModifyItemViewModel) {
@@ -349,17 +352,16 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
 @Composable
 fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
     val addItemUiState = modifyItemViewModel.uiState.collectAsState().value
-    if (addItemUiState.statusType.type == StatusType.UnassignedStatusType.type ||
-        addItemUiState.statusType.type == StatusType.CheckboxStatusType.type) {
+    if (addItemUiState.statusType.type != StatusType.MenuStatusType.type) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
         ) {
-            if (modifyItemViewModel.uiState.collectAsState().value.itemStatusCheckboxLabel.isEmpty()) {
-                ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel)
-            } else {
+            if (addItemUiState.statusType.type == StatusType.CheckboxStatusType.type) {
                 ItemStatusAsCheckbox(modifyItemViewModel)
+            } else {
+                ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel)
             }
         }
     }
@@ -369,7 +371,7 @@ fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
 fun ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel: ModifyItemViewModel) {
     val localUiState = modifyItemViewModel.uiState.collectAsState().value
     Column(
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
@@ -476,7 +478,7 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                             onClick = {
                                 //dialog with label, desc, and spinner
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
-                                modifyItemViewModel.setUseMenuForStatus(true)
+
                             },
                             text = stringResource(R.string.add_more)
                         )

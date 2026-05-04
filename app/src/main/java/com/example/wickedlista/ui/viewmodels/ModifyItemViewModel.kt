@@ -13,12 +13,10 @@ import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import com.example.wickedlista.database.saveditems.StatusType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,8 +60,12 @@ class ModifyItemViewModel @Inject constructor(
     }
 
     private fun isFormValidForCheckboxStatus(): Boolean {
+        val isCheckboxLabelAssigned = _uiState.value.itemStatusCheckboxLabel.isNotEmpty()
+
+        val isCheckboxFieldEmpty =  if (!isCheckboxLabelAssigned) checkboxTextFieldState.text.isEmpty() else false
+
         val isLabelFieldEmpty = labelTextFieldState.text.isEmpty()
-        val isCheckboxFieldEmpty = checkboxTextFieldState.text.isEmpty()
+
 
         _uiState.update {
             it.copy(
@@ -152,8 +154,9 @@ class ModifyItemViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         statusType = StatusType.CheckboxStatusType,
-                        itemStatusCheckboxLabel = listOfCheckedStatus.first().statusLabel,
-                        itemStatusCheckboxChecked = listOfCheckedStatus.first().isChecked
+                        itemStatusCheckboxLabel = listOfCheckedStatus.first().statusLabel, //why null?
+                        itemStatusCheckboxChecked = listOfCheckedStatus.first().isChecked,
+                        useCheckboxStatus = true
                     )
                 }
             } else {
@@ -203,11 +206,14 @@ class ModifyItemViewModel @Inject constructor(
     }
 
     private fun addItemInfoWithListIdForCheckbox(savedListId: Int) {
+        var checkboxLabel = checkboxTextFieldState.text.toString()
+        checkboxLabel = checkboxLabel.ifEmpty { _uiState.value.itemStatusCheckboxLabel }
+
         val savedItems = SavedItems(
             label = labelTextFieldState.text.toString(),
             savedListForeignId = savedListId,
             description = descTextFieldState.text.toString(),
-            status = checkboxTextFieldState.text.toString(),
+            status = checkboxLabel,
             statusType = StatusType.CheckboxStatusType
         )
         viewModelScope.launch {
@@ -218,13 +224,14 @@ class ModifyItemViewModel @Inject constructor(
             it.copy(
                 showSuccessAddMoreItemDialog = true,
                 useCheckboxStatus = true,
-                statusType = StatusType.CheckboxStatusType
+                statusType = StatusType.CheckboxStatusType,
             )
         }
     }
 
     private fun addItemStatusWithListIdForCheckbox(savedListId: Int) {
-        val checkboxLabel = checkboxTextFieldState.text.toString()
+        var checkboxLabel = checkboxTextFieldState.text.toString()
+        checkboxLabel = checkboxLabel.ifEmpty { _uiState.value.itemStatusCheckboxLabel }
 
         viewModelScope.launch {
             val itemStatusChecked = ItemStatusChecked(
@@ -236,7 +243,7 @@ class ModifyItemViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    itemStatusCheckboxLabel = checkboxLabel,
+                    itemStatusCheckboxLabel = checkboxLabel, //??? works for add more at first, but not for add when coming back in
                     useCheckboxStatus = true
                 )
             }
@@ -254,12 +261,20 @@ class ModifyItemViewModel @Inject constructor(
         val isValid = labelTextFieldState.text.isNotEmpty()
         if (isValid) {
             viewModelScope.launch {
+                val statusText = if (
+                    _uiState.value.statusType.type == StatusType.MenuStatusType.type
+                ) {
+                    statusTextFieldForMenuState.text.toString()
+                } else {
+                    _uiState.value.itemStatusCheckboxLabel
+                }
+
                 val updatedItem = SavedItems(
                     savedItemId,
                     ownerId,
                     labelTextFieldState.text.toString(),
                     descTextFieldState.text.toString(),
-                    statusTextFieldForMenuState.text.toString()
+                    statusText
                 )
                 savedListRepositoryImp.updateSavedItem(updatedItem)
             }
@@ -392,9 +407,11 @@ class ModifyItemViewModel @Inject constructor(
     }
 
     fun setUseCheckboxStatus(onOrOff: Boolean) {
+        //val statusType = if (onOrOff) StatusType.CheckboxStatusType else StatusType.UnassignedStatusType
         _uiState.update {
             it.copy(
-                useCheckboxStatus = onOrOff
+                useCheckboxStatus = onOrOff,
+                //statusType = statusType
             )
         }
     }
