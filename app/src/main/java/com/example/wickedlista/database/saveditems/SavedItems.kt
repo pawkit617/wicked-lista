@@ -28,7 +28,8 @@ data class SavedItems(
     val label: String,
     val description: String,
     val status: String,
-    val statusType: StatusType = StatusType.UnassignedStatusType
+    val statusType: StatusType = StatusType.UnassignedStatusType,
+    val isChecked: Boolean = false
 )
 
 enum class StatusType(val type: String) {

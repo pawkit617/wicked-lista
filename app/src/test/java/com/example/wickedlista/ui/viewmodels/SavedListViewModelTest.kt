@@ -1,6 +1,8 @@
 package com.example.wickedlista.ui.viewmodels
 
 import android.database.sqlite.SQLiteException
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
@@ -32,9 +34,13 @@ class SavedListViewModelTest {
     private lateinit var savedListsDao: SavedListsDao
     @Mock
     private lateinit var savedItemsDao: SavedItemsDao
+
+    @Mock lateinit var itemStatusCheckedDao: ItemStatusCheckedDao
     private lateinit var savedListsRepositoryImp: SavedListsRepositoryImp
     private lateinit var itemsRepositoryImp: SavedItemsRepositoryImp
     private lateinit var savedListViewModel: SavedListViewModel
+
+    private lateinit var itemStatusCheckedRepositoryImp: ItemStatusCheckedRepositoryImp
 
     @Before
     fun setUp() {
@@ -44,10 +50,11 @@ class SavedListViewModelTest {
         savedItemsDao = mockk<SavedItemsDao>()
         savedListsRepositoryImp = SavedListsRepositoryImp(savedListsDao)
         itemsRepositoryImp = SavedItemsRepositoryImp(savedItemsDao)
-
+        itemStatusCheckedRepositoryImp = ItemStatusCheckedRepositoryImp(itemStatusCheckedDao)
         savedListViewModel = SavedListViewModel(
             savedListsRepositoryImp,
-            itemsRepositoryImp
+            itemsRepositoryImp,
+            itemStatusCheckedRepositoryImp
         )
     }
 

@@ -11,4 +11,9 @@ class ItemStatusCheckedRepositoryImp @Inject constructor(
 
     override fun getStatusesForSavedItem(savedListId: Int): Flow<List<ItemStatusChecked>> =
         itemStatusCheckedDao.getStatusesForSavedItem(savedListId)
+
+    override suspend fun updateItemStatusChecked(itemStatusChecked: ItemStatusChecked) =
+        itemStatusCheckedDao.updateItemStatusChecked(itemStatusChecked)
+
+    //CURT - Need a new method for getting statuses for a specific item
 }

@@ -20,4 +20,6 @@ interface SavedItemsDao {
 
    @Query("DELETE FROM saved_items WHERE saved_item_id = :savedItemId")
     suspend fun deleteSavedItem(savedItemId: Int): Int
+    @Update
+    suspend fun updateSavedItemForCheckboxOnly(updatedItem: SavedItems)
 }

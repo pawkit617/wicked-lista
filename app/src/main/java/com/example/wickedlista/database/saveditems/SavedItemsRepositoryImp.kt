@@ -11,4 +11,10 @@ class SavedItemsRepositoryImp @Inject constructor(val savedItemsDao: SavedItemsD
     override fun getAllSavedItemsForListId(savedListId: Int): Flow<List<SavedItems>> = savedItemsDao.getAllSavedItemForListId(savedListId)
 
     override suspend fun deleteSavedItem(savedItemId: Int): Int = savedItemsDao.deleteSavedItem(savedItemId)
+
+    override suspend fun updateSavedItemForCheckboxOnly(
+        savedItem: SavedItems
+    ){
+        savedItemsDao.updateSavedItemForCheckboxOnly(savedItem)
+    }
 }

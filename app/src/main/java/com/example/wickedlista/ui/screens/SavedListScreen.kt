@@ -35,6 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -223,7 +226,7 @@ fun ItemsOfSavedLists(
         HintToAddItemsToOwner(modifier = modifier)
     } else {
         val ownerId = savedListViewModel.uiState.collectAsState().value.selectedOwner.first
-        ContainerOfListItems(ownerId,savedLists, onEditIconButtonClick, modifier)
+        ContainerOfListItems(ownerId,savedLists, onEditIconButtonClick, modifier, savedListViewModel)
     }
 }
 
@@ -232,7 +235,8 @@ fun ContainerOfListItems(
     ownerId: Int,
     savedListItems: List<SavedItems>,
     onEditIconButtonClick: (savedItemId: Int, savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    savedListViewModel: SavedListViewModel
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth()
@@ -293,7 +297,7 @@ fun ContainerOfListItems(
                             end = 4.dp
                         )
                     )
-                    StatusConfigurationForItem(it)
+                    StatusConfigurationForItem(it, savedListViewModel)
                 }
             }
         }
@@ -301,7 +305,7 @@ fun ContainerOfListItems(
 }
 
 @Composable
-fun StatusConfigurationForItem(savedItem: SavedItems) {
+fun StatusConfigurationForItem(savedItem: SavedItems, savedListViewModel: SavedListViewModel) {
     if (savedItem.statusType == StatusType.MenuStatusType) {
         Text(
             text = stringResource(R.string.status) + " : " + savedItem.status,
@@ -309,6 +313,7 @@ fun StatusConfigurationForItem(savedItem: SavedItems) {
             modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
         )
     } else {
+        var localIsChecked by remember { mutableStateOf(savedItem.isChecked) }
         Row(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
@@ -321,9 +326,13 @@ fun StatusConfigurationForItem(savedItem: SavedItems) {
                 modifier = Modifier.padding(8.dp)
             )
             Checkbox(
-                checked = true,
+                checked = localIsChecked,
                 onCheckedChange = { checked ->
-                    //modifyItemViewModel.setItemStatusCheckboxChecked(checked)
+                    localIsChecked = checked
+                    val updatedSavedItem = savedItem.copy(
+                        isChecked = checked
+                    )
+                    savedListViewModel.updateSavedItemForCheckboxOnly(updatedSavedItem)
                 },
                 colors = CheckboxDefaults.colors(
                     checkedColor = Color.Black,
