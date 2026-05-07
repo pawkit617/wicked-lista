@@ -221,9 +221,8 @@ class ModifyItemViewModel @Inject constructor(
             statusType = StatusType.CheckboxStatusType,
             isChecked = isCheckboxChecked
         )
-        var returnedItemId: Long
 
-        returnedItemId = savedListRepositoryImp.addItemToList(savedItems)
+        val returnedItemId: Long = savedListRepositoryImp.addItemToList(savedItems)
 
         _uiState.update {
             it.copy(
@@ -373,14 +372,6 @@ class ModifyItemViewModel @Inject constructor(
         }
     }
 
-    fun setItemStatusCheckboxLabel(label: String) {
-        _uiState.update {
-            it.copy(
-                itemStatusCheckboxLabel = label
-            )
-        }
-    }
-
     fun setItemStatusCheckboxChecked(isChecked: Boolean) {
         _uiState.update {
             it.copy(
@@ -412,11 +403,9 @@ class ModifyItemViewModel @Inject constructor(
     }
 
     fun setUseCheckboxStatus(onOrOff: Boolean) {
-        //val statusType = if (onOrOff) StatusType.CheckboxStatusType else StatusType.UnassignedStatusType
         _uiState.update {
             it.copy(
                 useCheckboxStatus = onOrOff,
-                //statusType = statusType
             )
         }
     }

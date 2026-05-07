@@ -3,16 +3,20 @@ package com.example.wickedlista.ui.viewmodels
 import com.example.wickedlista.database.itemstatus.ItemStatus
 import com.example.wickedlista.database.itemstatus.ItemStatusDao
 import com.example.wickedlista.database.itemstatus.ItemStatusRepositoryImp
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusChecked
 import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
 import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
+import com.example.wickedlista.database.saveditems.StatusType
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -21,6 +25,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
@@ -47,6 +52,7 @@ class ModifyItemViewModelTest {
         MockitoAnnotations.openMocks(this)
         savedItemsDao = mockk<SavedItemsDao>()
         itemStatusDao = mockk<ItemStatusDao>()
+        itemStatusCheckedDao = mockk<ItemStatusCheckedDao>()
         savedItemsRepositoryImp = SavedItemsRepositoryImp(savedItemsDao)
         itemStatusRepositoryImp = ItemStatusRepositoryImp(itemStatusDao)
         itemStatusCheckedRepositoryImp = ItemStatusCheckedRepositoryImp(itemStatusCheckedDao)
@@ -158,15 +164,115 @@ class ModifyItemViewModelTest {
         modifyItemViewModel.additionalStatus2TextFieldState.edit {
             replace(0, length, "Found")
         }
-        coEvery {itemStatusDao.getStatusesForSavedItem(any())} returns flowOf(
+        coEvery { itemStatusDao.getStatusesForSavedItem(any()) } returns flowOf(
             listOf(ItemStatus(1,
                 1,
                 "Buy",
                 "Bought",
                 "Found",
                 "")))
+
+        coEvery {
+            itemStatusCheckedDao.getStatusesForSavedItem(1)
+        } returns flowOf(
+            listOf()
+        )
         modifyItemViewModel.prepopulateFormWithItemInfo(1, "Lemons", "Lemons are tasty", "Bought")
         assertTrue(modifyItemViewModel.uiState.value.itemStatuses.size == 3)
+    }
+
+    @Test
+    fun prepopulate_Form_With_Item_Info_Checkbox() = runTest {
+
+        coEvery { itemStatusDao.getStatusesForSavedItem(any()) } returns flowOf(
+            listOf()
+        )
+
+        coEvery {
+            itemStatusCheckedDao.getStatusesForSavedItem(1)
+        } returns flowOf(
+            listOf(
+                ItemStatusChecked(
+                    1,
+                    "Bought",
+                    1,
+                    1,
+                    isChecked = true
+                )
+            )
+        )
+        modifyItemViewModel.prepopulateFormWithItemInfo(1, "Lemons", "Lemons are tasty", "Bought")
+        assertTrue(modifyItemViewModel.uiState.value.itemStatusCheckboxChecked)
+    }
+
+    @Test
+    fun add_Item_To_List_With_Id_For_Checked_Label() = runTest {
+        modifyItemViewModel.labelTextFieldState.edit {
+            replace(0, modifyItemViewModel.labelTextFieldState.text.length, "Lemons")
+        }
+        modifyItemViewModel.checkboxTextFieldState.edit {
+            replace(0, modifyItemViewModel.checkboxTextFieldState.text.length, "Bought")
+        }
+
+        coEvery { savedItemsDao.addItemToList(any()) } returns 1L
+        coEvery { itemStatusCheckedDao.addItemStatusChecked(any()) } returns 1L
+
+        modifyItemViewModel.addItemToListWithIdForCheckedLabel(1)
+        assertTrue(modifyItemViewModel.uiState.value.showSuccessAddMoreItemDialog)
+    }
+
+    @Test
+    fun check_Items_Statuses_For_OwnerId_Menu_Options() = runTest() {
+       coEvery { itemStatusDao.getStatusesForSavedItem(any()) } returns flowOf(
+           listOf(ItemStatus(
+               1,1,
+               "Buy", "Bought",
+               "Sold", ""))
+       )
+       coEvery { itemStatusCheckedDao.getStatusesForSavedItem(any()) } returns flowOf(listOf())
+
+       modifyItemViewModel.checkItemsStatusesForOwnerId(1)
+       assertTrue(modifyItemViewModel.uiState.value.itemStatuses.size == 3)
+    }
+
+    @Test
+    fun check_Items_Statuses_For_OwnerId_Checkbox() = runTest() {
+        coEvery { itemStatusDao.getStatusesForSavedItem(any()) } returns flowOf(
+            listOf()
+        )
+        coEvery { itemStatusCheckedDao.getStatusesForSavedItem(any()) } returns flowOf(
+            listOf(
+                ItemStatusChecked(
+                    1,
+                    "Bought",
+                    1,
+                    1,
+                    isChecked = true
+                )
+            )
+        )
+
+        modifyItemViewModel.checkItemsStatusesForOwnerId(1)
+        assertTrue(modifyItemViewModel.uiState.value.itemStatusCheckboxLabel == "Bought")
+    }
+
+    @Test
+    fun check_Items_Statuses_For_OwnerId_Unassigned() = runTest() {
+        coEvery { itemStatusDao.getStatusesForSavedItem(any()) } returns flowOf(
+            listOf()
+        )
+        coEvery { itemStatusCheckedDao.getStatusesForSavedItem(any()) } returns flowOf(
+            listOf()
+        )
+
+        modifyItemViewModel.checkItemsStatusesForOwnerId(1)
+        assertTrue(modifyItemViewModel.uiState.value.statusType == StatusType.UnassignedStatusType)
+    }
+
+    @Test
+    fun set_Item_Status_Checkbox_Checked() {
+        modifyItemViewModel.setItemStatusCheckboxChecked(true)
+        assertTrue(modifyItemViewModel.uiState.value.itemStatusCheckboxChecked)
     }
 
     @Test
@@ -181,6 +287,11 @@ class ModifyItemViewModelTest {
         assertTrue(modifyItemViewModel.uiState.value.useMenuForStatus)
     }
 
+    @Test
+    fun set_Use_Checkbox_Status() {
+        modifyItemViewModel.setUseCheckboxStatus(true)
+        assertTrue(modifyItemViewModel.uiState.value.useCheckboxStatus)
+    }
     @Test
     fun clear_Text_Field_States() {
         modifyItemViewModel.clearInfoTextFieldStates()
