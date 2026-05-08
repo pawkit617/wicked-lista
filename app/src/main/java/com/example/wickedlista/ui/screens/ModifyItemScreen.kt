@@ -39,8 +39,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -384,6 +387,7 @@ fun ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel: ModifyItemViewModel)
                 .fillMaxWidth()
                 .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 0.dp)
         ) {
+            val contentDescForSwitch = stringResource(R.string.switch_for_checkbox_cdescript)
             Text(text = stringResource(R.string.add_item_checkbox_toggle_message))
             Switch(
                 checked = localUiState.useCheckboxStatus,
@@ -399,7 +403,8 @@ fun ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel: ModifyItemViewModel)
                     checkedTrackColor = Color.Black,
                     uncheckedThumbColor = Color.Black,
                     uncheckedTrackColor = Color.White
-                )
+                ),
+                modifier = Modifier.semantics { contentDescription = contentDescForSwitch }
             )
         }
         if (localUiState.useCheckboxStatus) {
@@ -429,6 +434,7 @@ fun ItemStatusAsCheckbox(modifyItemViewModel: ModifyItemViewModel) {
             text = localUiState.itemStatusCheckboxLabel,
             modifier = Modifier.padding(8.dp)
         )
+        val checkboxContentDesc = stringResource(R.string.status_checkbox_cdescript)
         Checkbox(
             checked = localUiState.itemStatusCheckboxChecked,
             onCheckedChange = { checked ->
@@ -438,7 +444,8 @@ fun ItemStatusAsCheckbox(modifyItemViewModel: ModifyItemViewModel) {
                 checkedColor = Color.Black,
                 uncheckedColor = Color.Black,
                 checkmarkColor = Color.White,
-            )
+            ),
+            modifier = Modifier.semantics { contentDescription = checkboxContentDesc }
         )
     }
 }
