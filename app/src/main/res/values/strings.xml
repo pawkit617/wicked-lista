@@ -17,7 +17,7 @@
     <string name="category">Category</string>
     <string name="category_placeholder">e.g. Recipes</string>
     <string name="topic">Topic</string>
-    <string name="topic_placeholder">e.g. Pie</string>
+    <string name="topic_placeholder">e.g. Pies</string>
     <string name="lists_for">Lists needed for…</string>
     <string name="lists_for_placeholder">e.g. Apple Pie</string>
     <string name="create">Create</string>
@@ -59,6 +59,8 @@
     <string name="add_owner_button_cdescript">add item button</string>
     <string name="add_item_success_message_icon">add success icon</string>
     <string name="category_icon">category icon</string>
+    <string name="switch_for_checkbox_cdescript">switch to toggle to checkbox</string>
+    <string name="status_checkbox_cdescript">status checkbox</string>
 
     <!-- Modify Items -->
     <string name="add_item_label">Label</string>
@@ -74,6 +76,8 @@
     <string name="add_item_additional_status_hint">e.g. Ordered</string>
     <string name="add_item_additional_status_hint2">e.g. Received</string>
     <string name="add_item_additional_status_hint3">e.g. Done</string>
+    <string name="add_item_checkbox_toggle_message">Use checkbox status</string>
+    <string name="add_item_checkbox_label">Label for checkbox</string>
     <string name="add_item_successful_add_message">Item successfully added.</string>
     <string name="done">Done</string>
     <string name="status">Status</string>

@@ -22,6 +22,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +53,7 @@ import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
+import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 
@@ -56,7 +62,7 @@ fun SavedListScreen(
     categoryId: Int,
     topicName: String,
     savedListViewModel: SavedListViewModel = hiltViewModel(),
-    onAddItemClick: (ownerId: Int, isAddingMore: Boolean) -> Unit,
+    onAddItemClick: (ownerId: Int) -> Unit,
     onEditIconButtonClick:(
         savedItemId: Int,savedItemLabel: String,
         savedItemDesc: String, currentStatus: String,
@@ -81,7 +87,7 @@ fun OwnersWithListItems(
     topicName: String,
     listOfSavedListsOwners: List<SavedLists>,
     savedListViewModel: SavedListViewModel,
-    onAddItemClick: (ownerId: Int, isAddingMore: Boolean) -> Unit,
+    onAddItemClick: (ownerId: Int) -> Unit,
     onEditIconButtonClick: (savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
 ) {
     if (listOfSavedListsOwners.isNotEmpty()) {
@@ -220,21 +226,22 @@ fun ItemsOfSavedLists(
         HintToAddItemsToOwner(modifier = modifier)
     } else {
         val ownerId = savedListViewModel.uiState.collectAsState().value.selectedOwner.first
-        ContainerOfListItems(ownerId,savedLists, onEditIconButtonClick, modifier)
+        ContainerOfListItems(ownerId,savedLists, onEditIconButtonClick, modifier, savedListViewModel)
     }
 }
 
 @Composable
 fun ContainerOfListItems(
     ownerId: Int,
-    savedListItem: List<SavedItems>,
+    savedListItems: List<SavedItems>,
     onEditIconButtonClick: (savedItemId: Int, savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    savedListViewModel: SavedListViewModel
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth()
     ) {
-        items(savedListItem) {
+        items(savedListItems)  {
             ElevatedCard(
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = modifier
@@ -290,13 +297,49 @@ fun ContainerOfListItems(
                             end = 4.dp
                         )
                     )
-                    Text(
-                        text = stringResource(R.string.status) + " : " + it.status,
-                        textAlign = TextAlign.Right,
-                        modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
-                    )
+                    StatusConfigurationForItem(it, savedListViewModel)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun StatusConfigurationForItem(savedItem: SavedItems, savedListViewModel: SavedListViewModel) {
+    if (savedItem.statusType == StatusType.MenuStatusType) { //Curt - on update it get StatusType.Unassigned and causes the defect
+        Text(
+            text = stringResource(R.string.status) + " : " + savedItem.status,
+            textAlign = TextAlign.Right,
+            modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
+        )
+    } else {
+        var localIsChecked by remember { mutableStateOf(savedItem.isChecked) }
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
+        ) {
+            Text(
+                text = savedItem.status,
+                modifier = Modifier.padding(8.dp)
+            )
+            Checkbox(
+                checked = localIsChecked,
+                onCheckedChange = { checked ->
+                    localIsChecked = checked
+                    val updatedSavedItem = savedItem.copy(
+                        isChecked = checked
+                    )
+                    savedListViewModel.updateSavedItemForCheckboxOnly(updatedSavedItem)
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color.Black,
+                    uncheckedColor = Color.Black,
+                    checkmarkColor = Color.White,
+                )
+            )
         }
     }
 }
@@ -329,11 +372,10 @@ fun HintToAddItemsToOwner(modifier: Modifier = Modifier) {
 fun BottomButtonEditRow(
     savedListViewModel: SavedListViewModel,
     modifier: Modifier = Modifier,
-    onButtonClick: (Int, Boolean) -> Unit
+    onButtonClick: (Int) -> Unit
 ) {
     val savedListUIState by savedListViewModel.uiState.collectAsState()
     val selectedOwnerId = savedListUIState.selectedOwner.first
-    val useMenu = savedListUIState.allSavedItemsForList.isNotEmpty()
 
     Row(
         modifier,
@@ -345,7 +387,12 @@ fun BottomButtonEditRow(
             R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
         BottomIconButton(
             R.drawable.listitem_add_48,
-            R.string.icon_add_listitem_button_cdescript) { onButtonClick(selectedOwnerId, useMenu) }
+            R.string.icon_add_listitem_button_cdescript) {
+
+           //CURT -  put check here to get the status type
+
+            onButtonClick(selectedOwnerId)
+        }
         BottomIconButton(
             R.drawable.delete_box_owner_48,
             R.string.icon_delete_owner_button_cdescript) {
@@ -407,7 +454,6 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                         isError = collectedUiState.hasSQLError,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-
                     ErrorMessageWithinDialog(collectedUiState)
 
                     Row(

@@ -14,7 +14,7 @@ import com.example.wickedlista.database.savedlists.SavedLists
             entity = SavedLists::class,
             parentColumns = ["saved_list_id"],
             childColumns = ["saved_list_foreign_id"],
-            onDelete = ForeignKey.Companion.CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["saved_list_foreign_id"])]
@@ -27,5 +27,13 @@ data class SavedItems(
     val savedListForeignId: Int,
     val label: String,
     val description: String,
-    val status: String
+    val status: String,
+    val statusType: StatusType = StatusType.UnassignedStatusType,
+    val isChecked: Boolean = false
 )
+
+enum class StatusType(val type: String) {
+    MenuStatusType(type = "Menu"),
+    CheckboxStatusType(type = "Checkbox"),
+    UnassignedStatusType(type = "Unassigned")
+}

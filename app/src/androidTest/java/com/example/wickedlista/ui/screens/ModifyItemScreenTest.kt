@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -17,6 +18,7 @@ import com.example.wickedlista.R
 import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.database.homecategories.HomeCategories
 import com.example.wickedlista.database.itemstatus.ItemStatus
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusChecked
 import com.example.wickedlista.database.savedlists.SavedLists
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -76,11 +78,10 @@ class ModifyItemScreenTest {
         wickedListaDatabase.clearAllTables()
     }
 
-    private fun setUpAddScreen(isAddingMore: Boolean = false) {
+    private fun setUpAddScreen() {
         composeTestRuleActivity.setContent {
             AddItemScreen(
                 ownerId = 1,
-                isAddingMore = isAddingMore,
                 onDoneAddingItems = {},
                 modifyItemViewModel = hiltViewModel()
             )
@@ -114,7 +115,6 @@ class ModifyItemScreenTest {
         runBlocking {
             wickedListaDatabase.itemStatusDao().addItemStatus(itemStatus)
         }
-
     }
 
     @Test
@@ -123,9 +123,40 @@ class ModifyItemScreenTest {
         composeTestRuleActivity.let {
             it.onNodeWithText(baseContext.getString(R.string.add_item_label)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.add_item_description_label)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.add_item_checkbox_toggle_message)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.add_item_status_help_message)).assertIsDisplayed()
             it.onAllNodesWithText(baseContext.getString(R.string.add_item_additional_status_label)).assertCountEquals(3)
             it.onNodeWithText(baseContext.getString(R.string.create)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun showInitialUiFeaturesForCheckbox() {
+        setUpAddScreen()
+        composeTestRuleActivity.let {
+            it.onNodeWithText(baseContext.getString(R.string.add_item_checkbox_toggle_message)).assertIsDisplayed()
+            it.onNodeWithContentDescription(
+                baseContext.getString(R.string.switch_for_checkbox_cdescript)
+            ).assertIsDisplayed().performClick()
+            it.onNodeWithText(baseContext.getString(R.string.add_item_checkbox_toggle_message)).assertIsDisplayed()
+            it.onNodeWithText(baseContext.getString(R.string.add_item_status_choose_message)).assertIsNotDisplayed()
+        }
+    }
+
+    @Test
+    fun showStatusAsCheckbox() {
+       // setItemStatusCheckedInDatabase()
+        setUpAddScreen()
+        composeTestRuleActivity.let {
+            it.onNodeWithText(baseContext.getString(R.string.add_item_label)).performTextInput("Lemons")
+            it.onNodeWithContentDescription(
+                baseContext.getString(R.string.switch_for_checkbox_cdescript)
+            ).assertIsDisplayed().performClick()
+            it.onNodeWithText(baseContext.getString(R.string.add_item_checkbox_label)).performTextInput("Bought")
+            it.onNodeWithText(baseContext.getString(R.string.create)).performClick()
+
+            it.onNodeWithText("Bought").assertIsDisplayed()
+            it.onNodeWithContentDescription(baseContext.getString(R.string.status_checkbox_cdescript)).performClick()
         }
     }
 
@@ -135,9 +166,8 @@ class ModifyItemScreenTest {
         composeTestRuleActivity.let {
             it.onNodeWithText(baseContext.getString(R.string.create)).performClick()
             it.onNodeWithText(baseContext.getString(R.string.error_add_item_blank_label)).assertIsDisplayed()
-
         }
-           }
+    }
 
     @Test
     fun showBlankStatusError() {
@@ -205,7 +235,7 @@ class ModifyItemScreenTest {
             it.onNodeWithText(baseContext.getString(R.string.add_item_description_label)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.add_item_status_choose_message)).assertIsDisplayed()
             it.onNodeWithContentDescription(baseContext.getString(R.string.status_menu_drop_down_icon)).performClick()
-            it.onNodeWithText("Bought").assertIsDisplayed()
+            it.onNodeWithText("Bought").assertIsDisplayed().performClick()
         }
     }
 

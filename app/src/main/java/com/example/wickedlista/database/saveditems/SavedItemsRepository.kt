@@ -10,4 +10,5 @@ interface SavedItemsRepository {
     fun getAllSavedItemsForListId(savedListId: Int): Flow<List<SavedItems>>
 
     suspend fun deleteSavedItem(savedItemId: Int): Int
+    suspend fun updateSavedItemForCheckboxOnly(savedItem: SavedItems)
 }

@@ -1,13 +1,13 @@
 package com.example.wickedlista.ui.viewmodels
 
-import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.sqlite.SQLiteException
 import com.example.wickedlista.data.SavedListUIState
-import com.example.wickedlista.database.homecategories.HomeCategoriesRepositoryImp
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
+import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.database.savedlists.SavedListsRepositoryImp
@@ -23,9 +23,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SavedListViewModel @Inject constructor(
     val savedListsRepositoryImp: SavedListsRepositoryImp,
-    val itemsRepositoryImp: SavedItemsRepositoryImp
+    val itemsRepositoryImp: SavedItemsRepositoryImp,
+    val itemStatusCheckedRepositoryImp: ItemStatusCheckedRepositoryImp
 ): ViewModel() {
     private val _uiState = MutableStateFlow(SavedListUIState())
+
     val uiState: StateFlow<SavedListUIState> = _uiState.asStateFlow()
 
     val addOwnerTextFieldState = TextFieldState("")
@@ -110,6 +112,20 @@ class SavedListViewModel @Inject constructor(
                     allSavedItemsForList = itemsForListOwner,
                     showHintScreenToAddItems = hasNoItems
                 )
+            }
+        }
+    }
+
+    fun updateSavedItemForCheckboxOnly(updatedItem: SavedItems) {
+        viewModelScope.launch {
+            itemsRepositoryImp.updateSavedItemForCheckboxOnly(updatedItem)
+            val itemStatusChecked = itemStatusCheckedRepositoryImp.getStatusesForSavedItem(updatedItem.savedListForeignId).first()
+
+            val foundItems = itemStatusChecked.filter { it.savedItemForeignId == updatedItem.savedItemId }
+
+            if (foundItems.isNotEmpty()) {
+                foundItems.first().isChecked = updatedItem.isChecked
+                itemStatusCheckedRepositoryImp.updateItemStatusChecked(foundItems.first())
             }
         }
     }

@@ -53,7 +53,7 @@ fun HomeScreen(
     contentPaddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
 
-    homeScreenViewModel.getLists() //CURT - move this to WickedListaScreen?
+    homeScreenViewModel.getLists()
     val homeScreenUIStateCollected = homeScreenViewModel.uiState.collectAsState()
 
     val showCreateDialog = homeScreenUIStateCollected.value.showCreateDialog

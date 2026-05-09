@@ -36,6 +36,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.ui.screens.AddItemScreen
 import com.example.wickedlista.ui.screens.EditItemScreen
 import com.example.wickedlista.ui.screens.HomeScreen
@@ -46,7 +47,7 @@ import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 enum class WickedListaScreen(@StringRes val title: Int, val path: String) {
     HomeScreen(title = R.string.app_name, path = "wickedLista"),
     SavedListScreen(title = R.string.saved_list_screen, path = "savedList"),
-    AddItem(title = R.string.add_item, path = "addItem/{ownerId}/{isAddingMore}"),
+    AddItem(title = R.string.add_item, path = "addItem/{ownerId}"),
     EditItem(title = R.string.edit_item, path = "editItem/{savedItemId}/{savedItemLabel}/{savedItemDesc}/{currentStatus}/{ownerId}")
 }
 
@@ -88,7 +89,7 @@ fun WickedListaApp(
                         onClickOfHomeListCard = {
                             navController.navigate(WickedListaScreen.SavedListScreen.path)
                         },
-                        contentPaddingValues = PaddingValues(0.dp)//innerPadding
+                        contentPaddingValues = PaddingValues(0.dp)
                     )
                 }
                 composable (route = WickedListaScreen.SavedListScreen.path) {
@@ -96,8 +97,8 @@ fun WickedListaApp(
                     SavedListScreen(
                         topicName = homeScreenUIState.currentlySelectedHomeList.third,
                         categoryId = homeScreenUIState.currentlySelectedHomeList.first,
-                        onAddItemClick = { ownerId, isAddingMore ->
-                            navController.navigate("addItem/$ownerId/$isAddingMore")
+                        onAddItemClick = { ownerId ->
+                            navController.navigate("addItem/$ownerId")
                         },
                         onEditIconButtonClick = { savedItemId, savedItemLabel, savedItemDesc, currentStatus, ownerId ->
                             navController.navigate("editItem/$savedItemId/$savedItemLabel/$savedItemDesc/$currentStatus/$ownerId")
@@ -106,19 +107,11 @@ fun WickedListaApp(
                 }
                 composable (
                     route = WickedListaScreen.AddItem.path,
-                    arguments = listOf(
-                        navArgument("isAddingMore") {
-                            type = NavType.BoolType
-                            defaultValue = false
-                        }
-                    )
                 ) { backStackEntry ->
                     backStackEntry.arguments?.let {
                         val ownerId = it.getString("ownerId") ?: "-1"
-                        val useMenu = it.getBoolean("isAddingMore")
                         AddItemScreen(
                             ownerId.toInt(),
-                            useMenu,
                             {
                                 navController.popBackStack(WickedListaScreen.SavedListScreen.path, false)
                             }

@@ -1,6 +1,9 @@
 package com.example.wickedlista.ui.viewmodels
 
 import android.database.sqlite.SQLiteException
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusChecked
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedDao
+import com.example.wickedlista.database.itemstatuschecked.ItemStatusCheckedRepositoryImp
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
@@ -32,9 +35,13 @@ class SavedListViewModelTest {
     private lateinit var savedListsDao: SavedListsDao
     @Mock
     private lateinit var savedItemsDao: SavedItemsDao
+
+    @Mock lateinit var itemStatusCheckedDao: ItemStatusCheckedDao
     private lateinit var savedListsRepositoryImp: SavedListsRepositoryImp
     private lateinit var itemsRepositoryImp: SavedItemsRepositoryImp
     private lateinit var savedListViewModel: SavedListViewModel
+
+    private lateinit var itemStatusCheckedRepositoryImp: ItemStatusCheckedRepositoryImp
 
     @Before
     fun setUp() {
@@ -42,12 +49,14 @@ class SavedListViewModelTest {
         MockitoAnnotations.openMocks(this)
         savedListsDao = mockk<SavedListsDao>()
         savedItemsDao = mockk<SavedItemsDao>()
+        itemStatusCheckedDao = mockk<ItemStatusCheckedDao>()
         savedListsRepositoryImp = SavedListsRepositoryImp(savedListsDao)
         itemsRepositoryImp = SavedItemsRepositoryImp(savedItemsDao)
-
+        itemStatusCheckedRepositoryImp = ItemStatusCheckedRepositoryImp(itemStatusCheckedDao)
         savedListViewModel = SavedListViewModel(
             savedListsRepositoryImp,
-            itemsRepositoryImp
+            itemsRepositoryImp,
+            itemStatusCheckedRepositoryImp
         )
     }
 
@@ -142,6 +151,32 @@ class SavedListViewModelTest {
     }
 
     @Test
+    fun update_SavedItem_For_Checkbox_Only() = runTest {
+        val updatedItem = SavedItems(
+            1,
+            1,
+            "Lemons",
+            "Lemons are tasty",
+            "Bought"
+        )
+        coEvery { savedItemsDao.updateSavedItemForCheckboxOnly(updatedItem) } returns Unit
+        coEvery { itemStatusCheckedDao.getStatusesForSavedItem(1) } returns flowOf(
+            listOf(
+                ItemStatusChecked(
+                    1,
+                    "Bought",
+                    1,
+                    isChecked = true,
+                    savedListForeignId = 1,
+                )
+            )
+        )
+        coEvery { itemStatusCheckedDao.updateItemStatusChecked(any()) } returns Unit
+        savedListViewModel.updateSavedItemForCheckboxOnly(updatedItem)
+        assertFalse(savedListViewModel.uiState.value.showHintScreenToAddItems)
+    }
+
+    @Test
     fun set_Selected_Owner() {
         val expectedPair = Pair(3, "Blueberry")
         savedListViewModel.setSelectedOwner(Pair(3, "Blueberry"))
@@ -179,12 +214,4 @@ class SavedListViewModelTest {
         val text = savedListViewModel.addOwnerTextFieldState.text
         assertTrue(text.isEmpty())
     }
-    /*
-
-
-    fun clearTextFieldState() {
-        addOwnerTextFieldState.clearText()
-    }
-
-     */
 }
