@@ -260,7 +260,8 @@ class ModifyItemViewModel @Inject constructor(
 
     fun updateSavedItem(
         savedItemId: Int,
-        ownerId: Int
+        ownerId: Int,
+        statusType: StatusType
     ) : Boolean {
         val isValid = labelTextFieldState.text.isNotEmpty()
         if (isValid) {
@@ -278,7 +279,8 @@ class ModifyItemViewModel @Inject constructor(
                     ownerId,
                     labelTextFieldState.text.toString(),
                     descTextFieldState.text.toString(),
-                    statusText
+                    statusText,
+                    statusType
                 )
                 savedListRepositoryImp.updateSavedItem(updatedItem)
             }

@@ -306,7 +306,7 @@ fun ContainerOfListItems(
 
 @Composable
 fun StatusConfigurationForItem(savedItem: SavedItems, savedListViewModel: SavedListViewModel) {
-    if (savedItem.statusType == StatusType.MenuStatusType) {
+    if (savedItem.statusType == StatusType.MenuStatusType) { //Curt - on update it get StatusType.Unassigned and causes the defect
         Text(
             text = stringResource(R.string.status) + " : " + savedItem.status,
             textAlign = TextAlign.Right,

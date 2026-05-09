@@ -10,13 +10,11 @@ import com.example.wickedlista.database.saveditems.SavedItemsDao
 import com.example.wickedlista.database.saveditems.SavedItemsRepositoryImp
 import com.example.wickedlista.database.saveditems.StatusType
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -25,7 +23,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
@@ -110,14 +107,22 @@ class ModifyItemViewModelTest {
             replace(0, length, "Lemons")
         }
         coEvery {savedItemsDao.updateSavedItem(any())} returns 1
-        modifyItemViewModel.updateSavedItem(1, 1)
+        modifyItemViewModel.updateSavedItem(
+            1,
+            1,
+            modifyItemViewModel.uiState.value.statusType
+        )
         assertFalse(modifyItemViewModel.uiState.value.hasBlankLabelError)
     }
 
     @Test
     fun update_Saved_Item_Check_Has_Blank_Label() = runTest {
         coEvery {savedItemsDao.updateSavedItem(any())} returns 1
-        modifyItemViewModel.updateSavedItem(1, 1)
+        modifyItemViewModel.updateSavedItem(
+            1,
+            1,
+            modifyItemViewModel.uiState.value.statusType
+        )
         assertTrue(modifyItemViewModel.uiState.value.hasBlankLabelError)
     }
 

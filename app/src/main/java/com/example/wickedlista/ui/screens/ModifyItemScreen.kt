@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -175,11 +174,13 @@ fun EditItemScreen(
             ) {
                 Text(text = stringResource(R.string.delete), textAlign = TextAlign.Center)
             }
+            val statusType = modifyItemViewModel.uiState.collectAsState().value.statusType
             Button(
                 onClick = {
                     val status = modifyItemViewModel.updateSavedItem(
                         savedItemId,
-                        ownerId
+                        ownerId,
+                        statusType
                     )
                     if (status) {
                         onDoneEditingItems()

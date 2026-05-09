@@ -116,7 +116,7 @@ class ModifyItemScreenTest {
             wickedListaDatabase.itemStatusDao().addItemStatus(itemStatus)
         }
     }
-    
+
     @Test
     fun showInitialUiFeatures() {
         setUpAddScreen()
