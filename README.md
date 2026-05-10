@@ -48,6 +48,20 @@ The vertical tabs allow the user to view their many lists based on the configure
   <img src="https://github.com/user-attachments/assets/39257a07-e09c-4503-a701-03e6241b3197" width="40%" />
 </p>
 
+## Checkbox Style List Items
+For a simplier list that only requires whether or not an event has occurred on an item, use a status as a checkbox.
+<p align="left"> 
+  <img src="https://github.com/user-attachments/assets/1ab68251-c087-4612-9085-ba952fa51438" width="40%"/>
+  <img src="https://github.com/user-attachments/assets/79f8b0c6-986b-46ce-9143-7e6baf8e3e49" width="40%"/>
+</p>
+
+After configured with a label, it is ready for use in your list items.
+<p align="left"> 
+  <img src="https://github.com/user-attachments/assets/f4f47d25-818f-4a46-964c-990e14c78a8a" width="40%"/>
+  <img src="https://github.com/user-attachments/assets/83fdde11-8ebb-4648-936b-d3d2f7e70a78" width="40%"/>
+
+</p>
+
 ## What's Next?
 - Single checkbox status that has one label and a checkbox in a row format - Implemented, Unit Tested and Instrumented Tested as of 05/09
 - Implement Material Design Theme for some colors and fonts
