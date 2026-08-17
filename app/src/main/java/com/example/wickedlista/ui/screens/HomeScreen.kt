@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
+import androidx.compose.foundation.style.Style
+import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -69,6 +72,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun ListsScreen(
     allLists: List<HomeCategories>,
@@ -76,11 +80,13 @@ fun ListsScreen(
     onHomeListClick: () -> Unit,
     contentPaddingValues: PaddingValues
 ) {
+    val style2 = Style {background(Color.Blue)}
     LazyVerticalGrid(
         columns = GridCells.Adaptive(200.dp),
         modifier = Modifier
+            .styleable(null, style2)
             .fillMaxWidth()
-            .padding( 8.dp),
+            .padding( 8.dp), //.background(MaterialTheme.colorScheme.secondaryContainer)
         contentPadding = contentPaddingValues
     ) {
         items(items = allLists, key = {list -> list.id}) { list ->
@@ -88,6 +94,9 @@ fun ListsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 onClick = {
                     homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category, list.topic)
