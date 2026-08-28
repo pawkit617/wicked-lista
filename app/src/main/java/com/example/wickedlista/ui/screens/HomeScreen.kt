@@ -1,5 +1,6 @@
 package com.example.wickedlista.ui.screens
 
+import android.R.attr.background
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +46,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.wickedlista.CommonButton
 import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
+import com.example.wickedlista.StyleButton
 import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.database.homecategories.HomeCategories
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
@@ -80,11 +83,9 @@ fun ListsScreen(
     onHomeListClick: () -> Unit,
     contentPaddingValues: PaddingValues
 ) {
-    val style2 = Style {background(Color.Blue)}
     LazyVerticalGrid(
         columns = GridCells.Adaptive(200.dp),
         modifier = Modifier
-            .styleable(null, style2)
             .fillMaxWidth()
             .padding( 8.dp), //.background(MaterialTheme.colorScheme.secondaryContainer)
         contentPadding = contentPaddingValues
@@ -158,7 +159,15 @@ fun NoListFoundScreen(
             text = stringResource(R.string.no_categories_found),
             style = MaterialTheme.typography.titleLarge
         )
-        CommonButton(
+//        Button(
+//            onClick = { homeScreenViewModel.setCreateDialogVisibility(true) },
+//            shape = MaterialTheme.shapes.small
+//        ) { Text(text = "poop") }
+//        CommonButton(
+//            onClick = { homeScreenViewModel.setCreateDialogVisibility(true) },
+//            text = stringResource(R.string.create_category)
+//        )
+        StyleButton(
             onClick = { homeScreenViewModel.setCreateDialogVisibility(true) },
             text = stringResource(R.string.create_category)
         )

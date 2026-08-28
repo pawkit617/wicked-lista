@@ -1,46 +1,66 @@
 package com.example.wickedlista
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ComposeFoundationFlags
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
+import androidx.compose.foundation.style.MutableStyleState
+import androidx.compose.foundation.style.Style
+import androidx.compose.foundation.style.contentPadding
+import androidx.compose.foundation.style.styleable
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material3.BadgeDefaults.containerColor
+import androidx.compose.material3.BottomAppBarDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.ui.screens.AddItemScreen
 import com.example.wickedlista.ui.screens.EditItemScreen
 import com.example.wickedlista.ui.screens.HomeScreen
 import com.example.wickedlista.ui.screens.SavedListScreen
+import com.example.wickedlista.ui.theme.WickedListaTheme
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
@@ -201,6 +221,9 @@ fun CommonButton(
     onClick : () -> Unit,
     text: String
 ) {
+
+
+
     Button(
         onClick = onClick,
         shape = MaterialTheme.shapes.small,
@@ -209,5 +232,56 @@ fun CommonButton(
         )
     ) {
         Text(text = text)
+    }
+}
+
+@OptIn(ExperimentalFoundationStyleApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun StyleButton(
+    onClick : () -> Unit = {},
+    text: String = ""
+) {
+    ComposeFoundationFlags.isInheritedTextStyleEnabled = true
+    val backgroundColor = MaterialTheme.colorScheme.tertiary
+    val myShape = MaterialTheme.shapes.small
+    val contentColor = MaterialTheme.colorScheme.primaryContainer
+    val styleState = remember { MutableStyleState(null) }
+    val buttonStyle = Style {
+        background(backgroundColor)
+        shape(myShape)
+        contentPadding(20.dp, 16.dp)
+        contentColor(contentColor)
+        fontWeight(FontWeight.Bold)
+    }
+
+    Row(
+        modifier = Modifier
+            .styleable(
+                styleState,
+                buttonStyle
+            )
+            .clickable(
+                onClick = onClick
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+            Text(
+                text = text
+            )
+    }
+}
+
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun ShowMyButton() {
+    WickedListaTheme { //so preview matches colors in emulator
+        StyleButton(
+            onClick = {},
+            text = "Demo"
+        )
     }
 }
