@@ -64,4 +64,5 @@ After configured with a label, it is ready for use in your list items.
 
 ## What's Next?
 - ~~Single checkbox status that has one label and a checkbox in a row format~~ - Implemented, Unit Tested and Instrumented Tested as of 05/09
-- Implement Material Design Theme for some colors and fonts
+- ~~Implement Material Design Theme for some colors and fonts~~
+- Implement new Style API from Android
