@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
+import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,15 +27,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults.elevation
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +48,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -48,14 +59,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.wickedlista.CommonButton
+import com.example.wickedlista.StyleButton
 import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.database.savedlists.SavedLists
+import com.example.wickedlista.ui.theme.GetBoxAsDropShadow
+import com.example.wickedlista.ui.theme.commonIconButtonPressedShadow
+import com.example.wickedlista.ui.theme.commonIconButtonShadow
+import com.example.wickedlista.ui.theme.commonShadow
+import com.example.wickedlista.ui.theme.getBottomButtonRowStyle
 import com.example.wickedlista.ui.viewmodels.SavedListViewModel
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SavedListScreen(
@@ -91,7 +109,10 @@ fun OwnersWithListItems(
     onEditIconButtonClick: (savedItemId: Int,savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit
 ) {
     if (listOfSavedListsOwners.isNotEmpty()) {
-        Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+        ) {
             if (topicName.isNotEmpty()) {
                 Text(
                     text = stringResource(R.string.topic_subtitle) + topicName,
@@ -122,6 +143,15 @@ fun OwnersWithListItems(
                         .background(color = Color.White)
                 )
             }
+            GetBoxAsDropShadow()
+//            Box( //This is only a shadow to show depth b/w list content and button row
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(2.dp)
+//                    .dropShadow(
+//                        RectangleShape, commonShadow
+//                    )
+//            )
             BottomButtonEditRow(
                 savedListViewModel,
                 Modifier
@@ -230,6 +260,7 @@ fun ItemsOfSavedLists(
     }
 }
 
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun ContainerOfListItems(
     ownerId: Int,
@@ -368,6 +399,7 @@ fun HintToAddItemsToOwner(modifier: Modifier = Modifier) {
 //endregion
 
 // region Bottom Button UI
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun BottomButtonEditRow(
     savedListViewModel: SavedListViewModel,
@@ -378,19 +410,18 @@ fun BottomButtonEditRow(
     val selectedOwnerId = savedListUIState.selectedOwner.first
 
     Row(
-        modifier,
+        modifier.background(MaterialTheme.colorScheme.surface),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
         BottomIconButton(
             R.drawable.add_box_48,
-            R.string.add_owner_button_cdescript) { savedListViewModel.setShowAddOwner(true) }
+            R.string.add_owner_button_cdescript) {
+            savedListViewModel.setShowAddOwner(true)
+        }
         BottomIconButton(
             R.drawable.listitem_add_48,
             R.string.icon_add_listitem_button_cdescript) {
-
-           //CURT -  put check here to get the status type
-
             onButtonClick(selectedOwnerId)
         }
         BottomIconButton(
@@ -410,11 +441,31 @@ fun BottomIconButton(
     @StringRes desc: Int,
     onIconClick: () -> Unit
 ) {
-    IconButton(onClick = onIconClick) {
+    var isPressed by remember { mutableStateOf(false) }
+
+    if (isPressed) {
+        LaunchedEffect(Unit) {
+            delay(300.milliseconds)
+            isPressed = false
+        }
+    }
+
+    IconButton(
+        onClick = {
+            isPressed = true
+            onIconClick()
+        },
+        shape = RectangleShape,
+        modifier = Modifier.dropShadow(
+            RectangleShape,
+            if (!isPressed)commonIconButtonShadow else commonIconButtonPressedShadow
+        )
+    ) {
         Icon(
             painter = painterResource(drawableId),
-            modifier = Modifier.size(65.dp),
-            contentDescription = stringResource(desc)
+            modifier = Modifier.size(65.dp).background(MaterialTheme.colorScheme.surface),
+            contentDescription = stringResource(desc),
+
         )
     }
 }
@@ -449,10 +500,9 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     CommonFormTextField(
-                        label =R.string.new_owner,
+                        hint = R.string.new_owner,
                         textFieldState = savedListViewModel.addOwnerTextFieldState,
-                        isError = collectedUiState.hasSQLError,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        isError = collectedUiState.hasSQLError
                     )
                     ErrorMessageWithinDialog(collectedUiState)
 
@@ -460,7 +510,7 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        CommonButton(
+                        StyleButton(
                             onClick = {
                                 savedListViewModel.setShowAddOwner(false)
                                 savedListViewModel.clearErrors()
@@ -468,7 +518,7 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                             },
                             text = stringResource(R.string.cancel)
                         )
-                        CommonButton(
+                        StyleButton(
                             onClick = {
                                 savedListViewModel.addOwner(
                                     categoryId,
@@ -514,11 +564,11 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        CommonButton(
+                        StyleButton(
                             onClick = { savedListViewModel.setShowDeletionOwner(false) },
                             text = stringResource(R.string.cancel)
                         )
-                        CommonButton(
+                        StyleButton(
                             onClick = { savedListViewModel.deleteOwner(ownerToDelete.first) },
                             text = stringResource(R.string.delete)
                         )
@@ -553,7 +603,7 @@ fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
                         modifier = Modifier.padding(bottom = 8.dp),
                         textAlign = TextAlign.Center
                     )
-                    CommonButton(
+                    StyleButton(
                         onClick = { savedListViewModel.setShowDeletionOfLastOwnerWarning(false) },
                         text = stringResource(R.string.ok)
                     )
