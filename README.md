@@ -15,8 +15,8 @@ WickedLista is an application that provides an organizational tool for managing 
 
 On initial launch, the user will be prompted to create their first category. A category can be considered a container for 1 or many lists that are focused on a particular topic. The category must be created with a list.
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/2bbc5824-d134-4a58-a7d7-8cb04215d87d" width="40%" />
-  <img src="https://github.com/user-attachments/assets/567edbc6-a368-4064-ad44-2e9fc861f88f" width="40%"/>
+  <img src="https://github.com/user-attachments/assets/71f1bbd6-7ce2-4bc6-85a4-421c81837aaa" width="40%" />
+  <img src="https://github.com/user-attachments/assets/5b2ee2e3-c1c0-4bc0-afd8-8420bb0def97" width="40%" />
 </p>
 
 
