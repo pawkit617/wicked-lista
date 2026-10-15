@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
+import androidx.compose.foundation.style.styleable
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BasicAlertDialog
@@ -41,12 +44,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.wickedlista.StyleButton
@@ -55,6 +65,8 @@ import com.example.wickedlista.R
 import com.example.wickedlista.data.AddItemUIState
 import com.example.wickedlista.database.saveditems.StatusType
 import com.example.wickedlista.ui.theme.GetBoxAsDropShadow
+import com.example.wickedlista.ui.theme.getCardForModifyItemFormStyle
+import com.example.wickedlista.ui.theme.getDialogStyle
 import com.example.wickedlista.ui.viewmodels.ModifyItemViewModel
 
 @Composable
@@ -78,7 +90,7 @@ fun AddItemForm(modifyItemViewModel: ModifyItemViewModel, ownerId: Int) {
             modifier = Modifier
                 .weight(0.9f)
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp)
                 .verticalScroll(rememberScrollState())
                 .background(MaterialTheme.colorScheme.surfaceContainerLowest),
             verticalArrangement = Arrangement.Top,
@@ -134,68 +146,67 @@ fun EditItemScreen(
 
     val modifyItemUIState by modifyItemViewModel.uiState.collectAsState()
 
-
-    Box(Modifier
-        .fillMaxSize()
-        .background(Color.White)
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
+                .weight(0.9f)
                 .fillMaxWidth()
-                .background(Color.White),
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             ItemInfo(modifyItemViewModel)
             ErrorMessageDisplayWithinCard(modifyItemUIState)
             HelpMessageForStatus(modifyItemViewModel.uiState.collectAsState().value)
             ItemStatuses(modifyItemViewModel)
         }
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment =Alignment.CenterVertically,
+        GetBoxAsDropShadow()
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
-                .align(Alignment.BottomCenter)
-                .background(Color.White)
+                .weight(0.1f)
+                .background(MaterialTheme.colorScheme.surface)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Button(
-                onClick = { onDoneEditingItems() },
-                shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    textAlign = TextAlign.Center,
-                )
-            }
-            Button(
-                onClick = {
-                    modifyItemViewModel.deleteSavedItem(savedItemId)
-                    onDoneEditingItems()
-                },
-                shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-            ) {
-                Text(text = stringResource(R.string.delete), textAlign = TextAlign.Center)
-            }
-            val statusType = modifyItemViewModel.uiState.collectAsState().value.statusType
-            Button(
-                onClick = {
-                    val status = modifyItemViewModel.updateSavedItem(
-                        savedItemId,
-                        ownerId,
-                        statusType
-                    )
-                    if (status) {
+                StyleButton(
+                    {
+                        modifyItemViewModel.deleteSavedItem(savedItemId)
                         onDoneEditingItems()
-                    }
-                },
-                shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-            ) {
-                Text(text = stringResource(R.string.update), textAlign = TextAlign.Center)
+                    },
+                    text = stringResource(R.string.delete),
+                    backgroundColor = MaterialTheme.colorScheme.onErrorContainer,
+                    contentColor = MaterialTheme.colorScheme.surfaceDim,
+                    pressedColor = MaterialTheme.colorScheme.error
+                )
+                StyleButton(
+                    onClick = { onDoneEditingItems() },
+                    text = stringResource(R.string.cancel),
+                )
+                val statusType = modifyItemViewModel.uiState.collectAsState().value.statusType
+                StyleButton(
+                    onClick = {
+                        val status = modifyItemViewModel.updateSavedItem(
+                            savedItemId,
+                            ownerId,
+                            statusType
+                        )
+                        if (status) {
+                            onDoneEditingItems()
+                        }
+                    },
+                    text = stringResource(R.string.update),
+                    contentColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    backgroundColor = MaterialTheme.colorScheme.tertiary,
+                )
             }
         }
     }
@@ -203,13 +214,16 @@ fun EditItemScreen(
 }
 //region Modify Item Shared Form
 
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp, 8.dp, 8.dp, 16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        modifier = Modifier.styleable(
+        null,
+        getCardForModifyItemFormStyle(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            myShape = MaterialTheme.shapes.medium))
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -233,6 +247,106 @@ fun ItemInfo(modifyItemViewModel: ModifyItemViewModel) {
     }
 }
 
+@OptIn(ExperimentalFoundationStyleApi::class)
+@Composable
+fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
+    val addItemUiState = modifyItemViewModel.uiState.collectAsState().value
+    if (addItemUiState.statusType.type != StatusType.MenuStatusType.type) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            modifier = Modifier.styleable(
+                null,
+                getCardForModifyItemFormStyle(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    myShape = MaterialTheme.shapes.medium,
+                    topExternalPadding = 16.dp))
+        ){
+            if (addItemUiState.statusType.type == StatusType.CheckboxStatusType.type) {
+                ItemStatusAsCheckbox(modifyItemViewModel)
+            } else {
+                ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel: ModifyItemViewModel) {
+    val localUiState = modifyItemViewModel.uiState.collectAsState().value
+    Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            val contentDescForSwitch = stringResource(R.string.switch_for_checkbox_cdescript)
+            Text(
+                text = stringResource(R.string.add_item_checkbox_toggle_message),
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Switch(
+                checked = localUiState.useCheckboxStatus,
+                onCheckedChange = {
+                    modifyItemViewModel.setUseCheckboxStatus(it)
+                    if (it) {
+                        modifyItemViewModel.clearTextFieldStatesForStatusMenu()
+                        modifyItemViewModel.clearErrors()
+                    }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = MaterialTheme.colorScheme.tertiary,
+                    uncheckedThumbColor = Color.Black,
+                    uncheckedTrackColor = Color.White
+                ),
+                modifier = Modifier.semantics { contentDescription = contentDescForSwitch }
+            )
+        }
+        if (localUiState.useCheckboxStatus) {
+            CommonFormTextField(
+                R.string.add_item_checkbox_label,
+                modifyItemViewModel.checkboxTextFieldState,
+            )
+        }
+    }
+}
+
+@Composable
+fun ItemStatusAsCheckbox(modifyItemViewModel: ModifyItemViewModel) {
+    val localUiState = modifyItemViewModel.uiState.collectAsState().value
+    Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = localUiState.itemStatusCheckboxLabel,
+            modifier = Modifier.padding(8.dp)
+        )
+        val checkboxContentDesc = stringResource(R.string.status_checkbox_cdescript)
+        Checkbox(
+            checked = localUiState.itemStatusCheckboxChecked,
+            onCheckedChange = { checked ->
+                modifyItemViewModel.setItemStatusCheckboxChecked(checked)
+            },
+            colors = CheckboxDefaults.colors(
+                checkedColor = MaterialTheme.colorScheme.tertiary,
+                uncheckedColor = Color.Black,
+                checkmarkColor = Color.White,
+            ),
+            modifier = Modifier.semantics { contentDescription = checkboxContentDesc }
+        )
+    }
+}
+
 @Composable
 fun HelpMessageForStatus(addItemUIState: AddItemUIState) {
     if (!addItemUIState.useCheckboxStatus) {
@@ -251,14 +365,20 @@ fun HelpMessageForStatus(addItemUIState: AddItemUIState) {
         )
     }
 }
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun ItemStatuses(modifyItemViewModel: ModifyItemViewModel) {
     val addItemUIState = modifyItemViewModel.uiState.collectAsState().value
     if (!addItemUIState.useCheckboxStatus) {
         Card(
-            modifier = Modifier.padding(8.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-        ) {
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            modifier = Modifier.styleable(
+                null,
+                getCardForModifyItemFormStyle(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    myShape = MaterialTheme.shapes.medium)
+            )
+        ){
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -318,7 +438,8 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
             Icon(
                 painterResource(iconForTextField),
                 modifier = Modifier.clickable { expanded = !expanded },
-                contentDescription = stringResource(R.string.status_menu_drop_down_icon)
+                contentDescription = stringResource(R.string.status_menu_drop_down_icon),
+                tint = MaterialTheme.colorScheme.secondary
             )
         }
     )
@@ -342,106 +463,9 @@ fun StatusAsMenu(modifyItemViewModel: ModifyItemViewModel) {
         }
     }
 }
-
-@Composable
-fun ItemStatusAsCheckboxSwitch(modifyItemViewModel: ModifyItemViewModel) {
-    val addItemUiState = modifyItemViewModel.uiState.collectAsState().value
-    if (addItemUiState.statusType.type != StatusType.MenuStatusType.type) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-        ) {
-            if (addItemUiState.statusType.type == StatusType.CheckboxStatusType.type) {
-                ItemStatusAsCheckbox(modifyItemViewModel)
-            } else {
-                ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel)
-            }
-        }
-    }
-}
-
-@Composable
-fun ItemStatusConfigWithLabelAndSwitch(modifyItemViewModel: ModifyItemViewModel) {
-    val localUiState = modifyItemViewModel.uiState.collectAsState().value
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding( start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            val contentDescForSwitch = stringResource(R.string.switch_for_checkbox_cdescript)
-            Text(
-                text = stringResource(R.string.add_item_checkbox_toggle_message),
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Switch(
-                checked = localUiState.useCheckboxStatus,
-                onCheckedChange = {
-                    modifyItemViewModel.setUseCheckboxStatus(it)
-                    if (it) {
-                        modifyItemViewModel.clearTextFieldStatesForStatusMenu()
-                        modifyItemViewModel.clearErrors()
-                    }
-                },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = MaterialTheme.colorScheme.tertiary,
-                    uncheckedThumbColor = Color.Black,
-                    uncheckedTrackColor = Color.White
-                ),
-                modifier = Modifier.semantics { contentDescription = contentDescForSwitch }
-            )
-        }
-        if (localUiState.useCheckboxStatus) {
-            CommonFormTextField(
-                R.string.add_item_checkbox_label,
-                modifyItemViewModel.checkboxTextFieldState,
-            )
-        }
-    }
-}
-
-@Composable
-fun ItemStatusAsCheckbox(modifyItemViewModel: ModifyItemViewModel) {
-    val localUiState = modifyItemViewModel.uiState.collectAsState().value
-    Row(
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.LightGray)
-    ) {
-        Text(
-            text = localUiState.itemStatusCheckboxLabel,
-            modifier = Modifier.padding(8.dp)
-        )
-        val checkboxContentDesc = stringResource(R.string.status_checkbox_cdescript)
-        Checkbox(
-            checked = localUiState.itemStatusCheckboxChecked,
-            onCheckedChange = { checked ->
-                modifyItemViewModel.setItemStatusCheckboxChecked(checked)
-            },
-            colors = CheckboxDefaults.colors(
-                checkedColor = Color.Black,
-                uncheckedColor = Color.Black,
-                checkmarkColor = Color.White,
-            ),
-            modifier = Modifier.semantics { contentDescription = checkboxContentDesc }
-        )
-    }
-}
 //endregion
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationStyleApi::class)
 @Composable
 fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction: () ->Unit) {
     if (modifyItemViewModel.uiState.collectAsState().value.showSuccessAddMoreItemDialog) {
@@ -452,7 +476,8 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .styleable(null, getDialogStyle(MaterialTheme.colorScheme.surfaceDim))
                 ) {
                     Image(
                         painter = painterResource(R.drawable.success_check_48),
@@ -484,7 +509,9 @@ fun SuccessAddMoreDialog(modifyItemViewModel: ModifyItemViewModel, onDoneAction:
                                 modifyItemViewModel.setShowSuccessAddMoreItemDialog(false)
                                 onDoneAction()
                             },
-                            text = stringResource(R.string.done)
+                            text = stringResource(R.string.done),
+                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                         )
                     }
                 }

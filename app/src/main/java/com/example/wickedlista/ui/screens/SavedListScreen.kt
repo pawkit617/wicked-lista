@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,19 +26,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButtonDefaults.elevation
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.draw.innerShadow
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -59,9 +51,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.wickedlista.StyleButton
 import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
+import com.example.wickedlista.StyleButton
 import com.example.wickedlista.data.SavedListUIState
 import com.example.wickedlista.database.saveditems.SavedItems
 import com.example.wickedlista.database.saveditems.StatusType
@@ -69,8 +61,9 @@ import com.example.wickedlista.database.savedlists.SavedLists
 import com.example.wickedlista.ui.theme.GetBoxAsDropShadow
 import com.example.wickedlista.ui.theme.commonIconButtonPressedShadow
 import com.example.wickedlista.ui.theme.commonIconButtonShadow
-import com.example.wickedlista.ui.theme.commonShadow
-import com.example.wickedlista.ui.theme.getBottomButtonRowStyle
+import com.example.wickedlista.ui.theme.getCardListItemStyle
+import com.example.wickedlista.ui.theme.getCommonTextFieldStyle
+import com.example.wickedlista.ui.theme.getDialogStyle
 import com.example.wickedlista.ui.viewmodels.SavedListViewModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -111,7 +104,7 @@ fun OwnersWithListItems(
     if (listOfSavedListsOwners.isNotEmpty()) {
         Column(modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
         ) {
             if (topicName.isNotEmpty()) {
                 Text(
@@ -119,13 +112,12 @@ fun OwnersWithListItems(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                 )
             }
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
                     .weight(0.9f)
             ) {
                 OwnersOfSavedList(
@@ -133,25 +125,17 @@ fun OwnersWithListItems(
                     savedListViewModel,
                     Modifier
                         .weight(0.25f)
-                        .background(color = Color.Gray)
+                        .background(color = MaterialTheme.colorScheme.secondary)
                 )
                 ItemsOfSavedLists(
                     savedListViewModel,
                     onEditIconButtonClick,
                     Modifier
                         .weight(0.75f)
-                        .background(color = Color.White)
+                        .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
                 )
             }
             GetBoxAsDropShadow()
-//            Box( //This is only a shadow to show depth b/w list content and button row
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(2.dp)
-//                    .dropShadow(
-//                        RectangleShape, commonShadow
-//                    )
-//            )
             BottomButtonEditRow(
                 savedListViewModel,
                 Modifier
@@ -247,7 +231,6 @@ fun ItemsOfSavedLists(
     onEditIconButtonClick: (savedItemId: Int, savedItemLabel: String, savedItemDesc: String, currentStatus: String, ownerId: Int) -> Unit,
     modifier: Modifier
 ) {
-    //CURT - revisit this logic with maybe a launcheffected higher up
     val savedListUIState by savedListViewModel.uiState.collectAsState()
     savedListViewModel.getAllSavedItemsForSelectedOwner()
 
@@ -270,21 +253,16 @@ fun ContainerOfListItems(
     savedListViewModel: SavedListViewModel
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 0.dp)
     ) {
         items(savedListItems)  {
-            ElevatedCard(
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(8.dp),
-                shape = RoundedCornerShape(10.dp)
+            Card(
+                modifier = Modifier.styleable(null, getCardListItemStyle())
             ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.fillMaxWidth().background(Color.LightGray)
+                    modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer,)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -302,8 +280,10 @@ fun ContainerOfListItems(
                         }, modifier = Modifier.padding(end = 8.dp)) {
                             Icon(
                                 painterResource(R.drawable.edit_note_48),
+                                tint = MaterialTheme.colorScheme.tertiary,
                                 contentDescription = "",
                                 modifier = Modifier.size(36.dp)
+
                             )
                         }
                     }
@@ -312,11 +292,17 @@ fun ContainerOfListItems(
                         minLines = 2,
                         maxLines = 4,
                         modifier = Modifier
-                            .padding(top = 8.dp, start = 8.dp, end = 8.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(10.dp)) //CURT - must come before background
-                            .background(Color.White)
-                            .padding(8.dp) //CURT - padding for inside the shape... weird
+                            .padding(8.dp)
+                            .styleable(
+                            null, 
+                            getCommonTextFieldStyle(
+                                shapeOfTextField = RoundedCornerShape(10.dp),
+                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                                contentColor = Color.Black,
+                                height = 75.dp
+                            )
+                        )
                     )
                     HorizontalDivider(
                         thickness = 1.dp,
@@ -350,7 +336,6 @@ fun StatusConfigurationForItem(savedItem: SavedItems, savedListViewModel: SavedL
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray)
         ) {
             Text(
                 text = savedItem.status,
@@ -366,9 +351,10 @@ fun StatusConfigurationForItem(savedItem: SavedItems, savedListViewModel: SavedL
                     savedListViewModel.updateSavedItemForCheckboxOnly(updatedSavedItem)
                 },
                 colors = CheckboxDefaults.colors(
-                    checkedColor = Color.Black,
+                    checkedColor = MaterialTheme.colorScheme.tertiary,
                     uncheckedColor = Color.Black,
                     checkmarkColor = Color.White,
+
                 )
             )
         }
@@ -415,9 +401,13 @@ fun BottomButtonEditRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         BottomIconButton(
-            R.drawable.add_box_48,
-            R.string.add_owner_button_cdescript) {
-            savedListViewModel.setShowAddOwner(true)
+            R.drawable.delete_box_owner_48,
+            R.string.icon_delete_owner_button_cdescript,
+            MaterialTheme.colorScheme.error) {
+            if (savedListUIState.allSavedLists.size > 1) {
+                savedListViewModel.setShowDeletionOwner(true)
+            } else
+                savedListViewModel.setShowDeletionOfLastOwnerWarning(true)
         }
         BottomIconButton(
             R.drawable.listitem_add_48,
@@ -425,12 +415,9 @@ fun BottomButtonEditRow(
             onButtonClick(selectedOwnerId)
         }
         BottomIconButton(
-            R.drawable.delete_box_owner_48,
-            R.string.icon_delete_owner_button_cdescript) {
-            if (savedListUIState.allSavedLists.size > 1) {
-                savedListViewModel.setShowDeletionOwner(true)
-            } else
-                savedListViewModel.setShowDeletionOfLastOwnerWarning(true)
+            R.drawable.add_box_48,
+            R.string.add_owner_button_cdescript) {
+            savedListViewModel.setShowAddOwner(true)
         }
     }
 }
@@ -439,6 +426,7 @@ fun BottomButtonEditRow(
 fun BottomIconButton(
     @DrawableRes drawableId: Int,
     @StringRes desc: Int,
+    iconColor: Color = MaterialTheme.colorScheme.tertiary,
     onIconClick: () -> Unit
 ) {
     var isPressed by remember { mutableStateOf(false) }
@@ -463,6 +451,7 @@ fun BottomIconButton(
     ) {
         Icon(
             painter = painterResource(drawableId),
+            tint = iconColor,
             modifier = Modifier.size(65.dp).background(MaterialTheme.colorScheme.surface),
             contentDescription = stringResource(desc),
 
@@ -472,7 +461,7 @@ fun BottomIconButton(
 // endregion
 
 //region Operations Dialogs
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationStyleApi::class)
 @Composable
 fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
     if (savedListViewModel.uiState.collectAsState().value.showAddOwnerDialog) {
@@ -484,8 +473,12 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
             Card {
                 Column(
                     modifier = Modifier
-                        .background(Color.White)
-                        .padding(8.dp),
+                        .styleable(
+                            null,
+                            getDialogStyle(
+                                MaterialTheme.colorScheme.surfaceDim
+                            )
+                        ),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -524,7 +517,9 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
                                     categoryId,
                                     savedListViewModel.addOwnerTextFieldState.text.toString())
                             },
-                            text = stringResource(R.string.add_owner)
+                            text = stringResource(R.string.add_owner),
+                            contentColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                            backgroundColor = MaterialTheme.colorScheme.tertiary
                         )
                     }
                 }
@@ -533,7 +528,7 @@ fun AddOwnerDialog(savedListViewModel: SavedListViewModel, categoryId: Int) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationStyleApi::class)
 @Composable
 fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: SavedListViewModel) {
     if (savedListViewModel.uiState.collectAsState().value.showDeletionDialog) {
@@ -542,6 +537,13 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
         ) {
             Card {
                 Column(
+                    Modifier
+                        .styleable(
+                            null,
+                            getDialogStyle(
+                                MaterialTheme.colorScheme.surfaceDim
+                            )
+                        ),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -579,7 +581,7 @@ fun DeleteOwnerDialog(ownerToDelete: Pair<Int, String>, savedListViewModel: Save
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationStyleApi::class)
 @Composable
 fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
     if (savedListViewModel.uiState.collectAsState().value.showDeletionOfLastOwnerDialog) {
@@ -588,6 +590,13 @@ fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
         ) {
             Card {
                 Column(
+                    Modifier
+                        .styleable(
+                            null,
+                            getDialogStyle(
+                                MaterialTheme.colorScheme.surfaceDim
+                            )
+                        ),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -605,7 +614,9 @@ fun WarningForDeletingLastOwnerDialog(savedListViewModel: SavedListViewModel) {
                     )
                     StyleButton(
                         onClick = { savedListViewModel.setShowDeletionOfLastOwnerWarning(false) },
-                        text = stringResource(R.string.ok)
+                        text = stringResource(R.string.ok),
+                        contentColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                        backgroundColor = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }

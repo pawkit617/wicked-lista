@@ -1,10 +1,19 @@
 package com.example.wickedlista.ui.theme
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.animate
@@ -13,7 +22,10 @@ import androidx.compose.foundation.style.externalPadding
 import androidx.compose.foundation.style.fillWidth
 import androidx.compose.foundation.style.pressed
 import androidx.compose.foundation.style.scale
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
@@ -21,8 +33,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.TextUnit
@@ -89,16 +106,33 @@ fun getHomeCardStyle(
 }
 
 @OptIn(ExperimentalFoundationStyleApi::class)
-fun getBottomButtonRowStyle() = Style {
-    innerShadow(
-        Shadow(
-            radius = 8.dp,
-            spread = 1.dp,
-            offset = DpOffset(0.dp, 20.dp),
-            color = Color.Black
-        )
-    )
+fun getCardListItemStyle() = Style {
+    fillWidth()
+    shape(RoundedCornerShape(10.dp))
+    externalPadding(start = 0.dp, top= 8.dp, end = 0.dp, bottom = 8.dp)
+    dropShadow(commonShadow)
 }
+
+@OptIn(ExperimentalFoundationStyleApi::class)
+fun getCardForModifyItemFormStyle(
+    containerColor: Color,
+    myShape: Shape,
+    topExternalPadding: Dp = 0.dp
+) = Style {
+    fillWidth()
+    shape(myShape)
+    externalPadding(0.dp, topExternalPadding, 0.dp, 0.dp)
+    background(containerColor)
+    dropShadow(commonShadow)
+
+    animate {
+        scaleIn(spring(dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow), initialScale = .20f)
+    }
+
+}
+
+
 
 @OptIn(ExperimentalFoundationStyleApi::class)
 fun getDialogStyle(backgroundColor: Color) = Style {
@@ -126,6 +160,9 @@ fun getButtonStyle(contentColor: Color,
             background(pressedColor)
             contentColor(pressedContentColor)
             innerShadow(commonShadow)
+//            animate(spring(dampingRatio = Spring.DampingRatioMediumBouncy)) {
+//                scale(1.2f)
+//            }
         }
     }
 
@@ -138,13 +175,14 @@ fun getCommonTextFieldStyle(
     fontSize : TextUnit,
     backgroundColor: Color,
     contentColor: Color,
-    innerShadowColor: Color = Color.Black
+    innerShadowColor: Color = Color.Black,
+    height: Dp = 50.dp
 ) = Style {
     contentPadding(start = 8.dp, 0.dp, 0.dp, 0.dp)
     fillWidth()
     background(backgroundColor)
     contentColor(contentColor)
-    height(50.dp)
+    height(height)
     shape(shapeOfTextField)
     innerShadow(Shadow(
         radius = 4.dp,

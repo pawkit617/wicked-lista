@@ -14,11 +14,11 @@
     <string name="edit_item">Edit Item</string>
 
     <!--Create List Labels-->
-    <string name="category">Category</string>
+    <string name="category">Category (e.g. Recipes)</string>
     <string name="category_placeholder">e.g. Recipes</string>
-    <string name="topic">Topic</string>
+    <string name="topic">Topic (e.g. Pies)</string>
     <string name="topic_placeholder">e.g. Pies</string>
-    <string name="lists_for">Lists needed for…</string>
+    <string name="lists_for">Lists needed for… (e.g. Apple Pie)</string>
     <string name="lists_for_placeholder">e.g. Apple Pie</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
@@ -56,7 +56,7 @@
     <string name="icon_add_listitem_cdescript">add item icon </string>
     <string name="icon_add_listitem_button_cdescript">add item icon button</string>
     <string name="icon_add_owner_cdescript">add owner icon</string>
-    <string name="add_owner_button_cdescript">add item button</string>
+    <string name="add_owner_button_cdescript">add owner button</string>
     <string name="add_item_success_message_icon">add success icon</string>
     <string name="category_icon">category icon</string>
     <string name="switch_for_checkbox_cdescript">switch to toggle to checkbox</string>

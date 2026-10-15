@@ -239,7 +239,8 @@ fun CommonFormTextField(
         fontSize,
         MaterialTheme.colorScheme.surfaceContainerLowest,
         MaterialTheme.colorScheme.outlineVariant,
-        if (isError) MaterialTheme.colorScheme.error else Color.Black
+        if (isError) MaterialTheme.colorScheme.error else Color.Black,
+        if (lineLimits != TextFieldLineLimits.SingleLine ) 100.dp else 50.dp
         )
 
     BasicTextField(
@@ -253,17 +254,16 @@ fun CommonFormTextField(
             Box (contentAlignment = Alignment.CenterStart) {
                 if (textFieldState.text.isEmpty()) {
                     Text(
-                        text = stringResource(hint),
+                        text = stringResource(hint)
                     )
                 }
                 innerTextField()
             }
-
         }
     )
     if (insertSpacer) {
         Spacer(
-            Modifier.height(16.dp).fillMaxWidth()//.background(MaterialTheme.colorScheme.secondaryContainer)
+            Modifier.height(16.dp).fillMaxWidth()
         )
     }
 }
@@ -276,6 +276,8 @@ fun StyleButton(
     text: String = "",
     contentColor: Color = MaterialTheme.colorScheme.primary,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    pressedColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    pressedContentColor: Color = MaterialTheme.colorScheme.inversePrimary,
     buttonWidth: Dp? = null
 ) {
 
@@ -284,8 +286,8 @@ fun StyleButton(
     val buttonStyle = getButtonStyle(
         contentColor,
         backgroundColor,
-        pressedColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        pressedContentColor = MaterialTheme.colorScheme.inversePrimary,
+        pressedColor = pressedColor,
+        pressedContentColor = pressedContentColor,
         MaterialTheme.shapes.small,
         buttonWidth
     )
@@ -294,7 +296,7 @@ fun StyleButton(
         modifier = Modifier
             .clickable(
                 onClick = onClick,
-                interactionSource = interactionSource
+                interactionSource = interactionSource,
             )
             .styleable(
                 styleState,

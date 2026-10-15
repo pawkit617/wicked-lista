@@ -156,7 +156,7 @@ class ModifyItemScreenTest {
             it.onNodeWithText(baseContext.getString(R.string.create)).performClick()
 
             it.onNodeWithText("Bought").assertIsDisplayed()
-            it.onNodeWithContentDescription(baseContext.getString(R.string.status_checkbox_cdescript)).performClick()
+            it.onNodeWithContentDescription(baseContext.getString(R.string.status_checkbox_cdescript), useUnmergedTree = true).performClick()
         }
     }
 
@@ -231,8 +231,8 @@ class ModifyItemScreenTest {
         setStatusInDatabase()
         setUpEditScreen()
         composeTestRuleActivity.let {
-            it.onNodeWithText(baseContext.getString(R.string.add_item_label)).assertIsDisplayed()
-            it.onNodeWithText(baseContext.getString(R.string.add_item_description_label)).assertIsDisplayed()
+            it.onNodeWithText("Flour").assertIsDisplayed()
+            it.onNodeWithText("Gold Medal").assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.add_item_status_choose_message)).assertIsDisplayed()
             it.onNodeWithContentDescription(baseContext.getString(R.string.status_menu_drop_down_icon)).performClick()
             it.onNodeWithText("Bought").assertIsDisplayed().performClick()

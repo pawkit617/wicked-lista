@@ -178,7 +178,9 @@ fun NoListFoundScreen(
 
         StyleButton(
             onClick = { homeScreenViewModel.setCreateDialogVisibility(true) },
-            text = stringResource(R.string.create_category)
+            text = stringResource(R.string.create_category),
+            backgroundColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.surfaceDim
         )
     }
 }
@@ -230,7 +232,10 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
                             homeScreenViewModel.deleteHomeList()
                             homeScreenViewModel.setDeletionDialogVisibility(false)
                         },
-                        text = stringResource(R.string.delete)
+                        text = stringResource(R.string.delete),
+                        backgroundColor = MaterialTheme.colorScheme.onErrorContainer,
+                        contentColor = MaterialTheme.colorScheme.surfaceDim,
+                        pressedColor = MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -304,7 +309,9 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                                     listForState.text
                                 )
                             },
-                            text = stringResource(R.string.create)
+                            text = stringResource(R.string.create),
+                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.surfaceDim
                         )
                     }
                 }

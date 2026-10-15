@@ -24,6 +24,7 @@ navigationCompose = "2.9.8"
 room = "2.8.4"
 viewModelSavedState = "2.11.0"
 foundationVersion = "1.12.0"
+animationCore = "1.12.1"
 
 [libraries]
 #androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -62,6 +63,7 @@ kotlinx-conroutines-test = {group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 mockito-core = {group = "org.mockito", name = "mockito-core", version.ref = "mockito"}
 mockk-io = {group = "io.mockk", name = "mockk", version.ref = "mockk"}
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "animationCore" }
 #androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 
 
