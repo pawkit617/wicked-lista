@@ -23,30 +23,30 @@ On initial launch, the user will be prompted to create their first category. A c
 Once a category is successfully created with the first list, the user can add list items to it.
 
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/ed1c114d-9455-47a6-958c-91850f1b7a49" width="40%" />
-  <img src="https://github.com/user-attachments/assets/52e8a3df-210d-498f-a792-68a6ce816dc4" width="40%"/>
+  <img width="40%" src="https://github.com/user-attachments/assets/95dec916-a9d0-4417-9ac5-12da9669a45f" />
+  <img width="40%" src="https://github.com/user-attachments/assets/8eb73d08-3a9c-411f-a913-409af205e42f" />
 </p>
 
 
 The user can add items continuously. After the statuses have been configured, they become a drop down menu selection.
 
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/01f8e98f-9140-4189-9e59-144dbc93326c" width="40%" />
-  <img src="https://github.com/user-attachments/assets/44e5a3e5-d8c2-41bf-8fe8-99d1c03aacb4" width="40%"/>
+  <img width="40%" src="https://github.com/user-attachments/assets/a29dbdd1-c4eb-4e6b-9d12-d751bab29c83" />
+  <img width="40%" src="https://github.com/user-attachments/assets/77c1a0c2-2415-4deb-b41e-bb8eb3f2b55f" />
 </p>
 
 git 
 When the user is finished adding their items, they can now see these items as a list. The user can add more lists pertaining to the given topic.
 
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/a1a085fb-7edf-4c82-a495-cc548914b16a" width="40%" />
-  <img src="https://github.com/user-attachments/assets/e036f1cb-cd62-4184-bb64-7998da1471d1" width="40%"/>
+  <img width="40%" src="https://github.com/user-attachments/assets/2e8db731-04e6-41c3-84fd-5ac347d9b1a7" />
+  <img width="40%" src="https://github.com/user-attachments/assets/65c26597-1efc-4e40-997b-8b9adac79ea5" />
 </p>
 
 The vertical tabs allow the user to view their many lists based on the configured topic.
 
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/39257a07-e09c-4503-a701-03e6241b3197" width="40%" />
+  <img width="40%" src="https://github.com/user-attachments/assets/2f329e98-3bff-4898-b1f8-9f5ca3b371ce" />
 </p>
 
 ## Checkbox Style List Items
