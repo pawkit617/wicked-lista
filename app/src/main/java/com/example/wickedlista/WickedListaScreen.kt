@@ -318,19 +318,3 @@ fun ShowMyPreview() {
 
     }
 }
-
-@Composable
-fun CommonButton(
-    onClick : () -> Unit,
-    text: String
-) {
-    Button(
-        onClick = onClick,
-        shape = MaterialTheme.shapes.small,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black,
-        )
-    ) {
-        Text(text = text)
-    }
-}
