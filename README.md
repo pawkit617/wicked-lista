@@ -7,6 +7,7 @@ WickedLista is an application that provides an organizational tool for managing 
 - Jetpack Compose UI implementation
 - Hilt dependency injection
 - Room database to create, find, update and delete categories of lists and their items
+- Utilizing Style API for Buttons and TextFields
 - Unit testing
 - Instrumented testing
 
