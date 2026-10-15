@@ -18,7 +18,6 @@ import com.example.wickedlista.R
 import com.example.wickedlista.database.WickedListaDatabase
 import com.example.wickedlista.database.homecategories.HomeCategories
 import com.example.wickedlista.database.itemstatus.ItemStatus
-import com.example.wickedlista.database.itemstatuschecked.ItemStatusChecked
 import com.example.wickedlista.database.savedlists.SavedLists
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
