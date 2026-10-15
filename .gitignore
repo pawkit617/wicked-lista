@@ -10,9 +10,11 @@
 /.idea/studiobot.xml
 /.idea/markdown.xml
 /.idea/androidTestResultsUserPreferences.xml
+/.idea/deploymentTargetSelector.xml
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+
