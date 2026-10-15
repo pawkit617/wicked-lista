@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    //alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.hilt)
     id("com.google.devtools.ksp")
@@ -12,13 +12,13 @@ hilt {
 android {
     namespace = "com.example.wickedlista"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.example.wickedlista"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -41,9 +41,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlin{
-        jvmToolchain(21)
-    }
+//    kotlin{
+//        jvmToolchain(21)
+//    }
     buildFeatures {
         compose = true
     }
@@ -51,8 +51,9 @@ android {
 
 dependencies {
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.animation.core)
 
-    implementation(platform(libs.androidx.compose.bom))
+    //implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -72,7 +73,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.junit.ktx)
-    implementation(libs.androidx.foundation)
+    //implementation(libs.androidx.foundation)
     ksp(libs.androidx.room.compiler)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
@@ -85,7 +86,7 @@ dependencies {
     testImplementation(libs.mockk.io)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
+    //androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     androidTestImplementation(libs.hilt.test)

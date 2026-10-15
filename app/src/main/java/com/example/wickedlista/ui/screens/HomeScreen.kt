@@ -2,12 +2,13 @@ package com.example.wickedlista.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
+import androidx.compose.foundation.style.rememberUpdatedStyleState
+import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,11 +43,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.wickedlista.CommonButton
 import com.example.wickedlista.CommonFormTextField
 import com.example.wickedlista.R
+import com.example.wickedlista.StyleButton
 import com.example.wickedlista.data.HomeScreenUIState
 import com.example.wickedlista.database.homecategories.HomeCategories
+import com.example.wickedlista.ui.theme.getDialogStyle
+import com.example.wickedlista.ui.theme.getHomeCardStyle
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
 
 
@@ -69,6 +76,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun ListsScreen(
     allLists: List<HomeCategories>,
@@ -80,19 +88,34 @@ fun ListsScreen(
         columns = GridCells.Adaptive(200.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding( 8.dp),
+            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest), //.background(MaterialTheme.colorScheme.secondaryContainer)
         contentPadding = contentPaddingValues
     ) {
         items(items = allLists, key = {list -> list.id}) { list ->
+            val interactionSource = remember { MutableInteractionSource() }
+            val styleState = rememberUpdatedStyleState(interactionSource)
             Card(
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                onClick = {
-                    homeScreenViewModel.setCurrentlySelectedHomeList(list.id, list.category, list.topic)
-                    onHomeListClick()
-                }
+                    .clickable(
+                            onClick = {
+                                homeScreenViewModel.setCurrentlySelectedHomeList(
+                                    list.id,
+                                    list.category,
+                                    list.topic)
+                                onHomeListClick()
+                            },
+                            interactionSource = interactionSource
+                    )
+                    .styleable(
+                        styleState = styleState,
+                        getHomeCardStyle(
+                        MaterialTheme.shapes.medium,
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                )
             ) {
                 Box {
                     IconButton(
@@ -104,7 +127,9 @@ fun ListsScreen(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.close_small_24),
-                            modifier = Modifier.fillMaxSize().scale(.5f),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .scale(.5f),
                             contentDescription = stringResource(R.string.icon_delete_cdescript),
                         )
                     }
@@ -140,7 +165,8 @@ fun NoListFoundScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(contentPaddingValues),
+            .padding(contentPaddingValues)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -149,9 +175,12 @@ fun NoListFoundScreen(
             text = stringResource(R.string.no_categories_found),
             style = MaterialTheme.typography.titleLarge
         )
-        CommonButton(
+
+        StyleButton(
             onClick = { homeScreenViewModel.setCreateDialogVisibility(true) },
-            text = stringResource(R.string.create_category)
+            text = stringResource(R.string.create_category),
+            backgroundColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.surfaceDim
         )
     }
 }
@@ -194,16 +223,19 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth() //Curt - necessary if u want SpaceEvenly to work
                 ) {
-                    CommonButton(
+                    StyleButton(
                         onClick = { homeScreenViewModel.setDeletionDialogVisibility(false) },
                         text = stringResource(R.string.cancel)
                     )
-                    CommonButton(
+                    StyleButton(
                         onClick = {
                             homeScreenViewModel.deleteHomeList()
                             homeScreenViewModel.setDeletionDialogVisibility(false)
                         },
-                        text = stringResource(R.string.delete)
+                        text = stringResource(R.string.delete),
+                        backgroundColor = MaterialTheme.colorScheme.onErrorContainer,
+                        contentColor = MaterialTheme.colorScheme.surfaceDim,
+                        pressedColor = MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -211,6 +243,7 @@ fun DeletionDialog(homeScreenViewModel: HomeScreenViewModel) {
     }
 }
 
+@OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
     val homeScreenUIState = homeScreenViewModel.uiState.collectAsState() //CURT - will not be call on state change. Seems state change is only recognized in HomeScreen(...)
@@ -226,46 +259,41 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
             Card {
                 Column(
                     modifier = Modifier
-                        .background(Color.White)
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .styleable(
+                            null,
+                            getDialogStyle(
+                                MaterialTheme.colorScheme.surfaceDim
+                            )
+                        ),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CommonFormTextField(
                         R.string.category,
-                        R.string.category_placeholder,
                         titleState,
                         isError = homeScreenUIState.value.isError,
-                        modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.padding(8.dp))
-
                     CommonFormTextField(
                         R.string.topic,
-                        R.string.topic_placeholder,
                         topicState,
-                        modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.padding(8.dp))
 
                     CommonFormTextField(
                         R.string.lists_for,
-                        R.string.lists_for_placeholder,
                         listForState,
-                        isError = homeScreenUIState.value.hasNoListFor,
-                        modifier = Modifier.fillMaxWidth()
+                        isError = homeScreenUIState.value.hasNoListFor
                     )
-                    Spacer(Modifier.padding(8.dp))
 
                     ErrorMessageDisplayWithinDialog(homeScreenUIState)
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, start = 0.dp, end = 0.dp, bottom = 0.dp)
                     ) {
-                        CommonButton(
+                        StyleButton(
                             onClick = {
                                 homeScreenViewModel.setCreateDialogVisibility(false)
                                 homeScreenViewModel.clearErrors()
@@ -273,7 +301,7 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                             },
                             text = stringResource(R.string.cancel)
                         )
-                        CommonButton(
+                        StyleButton(
                             onClick = {
                                 homeScreenViewModel.createNewList(
                                     titleState.text,
@@ -281,7 +309,9 @@ fun CreateListDialog(homeScreenViewModel: HomeScreenViewModel) {
                                     listForState.text
                                 )
                             },
-                            text = stringResource(R.string.create)
+                            text = stringResource(R.string.create),
+                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.surfaceDim
                         )
                     }
                 }
@@ -302,6 +332,7 @@ fun ErrorMessageDisplayWithinDialog(homeScreenUIState: State<HomeScreenUIState>)
     if (errMsg != -1) {
         Text(
             text = stringResource(errMsg),
-            color = Color.Red)
+            color = MaterialTheme.colorScheme.error)
+
     }
 }

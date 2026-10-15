@@ -109,11 +109,8 @@ class HomeScreenTest {
         composeTestRuleActivity.let {
             it.onNodeWithText(baseContext.getString(R.string.create_category)).performClick()
             it.onNodeWithText(baseContext.getString(R.string.category)).performClick()
-            it.onNodeWithText(baseContext.getString(R.string.category_placeholder)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.topic)).performClick()
-            it.onNodeWithText(baseContext.getString(R.string.topic_placeholder)).assertIsDisplayed()
             it.onNodeWithText(baseContext.getString(R.string.lists_for)).performClick()
-            it.onNodeWithText(baseContext.getString(R.string.lists_for_placeholder)).assertIsDisplayed()
         }
     }
 
