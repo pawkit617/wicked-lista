@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 108dp x 108dp. Artwork stays inside the central 66dp safe zone
+     (x/y 21..87), so it works as an adaptive-icon foreground. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Cardboard backing -->
+    <path
+        android:fillColor="#546E7A"
+        android:pathData="M33,26 H75 Q78,26 78,29 V81 Q78,84 75,84 H33 Q30,84 30,81 V29 Q30,26 33,26 Z" />
+
+    <!-- Edge of the page stack -->
+    <path
+        android:fillColor="#CFD8DC"
+        android:pathData="M33,79 H75 V81.5 H33 Z" />
+
+    <!-- Page -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,34 H76 V78 Q76,79 75,79 H33 Q32,79 32,78 Z" />
+
+    <!-- Title -->
+    <path
+        android:strokeColor="#37474F"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M37,39.5 H56" />
+
+    <!-- Item 1 -->
+    <path
+        android:strokeColor="#546E7A"
+        android:strokeWidth="1.1"
+        android:pathData="M37.2,43 H42.8 Q44,43 44,44.2 V49.8 Q44,51 42.8,51 H37.2 Q36,51 36,49.8 V44.2 Q36,43 37.2,43 Z" />
+    <path
+        android:strokeColor="#90A4AE"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M49,47 H72" />
+    <path
+        android:name="strike1"
+        android:strokeColor="#37474F"
+        android:strokeWidth="1.1"
+        android:pathData="M47.5,47 H73.5" />
+    <path
+        android:name="check1"
+        android:strokeColor="#43A047"
+        android:strokeWidth="1.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M37.8,47 L40,49.4 L45,43.8" />
+
+    <!-- Item 2 -->
+    <path
+        android:strokeColor="#546E7A"
+        android:strokeWidth="1.1"
+        android:pathData="M37.2,55 H42.8 Q44,55 44,56.2 V61.8 Q44,63 42.8,63 H37.2 Q36,63 36,61.8 V56.2 Q36,55 37.2,55 Z" />
+    <path
+        android:strokeColor="#90A4AE"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M49,59 H69" />
+    <path
+        android:name="strike2"
+        android:strokeColor="#37474F"
+        android:strokeWidth="1.1"
+        android:pathData="M47.5,59 H70.5" />
+    <path
+        android:name="check2"
+        android:strokeColor="#43A047"
+        android:strokeWidth="1.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M37.8,59 L40,61.4 L45,55.8" />
+
+    <!-- Item 3 -->
+    <path
+        android:strokeColor="#546E7A"
+        android:strokeWidth="1.1"
+        android:pathData="M37.2,67 H42.8 Q44,67 44,68.2 V73.8 Q44,75 42.8,75 H37.2 Q36,75 36,73.8 V68.2 Q36,67 37.2,67 Z" />
+    <path
+        android:strokeColor="#90A4AE"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M49,71 H65" />
+    <path
+        android:name="strike3"
+        android:strokeColor="#37474F"
+        android:strokeWidth="1.1"
+        android:pathData="M47.5,71 H66.5" />
+    <path
+        android:name="check3"
+        android:strokeColor="#43A047"
+        android:strokeWidth="1.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M37.8,71 L40,73.4 L45,67.8" />
+
+    <!-- Top binding -->
+    <path
+        android:fillColor="#37474F"
+        android:pathData="M30,26 H78 V34 H30 Z" />
+
+    <!-- Binding rings -->
+    <path
+        android:strokeColor="#CFD8DC"
+        android:strokeWidth="1.3"
+        android:pathData="M36.0,29.5 a2,4.5 0 1,0 4,0 a2,4.5 0 1,0 -4,0 Z
+                          M44.0,29.5 a2,4.5 0 1,0 4,0 a2,4.5 0 1,0 -4,0 Z
+                          M52.0,29.5 a2,4.5 0 1,0 4,0 a2,4.5 0 1,0 -4,0 Z
+                          M60.0,29.5 a2,4.5 0 1,0 4,0 a2,4.5 0 1,0 -4,0 Z
+                          M68.0,29.5 a2,4.5 0 1,0 4,0 a2,4.5 0 1,0 -4,0 Z" />
+</vector>

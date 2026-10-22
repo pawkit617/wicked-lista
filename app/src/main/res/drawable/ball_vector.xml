@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="200dp"
+    android:viewportWidth="120"
+    android:viewportHeight="200">
+
+    <!-- Shadow on the ground (scales with ball height) -->
+    <group android:scaleY=".7" android:scaleX=".7" android:pivotX="60" android:pivotY="100">
+    <group
+        android:name="shadow"
+        android:pivotX="60"
+        android:pivotY="182">
+        <path
+            android:fillColor="#33000000"
+            android:pathData="M40,182 a20,4 0 1,0 40,0 a20,4 0 1,0 -40,0 Z" />
+    </group>
+
+    <!-- Outer group: vertical movement -->
+    <group android:name="ball_translate">
+        <!-- Inner group: squash & stretch, pivoting at the bottom of the ball -->
+        <group
+            android:name="ball_squash"
+            android:pivotX="60"
+            android:pivotY="50">
+            <!-- Ball -->
+            <path
+                android:fillColor="#FFD600"
+                android:strokeColor="#F9A825"
+                android:strokeWidth="1.5"
+                android:pathData="M40,30 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+            <!-- Highlight -->
+            <path
+                android:fillColor="#99FFFFFF"
+                android:pathData="M48,23 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z" />
+        </group>
+    </group>
+    </group>
+</vector>

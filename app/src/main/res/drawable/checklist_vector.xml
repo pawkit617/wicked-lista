@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="90dp"
+    android:height="135dp"
+    android:viewportWidth="120"
+    android:viewportHeight="170">
+    <group android:scaleX=".6" android:scaleY=".6" android:pivotX="60" android:pivotY="85">
+    <!-- Cardboard backing -->
+    <path
+        android:fillColor="#546E7A"
+        android:pathData="M14,22 H106 V148 Q106,152 102,152 H18 Q14,152 14,148 Z" />
+
+    <!-- Edge of the page stack -->
+    <path
+        android:fillColor="#CFD8DC"
+        android:pathData="M19,146 H101 V149 H19 Z" />
+
+    <!-- Page -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18,30 H102 V144 Q102,146 100,146 H20 Q18,146 18,144 Z" />
+
+    <!-- Title -->
+    <path
+        android:strokeColor="#37474F"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M26,42 H62" />
+    <path
+        android:strokeColor="#CFD8DC"
+        android:strokeWidth="1"
+        android:pathData="M24,48 H96" />
+
+    <!-- Item 1 -->
+    <path
+        android:strokeColor="#546E7A"
+        android:strokeWidth="1.6"
+        android:pathData="M26,57 H36 Q38,57 38,59 V69 Q38,71 36,71 H26 Q24,71 24,69 V59 Q24,57 26,57 Z" />
+    <path
+        android:strokeColor="#90A4AE"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round"
+        android:pathData="M45,64 H96" />
+    <path
+        android:name="strike1"
+        android:strokeColor="#37474F"
+        android:strokeWidth="1.6"
+        android:trimPathEnd="0"
+        android:pathData="M42,64 H99" />
+    <path
+        android:name="check1"
+        android:strokeColor="#43A047"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:trimPathEnd="0"
+        android:pathData="M27,64 L30.5,68 L38,59" />
+
+    <!-- Item 2 -->
+    <path
+        android:strokeColor="#546E7A"
+        android:strokeWidth="1.6"
+        android:pathData="M26,85 H36 Q38,85 38,87 V97 Q38,99 36,99 H26 Q24,99 24,97 V87 Q24,85 26,85 Z" />
+    <path
+        android:strokeColor="#90A4AE"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round"
+        android:pathData="M45,92 H90" />
+    <path
+        android:name="strike2"
+        android:strokeColor="#37474F"
+        android:strokeWidth="1.6"
+        android:trimPathEnd="0"
+        android:pathData="M42,92 H93" />
+    <path
+        android:name="check2"
+        android:strokeColor="#43A047"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:trimPathEnd="0"
+        android:pathData="M27,92 L30.5,96 L38,87" />
+
+    <!-- Item 3 -->
+    <path
+        android:strokeColor="#546E7A"
+        android:strokeWidth="1.6"
+        android:pathData="M26,113 H36 Q38,113 38,115 V125 Q38,127 36,127 H26 Q24,127 24,125 V115 Q24,113 26,113 Z" />
+    <path
+        android:strokeColor="#90A4AE"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round"
+        android:pathData="M45,120 H82" />
+    <path
+        android:name="strike3"
+        android:strokeColor="#37474F"
+        android:strokeWidth="1.6"
+        android:trimPathEnd="0"
+        android:pathData="M42,120 H85" />
+    <path
+        android:name="check3"
+        android:strokeColor="#43A047"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:trimPathEnd="0"
+        android:pathData="M27,120 L30.5,124 L38,115" />
+
+    <!-- Top binding -->
+    <path
+        android:fillColor="#37474F"
+        android:pathData="M14,22 H106 V31 H14 Z" />
+
+    <!-- Binding rings -->
+    <path
+        android:strokeColor="#CFD8DC"
+        android:strokeWidth="1.6"
+        android:pathData="M21.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z
+                          M33.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z
+                          M45.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z
+                          M57.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z
+                          M69.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z
+                          M81.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z
+                          M93.2,26 a2.8,6 0 1,0 5.6,0 a2.8,6 0 1,0 -5.6,0 Z" />
+    </group>
+</vector>
