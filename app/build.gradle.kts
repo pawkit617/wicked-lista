@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.wickedlista"
-        minSdk = 24
+        minSdk = 31
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.junit.ktx)
     //implementation(libs.androidx.foundation)
     ksp(libs.androidx.room.compiler)

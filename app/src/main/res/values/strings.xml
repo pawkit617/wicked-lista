@@ -34,7 +34,7 @@
     <string name="delete">Delete</string>
 
     <!-- Add Owner Dialog-->
-    <string name="add_owner_message">Add an owner of a new list this category.</string>
+    <string name="add_owner_message">Add an owner of a new list for this category.</string>
     <string name="new_owner">New owner</string>
     <string name="add_owner">Add owner</string>
     <string name="error_duplicate_owner">&#x2A;Unique owner required</string>

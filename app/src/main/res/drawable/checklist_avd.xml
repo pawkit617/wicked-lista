@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/checklist_vector">
+
+    <!-- Item 1: draw the check mark -->
+    <target android:name="check1">
+        <aapt:attr name="android:animation">
+                <objectAnimator
+                    android:duration="4800"
+                    android:repeatCount="-1">
+                    <propertyValuesHolder
+                        android:propertyName="trimPathEnd"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="0" />
+                        <keyframe android:fraction="0.0625" android:value="0" />
+                        <keyframe
+                            android:fraction="0.1458"
+                            android:value="1"
+                            android:interpolator="@android:interpolator/fast_out_slow_in" />
+                        <keyframe android:fraction="1" android:value="1" />
+                    </propertyValuesHolder>
+                    <!-- Fade out at the end of the loop, then reset while invisible -->
+                    <propertyValuesHolder
+                        android:propertyName="strokeAlpha"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="1" />
+                        <keyframe android:fraction="0.8333" android:value="1" />
+                        <keyframe android:fraction="0.9375" android:value="0" />
+                        <keyframe android:fraction="1" android:value="0" />
+                    </propertyValuesHolder>
+                </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <!-- Item 1: strike through the text -->
+    <target android:name="strike1">
+        <aapt:attr name="android:animation">
+                <objectAnimator
+                    android:duration="4800"
+                    android:repeatCount="-1">
+                    <propertyValuesHolder
+                        android:propertyName="trimPathEnd"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="0" />
+                        <keyframe android:fraction="0.1458" android:value="0" />
+                        <keyframe
+                            android:fraction="0.2083"
+                            android:value="1"
+                            android:interpolator="@android:interpolator/linear" />
+                        <keyframe android:fraction="1" android:value="1" />
+                    </propertyValuesHolder>
+                    <!-- Fade out at the end of the loop, then reset while invisible -->
+                    <propertyValuesHolder
+                        android:propertyName="strokeAlpha"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="1" />
+                        <keyframe android:fraction="0.8333" android:value="1" />
+                        <keyframe android:fraction="0.9375" android:value="0" />
+                        <keyframe android:fraction="1" android:value="0" />
+                    </propertyValuesHolder>
+                </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <!-- Item 2: draw the check mark -->
+    <target android:name="check2">
+        <aapt:attr name="android:animation">
+                <objectAnimator
+                    android:duration="4800"
+                    android:repeatCount="-1">
+                    <propertyValuesHolder
+                        android:propertyName="trimPathEnd"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="0" />
+                        <keyframe android:fraction="0.2292" android:value="0" />
+                        <keyframe
+                            android:fraction="0.3125"
+                            android:value="1"
+                            android:interpolator="@android:interpolator/fast_out_slow_in" />
+                        <keyframe android:fraction="1" android:value="1" />
+                    </propertyValuesHolder>
+                    <!-- Fade out at the end of the loop, then reset while invisible -->
+                    <propertyValuesHolder
+                        android:propertyName="strokeAlpha"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="1" />
+                        <keyframe android:fraction="0.8333" android:value="1" />
+                        <keyframe android:fraction="0.9375" android:value="0" />
+                        <keyframe android:fraction="1" android:value="0" />
+                    </propertyValuesHolder>
+                </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <!-- Item 2: strike through the text -->
+    <target android:name="strike2">
+        <aapt:attr name="android:animation">
+                <objectAnimator
+                    android:duration="4800"
+                    android:repeatCount="-1">
+                    <propertyValuesHolder
+                        android:propertyName="trimPathEnd"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="0" />
+                        <keyframe android:fraction="0.3125" android:value="0" />
+                        <keyframe
+                            android:fraction="0.3750"
+                            android:value="1"
+                            android:interpolator="@android:interpolator/linear" />
+                        <keyframe android:fraction="1" android:value="1" />
+                    </propertyValuesHolder>
+                    <!-- Fade out at the end of the loop, then reset while invisible -->
+                    <propertyValuesHolder
+                        android:propertyName="strokeAlpha"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="1" />
+                        <keyframe android:fraction="0.8333" android:value="1" />
+                        <keyframe android:fraction="0.9375" android:value="0" />
+                        <keyframe android:fraction="1" android:value="0" />
+                    </propertyValuesHolder>
+                </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <!-- Item 3: draw the check mark -->
+    <target android:name="check3">
+        <aapt:attr name="android:animation">
+                <objectAnimator
+                    android:duration="4800"
+                    android:repeatCount="-1">
+                    <propertyValuesHolder
+                        android:propertyName="trimPathEnd"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="0" />
+                        <keyframe android:fraction="0.3958" android:value="0" />
+                        <keyframe
+                            android:fraction="0.4792"
+                            android:value="1"
+                            android:interpolator="@android:interpolator/fast_out_slow_in" />
+                        <keyframe android:fraction="1" android:value="1" />
+                    </propertyValuesHolder>
+                    <!-- Fade out at the end of the loop, then reset while invisible -->
+                    <propertyValuesHolder
+                        android:propertyName="strokeAlpha"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="1" />
+                        <keyframe android:fraction="0.8333" android:value="1" />
+                        <keyframe android:fraction="0.9375" android:value="0" />
+                        <keyframe android:fraction="1" android:value="0" />
+                    </propertyValuesHolder>
+                </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <!-- Item 3: strike through the text -->
+    <target android:name="strike3">
+        <aapt:attr name="android:animation">
+                <objectAnimator
+                    android:duration="4800"
+                    android:repeatCount="-1">
+                    <propertyValuesHolder
+                        android:propertyName="trimPathEnd"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="0" />
+                        <keyframe android:fraction="0.4792" android:value="0" />
+                        <keyframe
+                            android:fraction="0.5417"
+                            android:value="1"
+                            android:interpolator="@android:interpolator/linear" />
+                        <keyframe android:fraction="1" android:value="1" />
+                    </propertyValuesHolder>
+                    <!-- Fade out at the end of the loop, then reset while invisible -->
+                    <propertyValuesHolder
+                        android:propertyName="strokeAlpha"
+                        android:valueType="floatType">
+                        <keyframe android:fraction="0" android:value="1" />
+                        <keyframe android:fraction="0.8333" android:value="1" />
+                        <keyframe android:fraction="0.9375" android:value="0" />
+                        <keyframe android:fraction="1" android:value="0" />
+                    </propertyValuesHolder>
+                </objectAnimator>
+        </aapt:attr>
+    </target>
+</animated-vector>
