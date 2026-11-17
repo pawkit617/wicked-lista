@@ -1,6 +1,9 @@
 package com.example.wickedlista
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,8 +23,6 @@ import androidx.compose.foundation.style.styleable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,9 +33,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -59,6 +63,7 @@ import com.example.wickedlista.ui.screens.HomeScreen
 import com.example.wickedlista.ui.screens.SavedListScreen
 import com.example.wickedlista.ui.theme.WickedListaTheme
 import com.example.wickedlista.ui.theme.commonShadow
+import com.example.wickedlista.ui.theme.customFont
 import com.example.wickedlista.ui.theme.getButtonStyle
 import com.example.wickedlista.ui.theme.getCommonTextFieldStyle
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
@@ -222,7 +227,11 @@ fun CommonFormTextField(
         lineLimits = lineLimits,
         interactionSource = interactionSource,
         cursorBrush = SolidColor(Color.Black),
-        textStyle = TextStyle(Color.Black, fontSize),
+        textStyle = TextStyle(
+            Color.Black,
+            fontSize,
+            fontFamily = customFont
+        ),
         decorator = { innerTextField ->
             Box (contentAlignment = Alignment.CenterStart) {
                 if (textFieldState.text.isEmpty()) {
@@ -264,23 +273,34 @@ fun StyleButton(
         MaterialTheme.shapes.small,
         buttonWidth
     )
-
-    Row(
-        modifier = Modifier
-            .clickable(
-                onClick = onClick,
-                interactionSource = interactionSource,
+    var shouldAnimate by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { shouldAnimate = true}
+    AnimatedVisibility(
+        visible = shouldAnimate,
+        enter = fadeIn(
+            animationSpec = tween (
+                durationMillis = 200,
+                delayMillis = 300 // Delays the start of the fade-in by 500ms
             )
-            .styleable(
-                styleState,
-                buttonStyle
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = text
         )
+    ) {
+        Row(
+            modifier = Modifier
+                .clickable(
+                    onClick = onClick,
+                    interactionSource = interactionSource,
+                )
+                .styleable(
+                    styleState,
+                    buttonStyle
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = text
+            )
+        }
     }
 }
 
