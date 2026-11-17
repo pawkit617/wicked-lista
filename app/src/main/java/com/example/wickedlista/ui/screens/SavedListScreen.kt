@@ -187,7 +187,7 @@ fun OwnerSelected(savedLists: SavedLists) {
         Text(
             text= savedLists.owner,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.weight(1f),
             maxLines = 2
         )
@@ -213,7 +213,7 @@ fun OwnerUnSelected(savedLists: SavedLists, savedListViewModel: SavedListViewMod
         Text(
             text= savedLists.owner,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.weight(1f),
             maxLines = 2
         )

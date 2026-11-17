@@ -65,6 +65,7 @@ import com.example.wickedlista.ui.screens.HomeScreen
 import com.example.wickedlista.ui.screens.SavedListScreen
 import com.example.wickedlista.ui.theme.WickedListaTheme
 import com.example.wickedlista.ui.theme.commonShadow
+import com.example.wickedlista.ui.theme.customFont
 import com.example.wickedlista.ui.theme.getButtonStyle
 import com.example.wickedlista.ui.theme.getCommonTextFieldStyle
 import com.example.wickedlista.ui.viewmodels.HomeScreenViewModel
@@ -228,7 +229,11 @@ fun CommonFormTextField(
         lineLimits = lineLimits,
         interactionSource = interactionSource,
         cursorBrush = SolidColor(Color.Black),
-        textStyle = TextStyle(Color.Black, fontSize),
+        textStyle = TextStyle(
+            Color.Black,
+            fontSize,
+            fontFamily = customFont
+        ),
         decorator = { innerTextField ->
             Box (contentAlignment = Alignment.CenterStart) {
                 if (textFieldState.text.isEmpty()) {
